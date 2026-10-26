@@ -188,7 +188,7 @@ dotnet pack Sources/Render.NET.sln --configuration Release --no-build --output a
 
 Tests cover STL, OBJ triangulation/normals, 3MF build selection and cross-part components, malformed inputs, limits, cancellation, camera rotation/framing, depth ordering, transparent antialiasing, shadows, occlusion, and PNG decoding/checksums. The repository includes [eight public-domain model files](https://github.com/bvdcode/Render.NET/tree/main/Tests/Fixtures), with source declarations and SHA-256 checks. Tests run offline after package restore. Fixtures and benchmarks are excluded from NuGet packages.
 
-GitHub Actions builds, tests, and packs changes on `main` and pull requests. Successful builds on `main` publish both packages to NuGet.org using Trusted Publishing and create a GitHub release. Versions are calculated by GitVersion.
+GitHub Actions builds, tests, and packs changes on `main` and pull requests. Successful builds on `main` publish both packages to NuGet.org using Trusted Publishing and create a GitHub release with package summaries and all commits since the previous release. GitVersion increments the patch version on `main` from release tags; commit messages cannot trigger minor or major bumps. Minor and major releases require an explicit versioning decision.
 
 Each NuGet package includes the project icon, this README, XML API documentation, and the MIT license. Debug symbols are distributed in separate `.snupkg` files.
 

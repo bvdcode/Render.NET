@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Fixes automatic GitHub release descriptions for direct commits as well as pull requests. Includes shipped package summaries, commit links, and a comparison with the previous release. Adds the CodeFactor analysis badge and measured CPU preview benchmarks against F3D to the package README.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses release tags and patch increments for ordinary publications. Removes the forced next-version override and disables version bumps from commit messages and main-branch merge messages.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

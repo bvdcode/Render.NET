@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Fixes automatic GitHub release descriptions with package summaries and a complete commit list. Adds the CodeFactor analysis badge and Render.NET.Mesh performance results to the package README.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses release tags and patch increments for ordinary publications. Removes the forced next-version override and disables version bumps from commit messages and main-branch merge messages.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
