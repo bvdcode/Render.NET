@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Render.NET.Mesh</RootNamespace>
+        <Version>0.1.0</Version>
+        <Authors>Vadim Belov</Authors>
+        <Company>bvdcode</Company>
+        <Product>Render.NET.Mesh</Product>
+        <Title>Render.NET.Mesh</Title>
+        <Description>Foundation package for fully managed 3D model rendering with Render.NET. This initial release establishes the package structure; model loading and rendering APIs are not implemented yet.</Description>
+        <Summary>Managed 3D model loading, cameras, materials, lighting, and triangle rendering.</Summary>
+        <Copyright>Copyright © Vadim Belov 2026</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageId>Render.NET.Mesh</PackageId>
+        <PackageTags>rendering;graphics;3d;mesh;stl;obj;3mf;rasterization</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>packageIcon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>Initial Mesh package referencing Render.NET. No public model loading or rendering APIs are available yet.</PackageReleaseNotes>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Render.NET/Render.NET.csproj" />
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+        <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+    </ItemGroup>
+
+</Project>

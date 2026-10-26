@@ -10,23 +10,35 @@
 
 A .NET rendering library under development.
 
-The first `Render.NET` package is an empty placeholder. It contains no public rendering APIs yet.
+The initial `Render.NET` and `Render.NET.Mesh` packages establish the library structure. They contain no public rendering or model loading APIs yet.
 
 ## Packages
 
 | Package | Scope | Status |
 | --- | --- | --- |
 | [Render.NET](https://www.nuget.org/packages/Render.NET/) | Pixel buffers, drawing, transparency, and antialiasing. | Initial placeholder, targeting .NET 10. |
-| Render.NET.Mesh | STL, OBJ, and 3MF; camera, lighting, and triangle rendering. | Planned. |
+| [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF; camera, materials, lighting, and triangle rendering. | Initial placeholder, targeting .NET 10; depends on Render.NET. |
 | Render.NET.Pdf | PDF reading, fonts, and drawing command execution. | Planned. |
 
 ## Installation
 
 ```bash
 dotnet add package Render.NET
+dotnet add package Render.NET.Mesh
 ```
 
-The package currently adds an empty assembly with no runtime dependencies.
+`Render.NET` currently adds an empty assembly with no runtime dependencies. `Render.NET.Mesh` adds an empty assembly and a dependency on `Render.NET`.
+
+## Mesh rendering goals
+
+`Render.NET.Mesh` is intended for server-side 3D model previews implemented in managed C#, without external renderer processes, native graphics packages, or a windowing system.
+
+The planned responsibilities are:
+
+- `Render.NET`: pixel buffers, rasterization, transparency, and antialiasing.
+- `Render.NET.Mesh`: model loading, scene geometry, camera framing, materials, lighting, and projection onto the pixel buffer.
+
+The first rendering milestone is an STL preview with automatic camera framing, depth testing, lighting, shadows, and antialiasing. OBJ and 3MF support will extend the same rendering pipeline. Visual quality and performance will be evaluated against reference model previews.
 
 ## Build
 
