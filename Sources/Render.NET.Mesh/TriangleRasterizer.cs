@@ -56,8 +56,8 @@ namespace Render.NET.Mesh
                             continue;
                         }
 
-                        float depth = wa * a.Z + wb * b.Z + wc * c.Z;
-                        int offset = y * camera.Width + x;
+                        float depth = (wa * a.Z) + (wb * b.Z) + (wc * c.Z);
+                        int offset = (y * camera.Width) + x;
                         if (depth >= depths[offset])
                         {
                             continue;
@@ -66,7 +66,7 @@ namespace Render.NET.Mesh
                         depths[offset] = depth;
                         if (normals != null)
                         {
-                            Vector3 normal = mesh.Normals[corner] * wa + mesh.Normals[corner + 1] * wb + mesh.Normals[corner + 2] * wc;
+                            Vector3 normal = (mesh.Normals[corner] * wa) + (mesh.Normals[corner + 1] * wb) + (mesh.Normals[corner + 2] * wc);
                             if (normal.LengthSquared() < 0.000001f)
                             {
                                 normal = Vector3.Cross(mesh.Positions[mesh.Indices[corner + 1]] - mesh.Positions[mesh.Indices[corner]],
@@ -84,6 +84,6 @@ namespace Render.NET.Mesh
         }
 
         private static float Edge(Vector3 a, Vector3 b, float x, float y) =>
-            (b.X - a.X) * (y - a.Y) - (b.Y - a.Y) * (x - a.X);
+            ((b.X - a.X) * (y - a.Y)) - ((b.Y - a.Y) * (x - a.X));
     }
 }

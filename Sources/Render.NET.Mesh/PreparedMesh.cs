@@ -14,9 +14,21 @@ namespace Render.NET.Mesh
         internal PreparedMesh(TriangleMesh source, MeshRenderOptions options, CancellationToken token)
         {
             Indices = source.IndexData;
+            Quaternion rotation = Quaternion.Normalize(options.ModelRotation);
+            Positions = NormalizePositions(source, rotation, token);
+            var (faceNormals, faceAreas, adjacency) = CalculateFaces(source, options.SmoothNormals, token);
+            Normals = CreateCornerNormals(faceNormals, faceAreas, adjacency, options.CreaseAngle, token);
+            if (options.UseSourceNormals && source.NormalData.Length > 0)
+            {
+                ApplySourceNormals(source.NormalData, rotation, token);
+            }
+        }
+
+        private static Vector3[] NormalizePositions(TriangleMesh source, Quaternion rotation, CancellationToken token)
+        {
             Vector3 minimum = new(float.PositiveInfinity);
             Vector3 maximum = new(float.NegativeInfinity);
-            foreach (int index in Indices)
+            foreach (int index in source.IndexData)
             {
                 minimum = Vector3.Min(minimum, source.VertexData[index]);
                 maximum = Vector3.Max(maximum, source.VertexData[index]);
@@ -33,9 +45,8 @@ namespace Render.NET.Mesh
                 throw new ArgumentException("The mesh has no spatial extent.", nameof(source));
             }
 
-            Positions = new Vector3[source.VertexData.Length];
-            Quaternion rotation = Quaternion.Normalize(options.ModelRotation);
-            for (int index = 0; index < Positions.Length; index++)
+            Vector3[] positions = new Vector3[source.VertexData.Length];
+            for (int index = 0; index < positions.Length; index++)
             {
                 if ((index & 4095) == 0)
                 {
@@ -43,14 +54,20 @@ namespace Render.NET.Mesh
                 }
 
                 Vector3 vertex = source.VertexData[index];
-                Positions[index] = new Vector3((float)((vertex.X - centerX) * 2 / extent),
-                    (float)((vertex.Y - centerY) * 2 / extent), (float)((vertex.Z - centerZ) * 2 / extent));
-                Positions[index] = Vector3.Transform(Positions[index], rotation);
+                positions[index] = new Vector3((float)(((vertex.X - centerX) * 2) / extent),
+                    (float)(((vertex.Y - centerY) * 2) / extent), (float)(((vertex.Z - centerZ) * 2) / extent));
+                positions[index] = Vector3.Transform(positions[index], rotation);
             }
 
+            return positions;
+        }
+
+        private (Vector3[] Normals, Vector3[] Areas, Dictionary<Vector3, List<int>>? Adjacency) CalculateFaces(
+            TriangleMesh source, bool smoothNormals, CancellationToken token)
+        {
             Vector3[] faceNormals = new Vector3[source.TriangleCount];
             Vector3[] faceAreas = new Vector3[source.TriangleCount];
-            Dictionary<Vector3, List<int>>? adjacency = options.SmoothNormals ? new() : null;
+            Dictionary<Vector3, List<int>>? adjacency = smoothNormals ? new() : null;
             bool hasSurface = false;
             for (int face = 0; face < faceNormals.Length; face++)
             {
@@ -81,8 +98,14 @@ namespace Render.NET.Mesh
                 throw new ArgumentException("The mesh contains no nondegenerate triangles.", nameof(source));
             }
 
-            Normals = new Vector3[Indices.Length];
-            float cosine = MathF.Cos(options.CreaseAngle * MathF.PI / 180);
+            return (faceNormals, faceAreas, adjacency);
+        }
+
+        private Vector3[] CreateCornerNormals(Vector3[] faceNormals, Vector3[] faceAreas,
+            Dictionary<Vector3, List<int>>? adjacency, float creaseAngle, CancellationToken token)
+        {
+            Vector3[] normals = new Vector3[Indices.Length];
+            float cosine = MathF.Cos((creaseAngle * MathF.PI) / 180);
             for (int corner = 0; corner < Indices.Length; corner++)
             {
                 if ((corner & 4095) == 0)
@@ -91,7 +114,7 @@ namespace Render.NET.Mesh
                 }
 
                 Vector3 normal = faceNormals[corner / 3];
-                Normals[corner] = normal;
+                normals[corner] = normal;
                 if (normal == Vector3.Zero || adjacency == null)
                 {
                     continue;
@@ -115,23 +138,25 @@ namespace Render.NET.Mesh
 
                 if (sum.LengthSquared() > 1e-24f)
                 {
-                    Normals[corner] = Vector3.Normalize(sum);
+                    normals[corner] = Vector3.Normalize(sum);
                 }
             }
 
-            if (options.UseSourceNormals && source.NormalData.Length > 0)
-            {
-                for (int corner = 0; corner < Normals.Length; corner++)
-                {
-                    if ((corner & 4095) == 0)
-                    {
-                        token.ThrowIfCancellationRequested();
-                    }
+            return normals;
+        }
 
-                    if (source.NormalData[corner] != Vector3.Zero && Normals[corner] != Vector3.Zero)
-                    {
-                        Normals[corner] = Vector3.Transform(GeometryMath.Normalize(source.NormalData[corner]), rotation);
-                    }
+        private void ApplySourceNormals(Vector3[] sourceNormals, Quaternion rotation, CancellationToken token)
+        {
+            for (int corner = 0; corner < Normals.Length; corner++)
+            {
+                if ((corner & 4095) == 0)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+
+                if (sourceNormals[corner] != Vector3.Zero && Normals[corner] != Vector3.Zero)
+                {
+                    Normals[corner] = Vector3.Transform(GeometryMath.Normalize(sourceNormals[corner]), rotation);
                 }
             }
         }

@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Uses release tags and patch increments for ordinary publications. Removes the forced next-version override and disables version bumps from commit messages and main-branch merge messages.</PackageReleaseNotes>
+        <PackageReleaseNotes>Makes pixel-buffer offset arithmetic explicit as part of the rendering code quality cleanup. Pixel and PNG output remain unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

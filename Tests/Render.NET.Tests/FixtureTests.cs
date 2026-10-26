@@ -66,6 +66,5 @@ namespace Render.NET.Tests
             Assert.That(mesh.TriangleCount, Is.GreaterThan(0));
             Assert.That(inner.CanRead, Is.True);
         }
-
     }
 }

@@ -25,9 +25,9 @@ namespace Render.NET.Mesh
 
         internal Vector3 Shade(Vector3 point, Vector3 normal, Vector3 view, float occlusion)
         {
-            float hemisphere = normal.Z * 0.5f + 0.5f;
+            float hemisphere = (normal.Z * 0.5f) + 0.5f;
             Vector3 ambient = Vector3.Lerp(new Vector3(0.12f, 0.14f, 0.19f), new Vector3(0.38f, 0.43f, 0.55f), hemisphere);
-            Vector3 color = _baseColor * ambient * occlusion * (1 - 0.65f * _options.Metallic);
+            Vector3 color = _baseColor * ambient * occlusion * (1 - (0.65f * _options.Metallic));
             color += EvaluateLight(normal, view, KeyDirection) * new Vector3(4.8f, 4.5f, 4.1f) * Shadow(point, normal);
             color += EvaluateLight(normal, view, FillDirection) * new Vector3(0.85f, 1.05f, 1.5f);
             color += EvaluateLight(normal, view, RimDirection) * new Vector3(2.3f, 2.55f, 3.1f);
@@ -49,13 +49,13 @@ namespace Render.NET.Mesh
             float vh = MathF.Max(Vector3.Dot(view, halfVector), 0);
             float alpha = _options.Roughness * _options.Roughness;
             float alphaSquared = alpha * alpha;
-            float denominator = nh * nh * (alphaSquared - 1) + 1;
+            float denominator = (nh * nh * (alphaSquared - 1)) + 1;
             float distribution = alphaSquared / (MathF.PI * denominator * denominator);
-            float k = (_options.Roughness + 1) * (_options.Roughness + 1) / 8;
-            float geometry = nv / (nv * (1 - k) + k) * nl / (nl * (1 - k) + k);
-            Vector3 fresnel = _fresnel + (Vector3.One - _fresnel) * MathF.Pow(1 - vh, 5);
-            Vector3 specular = fresnel * (distribution * geometry / (4 * nv * nl + 0.0001f));
-            Vector3 diffuse = (Vector3.One - fresnel) * (1 - _options.Metallic) * _baseColor / MathF.PI;
+            float k = ((_options.Roughness + 1) * (_options.Roughness + 1)) / 8;
+            float geometry = ((nv / ((nv * (1 - k)) + k)) * nl) / ((nl * (1 - k)) + k);
+            Vector3 fresnel = _fresnel + ((Vector3.One - _fresnel) * MathF.Pow(1 - vh, 5));
+            Vector3 specular = fresnel * ((distribution * geometry) / ((4 * nv * nl) + 0.0001f));
+            Vector3 diffuse = ((Vector3.One - fresnel) * (1 - _options.Metallic) * _baseColor) / MathF.PI;
             return (diffuse + specular) * nl;
         }
 
@@ -69,7 +69,7 @@ namespace Render.NET.Mesh
             Vector3 projected = _shadowCamera.Project(point);
             int centerX = (int)MathF.Floor(projected.X);
             int centerY = (int)MathF.Floor(projected.Y);
-            float bias = 0.0025f + 0.004f * (1 - MathF.Max(Vector3.Dot(normal, KeyDirection), 0));
+            float bias = 0.0025f + (0.004f * (1 - MathF.Max(Vector3.Dot(normal, KeyDirection), 0)));
             float step = MathF.Max(1, _shadowCamera.Scale * _options.ShadowSoftness);
             float nl = MathF.Max(Vector3.Dot(normal, KeyDirection), 0.15f);
             float depthDx = Vector3.Dot(_shadowCamera.Unproject(projected.X + 1, projected.Y, projected.Z) - point, normal) / nl;
@@ -84,9 +84,9 @@ namespace Render.NET.Mesh
                     int x = centerX + (int)MathF.Round(dx * step);
                     float weight = (3 - Math.Abs(dx)) * (3 - Math.Abs(dy));
                     total += weight;
-                    float receiverDepth = projected.Z + (x + 0.5f - projected.X) * depthDx + (y + 0.5f - projected.Y) * depthDy;
+                    float receiverDepth = projected.Z + (((x + 0.5f) - projected.X) * depthDx) + (((y + 0.5f) - projected.Y) * depthDy);
                     if ((uint)x >= (uint)_shadowCamera.Width || (uint)y >= (uint)_shadowCamera.Height ||
-                        receiverDepth - bias <= _shadowDepths[y * _shadowCamera.Width + x])
+                        receiverDepth - bias <= _shadowDepths[(y * _shadowCamera.Width) + x])
                     {
                         visible += weight;
                     }
@@ -101,10 +101,15 @@ namespace Render.NET.Mesh
         internal static byte ToSrgbByte(float value)
         {
             value = Math.Clamp(value, 0, 1);
-            float srgb = value <= 0.0031308f ? value * 12.92f : 1.055f * MathF.Pow(value, 1 / 2.4f) - 0.055f;
+            float srgb = value <= 0.0031308f ? value * 12.92f : (1.055f * MathF.Pow(value, 1 / 2.4f)) - 0.055f;
             return (byte)Math.Clamp((int)MathF.Round(srgb * 255), 0, 255);
         }
 
-        private static float ToneMap(float value) => Math.Clamp(value * (2.51f * value + 0.03f) / (value * (2.43f * value + 0.59f) + 0.14f), 0, 1);
+        private static float ToneMap(float value)
+        {
+            float numerator = value * ((2.51f * value) + 0.03f);
+            float denominator = (value * ((2.43f * value) + 0.59f)) + 0.14f;
+            return Math.Clamp(numerator / denominator, 0, 1);
+        }
     }
 }

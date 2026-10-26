@@ -12,15 +12,15 @@ namespace Render.NET.Mesh.Sample
             Vector3[,] points = new Vector3[rings, sides];
             for (int ring = 0; ring < rings; ring++)
             {
-                float t = ring * MathF.Tau / rings;
+                float t = (ring * MathF.Tau) / rings;
                 Vector3 center = Curve(t);
                 Vector3 tangent = Vector3.Normalize(Curve(t + 0.001f) - Curve(t - 0.001f));
                 Vector3 normal = Vector3.Normalize(Vector3.Cross(tangent, Vector3.UnitZ));
                 Vector3 binormal = Vector3.Cross(tangent, normal);
                 for (int side = 0; side < sides; side++)
                 {
-                    float angle = side * MathF.Tau / sides;
-                    points[ring, side] = center + 0.32f * (normal * MathF.Cos(angle) + binormal * MathF.Sin(angle));
+                    float angle = (side * MathF.Tau) / sides;
+                    points[ring, side] = center + (0.32f * ((normal * MathF.Cos(angle)) + (binormal * MathF.Sin(angle))));
                 }
             }
 
@@ -44,8 +44,8 @@ namespace Render.NET.Mesh.Sample
         }
 
         private static Vector3 Curve(float t) => new(
-            (2 + 0.7f * MathF.Cos(3 * t)) * MathF.Cos(2 * t),
-            (2 + 0.7f * MathF.Cos(3 * t)) * MathF.Sin(2 * t), 0.7f * MathF.Sin(3 * t));
+            (2 + (0.7f * MathF.Cos(3 * t))) * MathF.Cos(2 * t),
+            (2 + (0.7f * MathF.Cos(3 * t))) * MathF.Sin(2 * t), 0.7f * MathF.Sin(3 * t));
 
         private static void WriteTriangle(BinaryWriter writer, Vector3 a, Vector3 b, Vector3 c)
         {

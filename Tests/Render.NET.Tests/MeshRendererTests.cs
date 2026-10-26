@@ -44,12 +44,12 @@ namespace Render.NET.Tests
             byte[] expected = MeshRenderer.Render(new TriangleMesh(vertices, [0, 1, 2]), options).Pixels.ToArray();
             foreach (float scale in new[] { MathF.Pow(2, -90), MathF.Pow(2, 90) })
             {
-                Vector3[] transformed = vertices.Select(vertex => vertex * scale + new Vector3(4 * scale)).ToArray();
+                Vector3[] transformed = vertices.Select(vertex => (vertex * scale) + new Vector3(4 * scale)).ToArray();
                 PixelBuffer image = MeshRenderer.Render(new TriangleMesh(transformed, [0, 1, 2]), options);
                 Assert.That(image.Pixels.ToArray(), Is.EqualTo(expected));
             }
 
-            int[] covered = Enumerable.Range(0, expected.Length / 4).Where(index => expected[index * 4 + 3] > 0).ToArray();
+            int[] covered = Enumerable.Range(0, expected.Length / 4).Where(index => expected[(index * 4) + 3] > 0).ToArray();
             Assert.That(covered.Length, Is.GreaterThan(100));
             Assert.That(covered.Min(index => index % 120), Is.GreaterThan(0));
             Assert.That(covered.Max(index => index % 120), Is.LessThan(119));
@@ -174,7 +174,7 @@ namespace Render.NET.Tests
                 {
                     Rgba32 a = reference[x, y];
                     Rgba32 b = shaded[x, y];
-                    if (a.A == 255 && b.R + b.G + b.B < a.R + a.G + a.B - 3)
+                    if (a.A == 255 && b.R + b.G + b.B < (a.R + a.G + a.B) - 3)
                     {
                         count++;
                     }

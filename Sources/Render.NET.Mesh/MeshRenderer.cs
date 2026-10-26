@@ -52,9 +52,9 @@ namespace Render.NET.Mesh
                     {
                         for (int sx = 0; sx < options.Supersampling; sx++)
                         {
-                            int sampleX = x * options.Supersampling + sx;
-                            int sampleY = y * options.Supersampling + sy;
-                            int offset = sampleY * width + sampleX;
+                            int sampleX = (x * options.Supersampling) + sx;
+                            int sampleY = (y * options.Supersampling) + sy;
+                            int offset = (sampleY * width) + sampleX;
                             float depth = depths[offset];
                             if (!float.IsFinite(depth))
                             {
@@ -71,7 +71,7 @@ namespace Render.NET.Mesh
                         }
                     }
 
-                    int target = (y * options.Width + x) * 4;
+                    int target = ((y * options.Width) + x) * 4;
                     if (alpha > 0)
                     {
                         // Average premultiplied linear samples, then return straight sRGB pixels.
@@ -79,7 +79,7 @@ namespace Render.NET.Mesh
                         pixels[target] = StudioLighting.ToSrgbByte(color.X);
                         pixels[target + 1] = StudioLighting.ToSrgbByte(color.Y);
                         pixels[target + 2] = StudioLighting.ToSrgbByte(color.Z);
-                        pixels[target + 3] = (byte)MathF.Round(alpha * 255 / (options.Supersampling * options.Supersampling));
+                        pixels[target + 3] = (byte)MathF.Round((alpha * 255) / (options.Supersampling * options.Supersampling));
                     }
                 }
             });

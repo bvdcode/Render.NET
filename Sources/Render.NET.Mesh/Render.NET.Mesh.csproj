@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Uses release tags and patch increments for ordinary publications. Removes the forced next-version override and disables version bumps from commit messages and main-branch merge messages.</PackageReleaseNotes>
+        <PackageReleaseNotes>Simplifies OBJ and 3MF parsing, polygon triangulation, mesh validation, and normal preparation. Makes arithmetic precedence explicit throughout the renderer. Verified identical geometry for all eight fixture models and identical pixels and PNG bytes across 24 render configurations.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

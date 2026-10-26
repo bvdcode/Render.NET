@@ -35,16 +35,19 @@ namespace Render.NET.Mesh
             _centerX = (minimum.X + maximum.X) * 0.5f;
             _centerY = (minimum.Y + maximum.Y) * 0.5f;
             Scale = MathF.Min(width / MathF.Max(maximum.X - minimum.X, 0.000001f),
-                height / MathF.Max(maximum.Y - minimum.Y, 0.000001f)) * (1 - 2 * padding);
+                height / MathF.Max(maximum.Y - minimum.Y, 0.000001f)) * (1 - (2 * padding));
         }
 
         internal Vector3 Project(Vector3 point) => new(
-            (Vector3.Dot(point, _right) - _centerX) * Scale + Width * 0.5f,
-            Height * 0.5f - (Vector3.Dot(point, _up) - _centerY) * Scale,
+            ((Vector3.Dot(point, _right) - _centerX) * Scale) + (Width * 0.5f),
+            (Height * 0.5f) - ((Vector3.Dot(point, _up) - _centerY) * Scale),
             -Vector3.Dot(point, _towardCamera));
 
-        internal Vector3 Unproject(float x, float y, float depth) =>
-            _right * ((x - Width * 0.5f) / Scale + _centerX) +
-            _up * ((Height * 0.5f - y) / Scale + _centerY) - _towardCamera * depth;
+        internal Vector3 Unproject(float x, float y, float depth)
+        {
+            float horizontal = ((x - (Width * 0.5f)) / Scale) + _centerX;
+            float vertical = (((Height * 0.5f) - y) / Scale) + _centerY;
+            return ((_right * horizontal) + (_up * vertical)) - (_towardCamera * depth);
+        }
     }
 }

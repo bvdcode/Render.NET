@@ -15,14 +15,37 @@ namespace Render.NET.Mesh
                 return [0, 1, 2];
             }
 
+            Vector2[] points = Project(vertices);
+            List<int> remaining = DistinctCorners(points);
+            double sign = Orientation(points, remaining);
+            List<int> triangles = new((vertices.Length - 2) * 3);
+            while (remaining.Count > 3)
+            {
+                token.ThrowIfCancellationRequested();
+                if (!ClipEar(points, remaining, triangles, sign))
+                {
+                    throw new InvalidDataException("OBJ polygon cannot be triangulated as a simple planar polygon.");
+                }
+            }
+
+            if (remaining.Count == 3)
+            {
+                triangles.AddRange(remaining);
+            }
+
+            return triangles;
+        }
+
+        private static Vector2[] Project(Vector3[] vertices)
+        {
             double nx = 0, ny = 0, nz = 0;
             Vector3 origin = vertices[0];
             for (int index = 0; index < vertices.Length; index++)
             {
                 Vector3 a = vertices[index], b = vertices[(index + 1) % vertices.Length];
-                nx += ((double)a.Y - b.Y) * ((double)a.Z + b.Z - 2d * origin.Z);
-                ny += ((double)a.Z - b.Z) * ((double)a.X + b.X - 2d * origin.X);
-                nz += ((double)a.X - b.X) * ((double)a.Y + b.Y - 2d * origin.Y);
+                nx += ((double)a.Y - b.Y) * (((double)a.Z + b.Z) - (2d * origin.Z));
+                ny += ((double)a.Z - b.Z) * (((double)a.X + b.X) - (2d * origin.X));
+                nz += ((double)a.X - b.X) * (((double)a.Y + b.Y) - (2d * origin.Y));
             }
 
             int dropAxis = Math.Abs(nx) > Math.Abs(ny) ? 0 : 1;
@@ -55,6 +78,11 @@ namespace Render.NET.Mesh
                 };
             }
 
+            return points;
+        }
+
+        private static List<int> DistinctCorners(Vector2[] points)
+        {
             List<int> remaining = [];
             for (int index = 0; index < points.Length; index++)
             {
@@ -69,11 +97,16 @@ namespace Render.NET.Mesh
                 remaining.RemoveAt(remaining.Count - 1);
             }
 
+            return remaining;
+        }
+
+        private static double Orientation(Vector2[] points, List<int> remaining)
+        {
             double area = 0;
             for (int index = 0; index < remaining.Count; index++)
             {
                 Vector2 a = points[remaining[index]], b = points[remaining[(index + 1) % remaining.Count]];
-                area += (double)a.X * b.Y - (double)a.Y * b.X;
+                area += ((double)a.X * b.Y) - ((double)a.Y * b.X);
             }
 
             if (Math.Abs(area) < 1e-12)
@@ -81,68 +114,57 @@ namespace Render.NET.Mesh
                 throw new InvalidDataException("OBJ polygon is degenerate or self-intersecting.");
             }
 
-            double sign = Math.Sign(area);
-            List<int> triangles = new((vertices.Length - 2) * 3);
-            while (remaining.Count > 3)
+            return Math.Sign(area);
+        }
+
+        private static bool ClipEar(Vector2[] points, List<int> remaining, List<int> triangles, double sign)
+        {
+            for (int index = 0; index < remaining.Count; index++)
             {
-                token.ThrowIfCancellationRequested();
-                bool removed = false;
-                for (int index = 0; index < remaining.Count; index++)
+                int a = remaining[((index + remaining.Count) - 1) % remaining.Count];
+                int b = remaining[index];
+                int c = remaining[(index + 1) % remaining.Count];
+                double turn = Cross(points[a], points[b], points[c]) * sign;
+                if (Math.Abs(turn) < 1e-12)
                 {
-                    int a = remaining[(index + remaining.Count - 1) % remaining.Count];
-                    int b = remaining[index];
-                    int c = remaining[(index + 1) % remaining.Count];
-                    double turn = Cross(points[a], points[b], points[c]) * sign;
-                    if (Math.Abs(turn) < 1e-12)
-                    {
-                        remaining.RemoveAt(index);
-                        removed = true;
-                        break;
-                    }
-
-                    if (turn < 0)
-                    {
-                        continue;
-                    }
-
-                    bool contains = false;
-                    foreach (int other in remaining)
-                    {
-                        if (other != a && other != b && other != c &&
-                            points[other] != points[a] && points[other] != points[b] && points[other] != points[c] &&
-                            Cross(points[a], points[b], points[other]) * sign >= -1e-12 &&
-                            Cross(points[b], points[c], points[other]) * sign >= -1e-12 &&
-                            Cross(points[c], points[a], points[other]) * sign >= -1e-12)
-                        {
-                            contains = true;
-                            break;
-                        }
-                    }
-
-                    if (!contains)
-                    {
-                        triangles.AddRange([a, b, c]);
-                        remaining.RemoveAt(index);
-                        removed = true;
-                        break;
-                    }
+                    remaining.RemoveAt(index);
+                    return true;
                 }
 
-                if (!removed)
+                if (turn < 0)
                 {
-                    throw new InvalidDataException("OBJ polygon cannot be triangulated as a simple planar polygon.");
+                    continue;
+                }
+
+                if (!ContainsVertex(points, remaining, a, b, c, sign))
+                {
+                    triangles.AddRange([a, b, c]);
+                    remaining.RemoveAt(index);
+                    return true;
                 }
             }
 
-            if (remaining.Count == 3)
+            return false;
+        }
+
+        private static bool ContainsVertex(Vector2[] points, List<int> remaining, int a, int b, int c, double sign)
+        {
+            foreach (int other in remaining)
             {
-                triangles.AddRange(remaining);
+                if (other != a && other != b && other != c &&
+                    points[other] != points[a] && points[other] != points[b] && points[other] != points[c] &&
+                    Cross(points[a], points[b], points[other]) * sign >= -1e-12 &&
+                    Cross(points[b], points[c], points[other]) * sign >= -1e-12 &&
+                    Cross(points[c], points[a], points[other]) * sign >= -1e-12)
+                {
+                    return true;
+                }
             }
 
-            return triangles;
+            return false;
         }
 
         private static double Cross(Vector2 a, Vector2 b, Vector2 c) =>
-            ((double)b.X - a.X) * ((double)c.Y - a.Y) - ((double)b.Y - a.Y) * ((double)c.X - a.X);
+            (((double)b.X - a.X) * ((double)c.Y - a.Y)) - (((double)b.Y - a.Y) * ((double)c.X - a.X));
     }
 }

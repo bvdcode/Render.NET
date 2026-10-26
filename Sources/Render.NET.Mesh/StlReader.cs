@@ -54,7 +54,7 @@ namespace Render.NET.Mesh
             if (data.Length >= 84)
             {
                 uint triangleCount = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(80, 4));
-                ulong expectedLength = 84UL + triangleCount * 50UL;
+                ulong expectedLength = 84UL + (triangleCount * 50UL);
                 if (expectedLength == (ulong)data.Length)
                 {
                     return ParseBinary(data, triangleCount, options, token);
@@ -90,10 +90,10 @@ namespace Render.NET.Mesh
             for (int triangle = 0; triangle < (int)count; triangle++)
             {
                 token.ThrowIfCancellationRequested();
-                int offset = 84 + triangle * 50 + 12;
+                int offset = 84 + (triangle * 50) + 12;
                 for (int corner = 0; corner < 3; corner++)
                 {
-                    ReadOnlySpan<byte> position = data.Slice(offset + corner * 12, 12);
+                    ReadOnlySpan<byte> position = data.Slice(offset + (corner * 12), 12);
                     Vector3 vertex = new(
                         BinaryPrimitives.ReadSingleLittleEndian(position),
                         BinaryPrimitives.ReadSingleLittleEndian(position[4..]),
@@ -103,7 +103,7 @@ namespace Render.NET.Mesh
                         throw new InvalidDataException("STL vertex coordinates must be finite.");
                     }
 
-                    int index = triangle * 3 + corner;
+                    int index = (triangle * 3) + corner;
                     vertices[index] = vertex;
                     indices[index] = index;
                 }

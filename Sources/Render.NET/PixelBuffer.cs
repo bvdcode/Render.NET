@@ -68,7 +68,7 @@ namespace Render.NET
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(x, Width);
             ArgumentOutOfRangeException.ThrowIfNegative(y);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(y, Height);
-            return (y * Width + x) * 4;
+            return ((y * Width) + x) * 4;
         }
     }
 }

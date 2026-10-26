@@ -21,15 +21,15 @@ namespace Render.NET.Mesh
                 float horizon = 0;
                 for (int step = 1; step <= 3; step++)
                 {
-                    float distance = radius * step / 3;
-                    int sx = (int)MathF.Round(x + direction.X * distance);
-                    int sy = (int)MathF.Round(y + direction.Y * distance);
+                    float distance = (radius * step) / 3;
+                    int sx = (int)MathF.Round(x + (direction.X * distance));
+                    int sy = (int)MathF.Round(y + (direction.Y * distance));
                     if ((uint)sx >= (uint)camera.Width || (uint)sy >= (uint)camera.Height)
                     {
                         continue;
                     }
 
-                    float depth = depths[sy * camera.Width + sx];
+                    float depth = depths[(sy * camera.Width) + sx];
                     if (!float.IsFinite(depth))
                     {
                         continue;
@@ -42,14 +42,14 @@ namespace Render.NET.Mesh
                         continue;
                     }
 
-                    float contribution = MathF.Max(Vector3.Dot(normal, delta) / length - 0.06f, 0) * (1 - length / worldRadius);
+                    float contribution = MathF.Max((Vector3.Dot(normal, delta) / length) - 0.06f, 0) * (1 - (length / worldRadius));
                     horizon = MathF.Max(horizon, contribution);
                 }
 
                 occlusion += horizon;
             }
 
-            return Math.Clamp(1 - occlusion * (2.5f / Directions.Length), 0.25f, 1);
+            return Math.Clamp(1 - (occlusion * (2.5f / Directions.Length)), 0.25f, 1);
         }
     }
 }
