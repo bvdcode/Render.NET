@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET</RootNamespace>
-        <Version>0.3.0</Version>
+        <Version>0.3.1</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Updates documentation for the Render.NET.Mesh STL, OBJ, and 3MF preview pipeline. Retains managed RGBA pixel buffers and metadata-free PNG encoding.</PackageReleaseNotes>
+        <PackageReleaseNotes>Fixes automatic GitHub release descriptions with package summaries and a complete commit list. Adds the CodeFactor analysis badge and Render.NET.Mesh performance results to the package README.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

@@ -6,6 +6,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Render.NET.Mesh.svg)](https://www.nuget.org/packages/Render.NET.Mesh/)
 [![Build](https://github.com/bvdcode/Render.NET/actions/workflows/publish-release.yml/badge.svg)](https://github.com/bvdcode/Render.NET/actions/workflows/publish-release.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/bvdcode/Render.NET/badge)](https://www.codefactor.io/repository/github/bvdcode/Render.NET)
 [![License](https://img.shields.io/github/license/bvdcode/Render.NET)](https://github.com/bvdcode/Render.NET/blob/main/LICENSE)
 
 Render STL, OBJ, and 3MF models to transparent PNG previews in managed C#. Runs on the CPU using .NET 10 and the base class library, without a native graphics dependency, GPU, display server, or external renderer process.
@@ -26,6 +27,24 @@ Render STL, OBJ, and 3MF models to transparent PNG previews in managed C#. Runs 
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/benchy-lime.png" alt="3DBenchy rendered from STL with a caller-supplied lime color" width="320" />
 </p>
+
+## Performance
+
+**512 × 512 CPU previews in 186–537 ms inside a running .NET process**, including model loading and PNG/file writing, on the five models below. This is the repeated-call scenario used by a service such as a thumbnail worker.
+
+For a separate comparison of **new processes**, both columns below include startup, loading, rendering, PNG encoding, and file writing:
+
+| Model | Triangles | Render.NET.Mesh | F3D 4.0 |
+| --- | ---: | ---: | ---: |
+| Spot (OBJ) | 5,856 | **509 ms** | 641 ms |
+| Mug (3MF) | 2,290 | **527 ms** | 671 ms |
+| Robot, 66 build items (3MF) | 19,116 | **978 ms** | 1,235 ms |
+| Dog, 28 build items (3MF) | 35,256 | 848 ms | **745 ms** |
+| 3DBenchy (STL) | 225,706 | 932 ms | **808 ms** |
+
+Medians of five runs, measured October 26, 2026, on an Intel Core i5-12450H under Linux with .NET 10. Quality profile: Render.NET uses 2× supersampling, studio lighting, shadows, and ambient occlusion; F3D uses FXAA, ambient occlusion, and tone mapping. F3D runs with Mesa llvmpipe software OpenGL and a new Xvfb display per invocation, whose startup time is included. Filesystem caches are warm. The images and algorithms differ, and these results do not measure GPU rendering or a persistent F3D service.
+
+See [the full benchmark](https://github.com/bvdcode/Render.NET/blob/main/docs/benchmarks.md) for 1024-pixel output, the fast profile, repeated-call timings, comparison images, raw samples, and reproduction commands.
 
 ## Mesh to PNG
 

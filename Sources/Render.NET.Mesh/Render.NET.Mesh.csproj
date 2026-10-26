@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Mesh</RootNamespace>
-        <Version>0.3.0</Version>
+        <Version>0.3.1</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Mesh</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds OBJ polygon triangulation, authored normals and smoothing groups; 3MF meshes, build/object selection, nested transforms, Production model-part references and separate thumbnail extraction; model rotation; bounded ZIP/XML loading; public-domain test models and a reproducible F3D comparison.</PackageReleaseNotes>
+        <PackageReleaseNotes>Fixes automatic GitHub release descriptions for direct commits as well as pull requests. Includes shipped package summaries, commit links, and a comparison with the previous release. Adds the CodeFactor analysis badge and measured CPU preview benchmarks against F3D to the package README.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

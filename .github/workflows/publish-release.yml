@@ -47,8 +47,23 @@ jobs:
       - name: Test
         run: dotnet test Sources/Render.NET.sln --configuration Release --no-build --no-restore
 
+      - name: Test release notes generation
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
       - name: Pack
         run: dotnet pack Sources/Render.NET.sln --configuration Release --no-build --output artifacts/packages -p:Version=${{ steps.gitversion.outputs.MajorMinorPatch }}
+
+      - name: Generate release notes
+        env:
+          RELEASE_VERSION: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+        run: python3 .github/scripts/release_notes.py --repository "$GITHUB_REPOSITORY" --version "$RELEASE_VERSION" --commit "$GITHUB_SHA" --packages artifacts/packages --output artifacts/release-notes.md
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: artifacts/release-notes.md
+          if-no-files-found: error
 
       - name: Upload packages
         uses: actions/upload-artifact@v7
@@ -76,6 +91,12 @@ jobs:
           name: nuget-packages
           path: packages
 
+      - name: Download release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: release
+
       - name: NuGet login
         id: nuget-login
         uses: NuGet/login@v1
@@ -93,4 +114,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_VERSION: ${{ needs.build.outputs.version }}
           RELEASE_COMMIT: ${{ github.sha }}
-        run: gh release create "$RELEASE_VERSION" packages/*.nupkg packages/*.snupkg --target "$RELEASE_COMMIT" --title "Render.NET $RELEASE_VERSION" --generate-notes
+        run: gh release create "$RELEASE_VERSION" packages/*.nupkg packages/*.snupkg --target "$RELEASE_COMMIT" --title "Render.NET $RELEASE_VERSION" --notes-file release/release-notes.md
