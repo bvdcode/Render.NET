@@ -1,0 +1,11 @@
+[Bb]in/
+[Oo]bj/
+artifacts/
+*.nupkg
+*.snupkg
+.vs/
+.idea/
+*.user
+*.suo
+notes/
+AGENTS.md
