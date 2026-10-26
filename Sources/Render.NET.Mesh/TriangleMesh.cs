@@ -8,6 +8,7 @@ namespace Render.NET.Mesh
     {
         internal Vector3[] VertexData { get; }
         internal int[] IndexData { get; }
+        internal Vector3[] NormalData { get; }
 
         /// <summary>Gets the model-space vertex positions.</summary>
         public ReadOnlyMemory<Vector3> Vertices => VertexData;
@@ -18,9 +19,31 @@ namespace Render.NET.Mesh
         /// <summary>Gets the number of triangles.</summary>
         public int TriangleCount => IndexData.Length / 3;
 
+        /// <summary>Gets optional normals per triangle corner. Zero entries use generated normals.</summary>
+        public ReadOnlyMemory<Vector3> CornerNormals => NormalData;
+
         /// <summary>Copies and validates indexed triangle geometry.</summary>
         public TriangleMesh(ReadOnlySpan<Vector3> vertices, ReadOnlySpan<int> triangleIndices)
+            : this(vertices, triangleIndices, ReadOnlySpan<Vector3>.Empty)
         {
+        }
+
+        /// <summary>Copies indexed geometry and optional per-corner normals. Normal count must be zero or match the index count.</summary>
+        public TriangleMesh(ReadOnlySpan<Vector3> vertices, ReadOnlySpan<int> triangleIndices, ReadOnlySpan<Vector3> cornerNormals)
+        {
+            if (!cornerNormals.IsEmpty && cornerNormals.Length != triangleIndices.Length)
+            {
+                throw new ArgumentException("Corner normals must match the triangle index count.", nameof(cornerNormals));
+            }
+
+            foreach (Vector3 normal in cornerNormals)
+            {
+                if (!float.IsFinite(normal.X) || !float.IsFinite(normal.Y) || !float.IsFinite(normal.Z))
+                {
+                    throw new ArgumentException("Normals must be finite.", nameof(cornerNormals));
+                }
+            }
+
             if (vertices.IsEmpty || triangleIndices.IsEmpty || triangleIndices.Length % 3 != 0)
             {
                 throw new ArgumentException("A mesh must contain vertices and complete triangle index triples.");
@@ -44,6 +67,7 @@ namespace Render.NET.Mesh
 
             VertexData = vertices.ToArray();
             IndexData = triangleIndices.ToArray();
+            NormalData = cornerNormals.ToArray();
         }
     }
 }

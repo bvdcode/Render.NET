@@ -5,7 +5,7 @@ using Render.NET.Mesh.Sample;
 
 if (args.Length < 2 || args.Length > 3)
 {
-    Console.Error.WriteLine("Usage: Render.NET.Mesh.Sample <input.stl | --demo> <output.png> [size]");
+    Console.Error.WriteLine("Usage: Render.NET.Mesh.Sample <input.stl|input.obj|input.3mf|--demo> <output.png> [size]");
     return 1;
 }
 
@@ -27,8 +27,7 @@ try
     }
 
     Stopwatch timer = Stopwatch.StartNew();
-    await using FileStream source = File.OpenRead(inputPath);
-    TriangleMesh mesh = await StlReader.ReadAsync(source, cancellationToken: cancellation.Token);
+    TriangleMesh mesh = await MeshReader.ReadFileAsync(inputPath, cancellation.Token);
     TimeSpan loadTime = timer.Elapsed;
     PixelBuffer image = MeshRenderer.Render(mesh, new MeshRenderOptions { Width = size, Height = size }, cancellation.Token);
     TimeSpan renderTime = timer.Elapsed - loadTime;
@@ -38,7 +37,7 @@ try
     Console.WriteLine(Path.GetFullPath(args[1]));
     return 0;
 }
-catch (Exception exception) when (exception is IOException or ArgumentException or OperationCanceledException or FormatException or OverflowException)
+catch (Exception exception) when (exception is IOException or ArgumentException or OperationCanceledException or FormatException or OverflowException or NotSupportedException)
 {
     Console.Error.WriteLine(exception.Message);
     return 1;

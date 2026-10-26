@@ -1,0 +1,2735 @@
+{
+  "utc": "2026-10-26T20:06:53.853355+00:00",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "cpu": "12th Gen Intel(R) Core(TM) i5-12450H",
+  "logicalCpus": 12,
+  "dotnet": "10.0.402",
+  "f3d": "F3D 4.0.0\n\nF3D - A fast and minimalist 3D viewer\nVersion: 4.0.0.\nBuild date: 2026-10-20 20:42:04.\nBuild system: Linux 64-bits.\nCompiler: GNU 13.3.0.\nModule FFmpeg: ON.\nModule ImGui: ON.\nModule OpenEXR: ON.\nModule Raytracing: OFF.\nModule WebP: ON.\nVTK version: 9.7.1-1746-gdbb73e9cc8 (date: 20261016).\nCopyright (C) 2019-2021 Kitware SAS.\nCopyright (C) 2021-2025 Michael Migliore, Mathieu Westphal.\nCopyright (C) 2025-2026 F3D-APP Foundation.\nLicense BSD-3-Clause.\n",
+  "softwareGraphics": true,
+  "xvfbPerInvocation": true,
+  "ldLibraryPath": "<local root>/f3d/gl-runtime:<local root>/f3d/python/f3d/lib64",
+  "repeats": 5,
+  "results": [
+    {
+      "model": "spot_triangulated.obj",
+      "size": 512,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            224.82663998380303,
+            298.1029059737921,
+            228.4687520004809,
+            241.77425797097385,
+            265.64748701639473
+          ],
+          "f3dProcessMs": [
+            379.60177194327116,
+            471.7050769831985,
+            427.3982580052689,
+            412.1223919792101,
+            471.01421596016735
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 75.2956,
+              "renderMs": 57.43940000000002,
+              "pngMs": 16.309199999999976,
+              "totalMs": 149.0442
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 67.67,
+              "renderMs": 94.2752,
+              "pngMs": 28.736999999999995,
+              "totalMs": 190.6822
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 64.3853,
+              "renderMs": 67.7447,
+              "pngMs": 18.87960000000001,
+              "totalMs": 151.0096
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 64.0236,
+              "renderMs": 61.033100000000005,
+              "pngMs": 18.46719999999999,
+              "totalMs": 143.5239
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 65.2226,
+              "renderMs": 74.8247,
+              "pngMs": 26.56019999999998,
+              "totalMs": 166.6075
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 5856,
+              "loadMs": 12.8491,
+              "renderMs": 30.957099999999997,
+              "pngMs": 8.308900000000001,
+              "totalMs": 52.1151
+            },
+            {
+              "iteration": 3,
+              "triangles": 5856,
+              "loadMs": 12.861,
+              "renderMs": 29.138,
+              "pngMs": 7.3506,
+              "totalMs": 49.3496
+            },
+            {
+              "iteration": 4,
+              "triangles": 5856,
+              "loadMs": 26.8473,
+              "renderMs": 37.64049999999999,
+              "pngMs": 8.134500000000003,
+              "totalMs": 72.6223
+            },
+            {
+              "iteration": 5,
+              "triangles": 5856,
+              "loadMs": 8.5683,
+              "renderMs": 25.327599999999997,
+              "pngMs": 8.497800000000005,
+              "totalMs": 42.3937
+            },
+            {
+              "iteration": 6,
+              "triangles": 5856,
+              "loadMs": 11.598,
+              "renderMs": 108.4473,
+              "pngMs": 11.092399999999998,
+              "totalMs": 131.1377
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/spot_triangulated.obj",
+              "artifacts/benchmark-cc0/spot_triangulated-512-fast-managed.png",
+              "512",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/spot_triangulated.obj",
+              "--output=artifacts/benchmark-cc0/spot_triangulated-512-fast-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            495.4520759638399,
+            569.1598220728338,
+            484.3464270234108,
+            618.979630060494,
+            508.51280300412327
+          ],
+          "f3dProcessMs": [
+            641.2053819512948,
+            645.17615607474,
+            640.5768690165132,
+            585.2412120439112,
+            570.8722689887509
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 66.6342,
+              "renderMs": 308.2788,
+              "pngMs": 37.085800000000006,
+              "totalMs": 411.9988
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 67.2615,
+              "renderMs": 321.3974,
+              "pngMs": 75.11679999999996,
+              "totalMs": 463.7757
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 58.2745,
+              "renderMs": 303.2589,
+              "pngMs": 32.0052,
+              "totalMs": 393.5386
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 62.0415,
+              "renderMs": 446.2586,
+              "pngMs": 24.007599999999968,
+              "totalMs": 532.3077
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 75.3094,
+              "renderMs": 330.88370000000003,
+              "pngMs": 22.298099999999977,
+              "totalMs": 428.4912
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 5856,
+              "loadMs": 8.8713,
+              "renderMs": 259.1384,
+              "pngMs": 9.513599999999997,
+              "totalMs": 277.5233
+            },
+            {
+              "iteration": 3,
+              "triangles": 5856,
+              "loadMs": 12.9409,
+              "renderMs": 159.4079,
+              "pngMs": 7.705599999999976,
+              "totalMs": 180.0544
+            },
+            {
+              "iteration": 4,
+              "triangles": 5856,
+              "loadMs": 35.5947,
+              "renderMs": 143.02249999999998,
+              "pngMs": 7.755200000000002,
+              "totalMs": 186.3724
+            },
+            {
+              "iteration": 5,
+              "triangles": 5856,
+              "loadMs": 27.1128,
+              "renderMs": 160.0231,
+              "pngMs": 9.331199999999995,
+              "totalMs": 196.4671
+            },
+            {
+              "iteration": 6,
+              "triangles": 5856,
+              "loadMs": 6.1076,
+              "renderMs": 140.0864,
+              "pngMs": 7.178500000000014,
+              "totalMs": 153.3725
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/spot_triangulated.obj",
+              "artifacts/benchmark-cc0/spot_triangulated-512-quality-managed.png",
+              "512",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/spot_triangulated.obj",
+              "--output=artifacts/benchmark-cc0/spot_triangulated-512-quality-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 5856
+    },
+    {
+      "model": "spot_triangulated.obj",
+      "size": 1024,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            385.3657679865137,
+            363.99200197774917,
+            291.7674550553784,
+            288.7329849181697,
+            313.1989819230512
+          ],
+          "f3dProcessMs": [
+            683.861794997938,
+            571.1599419591948,
+            567.3288489924744,
+            596.3463969528675,
+            563.4491340024397
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 110.0066,
+              "renderMs": 137.10160000000002,
+              "pngMs": 38.168799999999976,
+              "totalMs": 285.277
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 89.9838,
+              "renderMs": 121.5272,
+              "pngMs": 46.038399999999996,
+              "totalMs": 257.5494
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 67.4521,
+              "renderMs": 115.43539999999999,
+              "pngMs": 36.07080000000002,
+              "totalMs": 218.9583
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 59.35,
+              "renderMs": 118.595,
+              "pngMs": 37.4504,
+              "totalMs": 215.3954
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 77.2167,
+              "renderMs": 111.9109,
+              "pngMs": 41.5856,
+              "totalMs": 230.7132
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 5856,
+              "loadMs": 12.759,
+              "renderMs": 105.544,
+              "pngMs": 28.440200000000004,
+              "totalMs": 146.7432
+            },
+            {
+              "iteration": 3,
+              "triangles": 5856,
+              "loadMs": 15.6264,
+              "renderMs": 104.2411,
+              "pngMs": 23.643399999999986,
+              "totalMs": 143.5109
+            },
+            {
+              "iteration": 4,
+              "triangles": 5856,
+              "loadMs": 43.1535,
+              "renderMs": 72.4134,
+              "pngMs": 23.857799999999997,
+              "totalMs": 139.4247
+            },
+            {
+              "iteration": 5,
+              "triangles": 5856,
+              "loadMs": 24.1186,
+              "renderMs": 94.2804,
+              "pngMs": 23.820899999999995,
+              "totalMs": 142.2199
+            },
+            {
+              "iteration": 6,
+              "triangles": 5856,
+              "loadMs": 16.8895,
+              "renderMs": 76.708,
+              "pngMs": 18.511499999999998,
+              "totalMs": 112.109
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/spot_triangulated.obj",
+              "artifacts/benchmark-cc0/spot_triangulated-1024-fast-managed.png",
+              "1024",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/spot_triangulated.obj",
+              "--output=artifacts/benchmark-cc0/spot_triangulated-1024-fast-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            808.875715942122,
+            845.4058630159125,
+            805.7499210117385,
+            943.3220699429512,
+            818.994301953353
+          ],
+          "f3dProcessMs": [
+            1023.3936440199614,
+            1008.6464131018147,
+            1430.9910819865763,
+            1706.48007793352,
+            968.0989609332755
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 77.9125,
+              "renderMs": 598.7334999999999,
+              "pngMs": 46.9606,
+              "totalMs": 723.6066
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 67.3253,
+              "renderMs": 662.759,
+              "pngMs": 32.98580000000004,
+              "totalMs": 763.0701
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 57.4223,
+              "renderMs": 611.1072,
+              "pngMs": 44.801000000000045,
+              "totalMs": 713.3305
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 95.9087,
+              "renderMs": 629.2274000000001,
+              "pngMs": 114.31119999999999,
+              "totalMs": 839.4473
+            },
+            {
+              "iteration": 0,
+              "triangles": 5856,
+              "loadMs": 75.0123,
+              "renderMs": 620.1404,
+              "pngMs": 35.46710000000007,
+              "totalMs": 730.6198
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 5856,
+              "loadMs": 34.7098,
+              "renderMs": 442.96900000000005,
+              "pngMs": 23.91569999999996,
+              "totalMs": 501.5945
+            },
+            {
+              "iteration": 3,
+              "triangles": 5856,
+              "loadMs": 10.399,
+              "renderMs": 414.7915,
+              "pngMs": 35.968500000000006,
+              "totalMs": 461.159
+            },
+            {
+              "iteration": 4,
+              "triangles": 5856,
+              "loadMs": 30.2213,
+              "renderMs": 441.51120000000003,
+              "pngMs": 21.582499999999982,
+              "totalMs": 493.315
+            },
+            {
+              "iteration": 5,
+              "triangles": 5856,
+              "loadMs": 8.9986,
+              "renderMs": 430.8221,
+              "pngMs": 25.362099999999998,
+              "totalMs": 465.1828
+            },
+            {
+              "iteration": 6,
+              "triangles": 5856,
+              "loadMs": 8.6202,
+              "renderMs": 399.57,
+              "pngMs": 21.076099999999997,
+              "totalMs": 429.2663
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/spot_triangulated.obj",
+              "artifacts/benchmark-cc0/spot_triangulated-1024-quality-managed.png",
+              "1024",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/spot_triangulated.obj",
+              "--output=artifacts/benchmark-cc0/spot_triangulated-1024-quality-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 5856
+    },
+    {
+      "model": "mug.3mf",
+      "size": 512,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            384.82826203107834,
+            314.31122904177755,
+            251.65813602507114,
+            252.83469492569566,
+            281.6745660966262
+          ],
+          "f3dProcessMs": [
+            644.5855390047655,
+            600.459350971505,
+            615.134835941717,
+            556.8943360121921,
+            413.37297309655696
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 146.4281,
+              "renderMs": 119.43710000000002,
+              "pngMs": 25.50369999999998,
+              "totalMs": 291.3689
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 105.527,
+              "renderMs": 70.39229999999999,
+              "pngMs": 16.527600000000007,
+              "totalMs": 192.4469
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 86.3936,
+              "renderMs": 65.9182,
+              "pngMs": 18.9897,
+              "totalMs": 171.3015
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 101.9091,
+              "renderMs": 58.80860000000001,
+              "pngMs": 14.561999999999983,
+              "totalMs": 175.2797
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 100.4707,
+              "renderMs": 75.09870000000001,
+              "pngMs": 18.287900000000008,
+              "totalMs": 193.8573
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 2290,
+              "loadMs": 17.9254,
+              "renderMs": 26.435100000000002,
+              "pngMs": 8.396299999999997,
+              "totalMs": 52.7568
+            },
+            {
+              "iteration": 3,
+              "triangles": 2290,
+              "loadMs": 28.6068,
+              "renderMs": 25.5535,
+              "pngMs": 4.996099999999998,
+              "totalMs": 59.1564
+            },
+            {
+              "iteration": 4,
+              "triangles": 2290,
+              "loadMs": 18.8599,
+              "renderMs": 27.276300000000003,
+              "pngMs": 6.416399999999996,
+              "totalMs": 52.5526
+            },
+            {
+              "iteration": 5,
+              "triangles": 2290,
+              "loadMs": 19.1556,
+              "renderMs": 37.0409,
+              "pngMs": 7.0197,
+              "totalMs": 63.2162
+            },
+            {
+              "iteration": 6,
+              "triangles": 2290,
+              "loadMs": 18.6382,
+              "renderMs": 17.520099999999996,
+              "pngMs": 4.526900000000005,
+              "totalMs": 40.6852
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mug.3mf",
+              "artifacts/benchmark-cc0/mug-512-fast-managed.png",
+              "512",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mug.3mf",
+              "--output=artifacts/benchmark-cc0/mug-512-fast-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            542.9075059946626,
+            526.7619719961658,
+            501.05526100378484,
+            502.22327490337193,
+            549.3148310342804
+          ],
+          "f3dProcessMs": [
+            735.2881210390478,
+            671.471672016196,
+            708.6676520993933,
+            645.5302690155804,
+            659.4109629513696
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 85.3804,
+              "renderMs": 347.95799999999997,
+              "pngMs": 16.741100000000017,
+              "totalMs": 450.0795
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 79.8711,
+              "renderMs": 334.5285,
+              "pngMs": 18.89689999999996,
+              "totalMs": 433.2965
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 83.3078,
+              "renderMs": 320.49060000000003,
+              "pngMs": 22.220799999999997,
+              "totalMs": 426.0192
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 113.8986,
+              "renderMs": 290.1177,
+              "pngMs": 21.925099999999986,
+              "totalMs": 425.9414
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 121.3418,
+              "renderMs": 342.72720000000004,
+              "pngMs": 16.714499999999987,
+              "totalMs": 480.7835
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 2290,
+              "loadMs": 33.7813,
+              "renderMs": 221.75619999999998,
+              "pngMs": 8.900000000000006,
+              "totalMs": 264.4375
+            },
+            {
+              "iteration": 3,
+              "triangles": 2290,
+              "loadMs": 42.1697,
+              "renderMs": 176.0219,
+              "pngMs": 7.509399999999999,
+              "totalMs": 225.701
+            },
+            {
+              "iteration": 4,
+              "triangles": 2290,
+              "loadMs": 34.8201,
+              "renderMs": 173.80010000000001,
+              "pngMs": 10.994199999999978,
+              "totalMs": 219.6144
+            },
+            {
+              "iteration": 5,
+              "triangles": 2290,
+              "loadMs": 44.1145,
+              "renderMs": 182.67530000000002,
+              "pngMs": 10.441399999999987,
+              "totalMs": 237.2312
+            },
+            {
+              "iteration": 6,
+              "triangles": 2290,
+              "loadMs": 31.8414,
+              "renderMs": 152.68290000000002,
+              "pngMs": 7.9284999999999854,
+              "totalMs": 192.4528
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mug.3mf",
+              "artifacts/benchmark-cc0/mug-512-quality-managed.png",
+              "512",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mug.3mf",
+              "--output=artifacts/benchmark-cc0/mug-512-quality-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 2290
+    },
+    {
+      "model": "mug.3mf",
+      "size": 1024,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            306.1891020042822,
+            294.72077602986246,
+            299.87591598182917,
+            379.8325939569622,
+            348.1694699730724
+          ],
+          "f3dProcessMs": [
+            617.7321990253404,
+            601.9032889744267,
+            681.1511110281572,
+            664.1485299915075,
+            736.4657550351694
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 82.2786,
+              "renderMs": 132.8467,
+              "pngMs": 26.482799999999997,
+              "totalMs": 241.6081
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 81.0774,
+              "renderMs": 122.26960000000001,
+              "pngMs": 21.29559999999998,
+              "totalMs": 224.6426
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 71.8324,
+              "renderMs": 125.6891,
+              "pngMs": 26.387599999999992,
+              "totalMs": 223.9091
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 101.0248,
+              "renderMs": 153.8375,
+              "pngMs": 32.94200000000001,
+              "totalMs": 287.8043
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 102.1527,
+              "renderMs": 149.2147,
+              "pngMs": 23.91459999999998,
+              "totalMs": 275.282
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 2290,
+              "loadMs": 31.4457,
+              "renderMs": 135.7971,
+              "pngMs": 56.09,
+              "totalMs": 223.3328
+            },
+            {
+              "iteration": 3,
+              "triangles": 2290,
+              "loadMs": 46.5437,
+              "renderMs": 108.3801,
+              "pngMs": 15.864299999999986,
+              "totalMs": 170.7881
+            },
+            {
+              "iteration": 4,
+              "triangles": 2290,
+              "loadMs": 46.41,
+              "renderMs": 86.30160000000001,
+              "pngMs": 11.402799999999985,
+              "totalMs": 144.1144
+            },
+            {
+              "iteration": 5,
+              "triangles": 2290,
+              "loadMs": 42.3257,
+              "renderMs": 79.8409,
+              "pngMs": 15.750899999999987,
+              "totalMs": 137.9175
+            },
+            {
+              "iteration": 6,
+              "triangles": 2290,
+              "loadMs": 40.9396,
+              "renderMs": 80.7019,
+              "pngMs": 15.8198,
+              "totalMs": 137.4613
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mug.3mf",
+              "artifacts/benchmark-cc0/mug-1024-fast-managed.png",
+              "1024",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mug.3mf",
+              "--output=artifacts/benchmark-cc0/mug-1024-fast-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            1256.6853679018095,
+            1684.888171032071,
+            1362.0448769070208,
+            2146.946838009171,
+            1901.2348300311714
+          ],
+          "f3dProcessMs": [
+            3450.7511949632317,
+            2054.115124978125,
+            1707.103964057751,
+            1852.771857054904,
+            1961.4926460199058
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 113.9728,
+              "renderMs": 958.5282,
+              "pngMs": 91.68280000000004,
+              "totalMs": 1164.1838
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 112.109,
+              "renderMs": 1012.245,
+              "pngMs": 479.21759999999995,
+              "totalMs": 1603.5716
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 90.8294,
+              "renderMs": 931.5647,
+              "pngMs": 243.16499999999996,
+              "totalMs": 1265.5591
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 147.7815,
+              "renderMs": 1579.6593,
+              "pngMs": 47.14409999999998,
+              "totalMs": 1774.5849
+            },
+            {
+              "iteration": 0,
+              "triangles": 2290,
+              "loadMs": 380.9606,
+              "renderMs": 1207.1037000000001,
+              "pngMs": 177.91560000000004,
+              "totalMs": 1765.9799
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 2290,
+              "loadMs": 35.4536,
+              "renderMs": 628.4208,
+              "pngMs": 22.437900000000013,
+              "totalMs": 686.3123
+            },
+            {
+              "iteration": 3,
+              "triangles": 2290,
+              "loadMs": 36.7482,
+              "renderMs": 616.3253,
+              "pngMs": 18.295400000000086,
+              "totalMs": 671.3689
+            },
+            {
+              "iteration": 4,
+              "triangles": 2290,
+              "loadMs": 12.079,
+              "renderMs": 598.4828,
+              "pngMs": 21.253100000000018,
+              "totalMs": 631.8149
+            },
+            {
+              "iteration": 5,
+              "triangles": 2290,
+              "loadMs": 11.2813,
+              "renderMs": 647.8185,
+              "pngMs": 21.809000000000083,
+              "totalMs": 680.9088
+            },
+            {
+              "iteration": 6,
+              "triangles": 2290,
+              "loadMs": 11.311,
+              "renderMs": 568.9296999999999,
+              "pngMs": 18.416400000000067,
+              "totalMs": 598.6571
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mug.3mf",
+              "artifacts/benchmark-cc0/mug-1024-quality-managed.png",
+              "1024",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mug.3mf",
+              "--output=artifacts/benchmark-cc0/mug-1024-quality-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 2290
+    },
+    {
+      "model": "mech.3mf",
+      "size": 512,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            541.395602049306,
+            535.8264510286972,
+            622.1989420009777,
+            638.4990649530664,
+            592.536409967579
+          ],
+          "f3dProcessMs": [
+            566.453605890274,
+            598.3743530232459,
+            654.0544719900936,
+            628.3883058931679,
+            612.0238960720599
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 335.4693,
+              "renderMs": 87.11090000000002,
+              "pngMs": 20.67840000000001,
+              "totalMs": 443.2586
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 330.6357,
+              "renderMs": 87.15050000000002,
+              "pngMs": 13.112899999999968,
+              "totalMs": 430.8991
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 421.0797,
+              "renderMs": 98.27419999999995,
+              "pngMs": 14.480600000000095,
+              "totalMs": 533.8345
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 417.0096,
+              "renderMs": 109.99400000000003,
+              "pngMs": 17.619000000000028,
+              "totalMs": 544.6226
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 375.7139,
+              "renderMs": 81.0027,
+              "pngMs": 17.740499999999997,
+              "totalMs": 474.4571
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 19116,
+              "loadMs": 265.3984,
+              "renderMs": 38.9187,
+              "pngMs": 5.273700000000019,
+              "totalMs": 309.5908
+            },
+            {
+              "iteration": 3,
+              "triangles": 19116,
+              "loadMs": 266.7112,
+              "renderMs": 36.411099999999976,
+              "pngMs": 5.453899999999976,
+              "totalMs": 308.5762
+            },
+            {
+              "iteration": 4,
+              "triangles": 19116,
+              "loadMs": 192.0144,
+              "renderMs": 47.4213,
+              "pngMs": 5.345699999999994,
+              "totalMs": 244.7814
+            },
+            {
+              "iteration": 5,
+              "triangles": 19116,
+              "loadMs": 245.9721,
+              "renderMs": 50.532100000000014,
+              "pngMs": 5.543299999999988,
+              "totalMs": 302.0475
+            },
+            {
+              "iteration": 6,
+              "triangles": 19116,
+              "loadMs": 257.6021,
+              "renderMs": 94.55469999999997,
+              "pngMs": 5.265800000000013,
+              "totalMs": 357.4226
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mech.3mf",
+              "artifacts/benchmark-cc0/mech-512-fast-managed.png",
+              "512",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mech.3mf",
+              "--output=artifacts/benchmark-cc0/mech-512-fast-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            1812.4765349784866,
+            977.9640809865668,
+            942.4130580155179,
+            681.4766769530252,
+            1072.364888037555
+          ],
+          "f3dProcessMs": [
+            2082.7727280557156,
+            1630.0262110307813,
+            885.3301419876516,
+            825.3847389714792,
+            1234.7506060032174
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 999.3154,
+              "renderMs": 557.1191000000001,
+              "pngMs": 46.76389999999992,
+              "totalMs": 1603.1984
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 418.2446,
+              "renderMs": 420.0394,
+              "pngMs": 24.304499999999962,
+              "totalMs": 862.5885
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 459.5301,
+              "renderMs": 325.93390000000005,
+              "pngMs": 27.62779999999998,
+              "totalMs": 813.0918
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 312.3631,
+              "renderMs": 264.78990000000005,
+              "pngMs": 17.97969999999998,
+              "totalMs": 595.1327
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 365.7215,
+              "renderMs": 270.45220000000006,
+              "pngMs": 353.51379999999995,
+              "totalMs": 989.6875
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 19116,
+              "loadMs": 196.9851,
+              "renderMs": 245.2695,
+              "pngMs": 5.7346,
+              "totalMs": 447.9892
+            },
+            {
+              "iteration": 3,
+              "triangles": 19116,
+              "loadMs": 200.1397,
+              "renderMs": 224.9121,
+              "pngMs": 5.427399999999977,
+              "totalMs": 430.4792
+            },
+            {
+              "iteration": 4,
+              "triangles": 19116,
+              "loadMs": 111.19,
+              "renderMs": 152.7342,
+              "pngMs": 6.18040000000002,
+              "totalMs": 270.1046
+            },
+            {
+              "iteration": 5,
+              "triangles": 19116,
+              "loadMs": 154.2982,
+              "renderMs": 178.00740000000002,
+              "pngMs": 6.001299999999958,
+              "totalMs": 338.3069
+            },
+            {
+              "iteration": 6,
+              "triangles": 19116,
+              "loadMs": 143.3295,
+              "renderMs": 223.25990000000002,
+              "pngMs": 6.380200000000002,
+              "totalMs": 372.9696
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mech.3mf",
+              "artifacts/benchmark-cc0/mech-512-quality-managed.png",
+              "512",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mech.3mf",
+              "--output=artifacts/benchmark-cc0/mech-512-quality-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 19116
+    },
+    {
+      "model": "mech.3mf",
+      "size": 1024,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            656.6127769183367,
+            534.5561319263652,
+            562.9701298894361,
+            634.7442409023643,
+            538.0076250294223
+          ],
+          "f3dProcessMs": [
+            773.6265959683806,
+            939.0544559573755,
+            761.8038180517033,
+            848.8875409821048,
+            727.87884704303
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 381.3717,
+              "renderMs": 166.64140000000003,
+              "pngMs": 19.77279999999996,
+              "totalMs": 567.7859
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 307.5977,
+              "renderMs": 113.57060000000001,
+              "pngMs": 24.40379999999999,
+              "totalMs": 445.5721
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 342.5077,
+              "renderMs": 118.0222,
+              "pngMs": 24.669899999999984,
+              "totalMs": 485.1998
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 397.3079,
+              "renderMs": 128.51509999999996,
+              "pngMs": 18.698499999999967,
+              "totalMs": 544.5215
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 326.513,
+              "renderMs": 120.44750000000005,
+              "pngMs": 20.13069999999999,
+              "totalMs": 467.0912
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 19116,
+              "loadMs": 333.9103,
+              "renderMs": 98.23759999999999,
+              "pngMs": 21.244700000000023,
+              "totalMs": 453.3926
+            },
+            {
+              "iteration": 3,
+              "triangles": 19116,
+              "loadMs": 256.7007,
+              "renderMs": 118.1286,
+              "pngMs": 20.4452,
+              "totalMs": 395.2745
+            },
+            {
+              "iteration": 4,
+              "triangles": 19116,
+              "loadMs": 370.9087,
+              "renderMs": 151.49629999999996,
+              "pngMs": 18.606899999999996,
+              "totalMs": 541.0119
+            },
+            {
+              "iteration": 5,
+              "triangles": 19116,
+              "loadMs": 163.6712,
+              "renderMs": 145.3358,
+              "pngMs": 11.966999999999985,
+              "totalMs": 320.974
+            },
+            {
+              "iteration": 6,
+              "triangles": 19116,
+              "loadMs": 153.6293,
+              "renderMs": 96.88140000000001,
+              "pngMs": 16.780200000000008,
+              "totalMs": 267.2909
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mech.3mf",
+              "artifacts/benchmark-cc0/mech-1024-fast-managed.png",
+              "1024",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mech.3mf",
+              "--output=artifacts/benchmark-cc0/mech-1024-fast-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            1144.0110360272229,
+            1200.1376299886033,
+            1538.011611904949,
+            996.4777249842882,
+            962.0351298945025
+          ],
+          "f3dProcessMs": [
+            1655.2769099362195,
+            1859.3091639922932,
+            1154.8004110809416,
+            1227.5265069911256,
+            1378.0332999303937
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 350.0584,
+              "renderMs": 680.9689999999999,
+              "pngMs": 21.19470000000001,
+              "totalMs": 1052.2221
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 300.2486,
+              "renderMs": 591.1599,
+              "pngMs": 193.6932999999999,
+              "totalMs": 1085.1018
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 300.8359,
+              "renderMs": 580.3922,
+              "pngMs": 567.5115000000001,
+              "totalMs": 1448.7396
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 330.523,
+              "renderMs": 559.3856999999999,
+              "pngMs": 22.234100000000012,
+              "totalMs": 912.1428
+            },
+            {
+              "iteration": 0,
+              "triangles": 19116,
+              "loadMs": 307.6035,
+              "renderMs": 554.4891,
+              "pngMs": 20.460900000000038,
+              "totalMs": 882.5535
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 19116,
+              "loadMs": 125.815,
+              "renderMs": 400.4799,
+              "pngMs": 22.500599999999963,
+              "totalMs": 548.7955
+            },
+            {
+              "iteration": 3,
+              "triangles": 19116,
+              "loadMs": 185.7432,
+              "renderMs": 342.78639999999996,
+              "pngMs": 172.81810000000007,
+              "totalMs": 701.3477
+            },
+            {
+              "iteration": 4,
+              "triangles": 19116,
+              "loadMs": 112.927,
+              "renderMs": 360.84929999999997,
+              "pngMs": 408.27250000000004,
+              "totalMs": 882.0488
+            },
+            {
+              "iteration": 5,
+              "triangles": 19116,
+              "loadMs": 111.1245,
+              "renderMs": 308.7461,
+              "pngMs": 308.51489999999995,
+              "totalMs": 728.3855
+            },
+            {
+              "iteration": 6,
+              "triangles": 19116,
+              "loadMs": 97.0046,
+              "renderMs": 372.9714,
+              "pngMs": 277.26160000000004,
+              "totalMs": 747.2376
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/mech.3mf",
+              "artifacts/benchmark-cc0/mech-1024-quality-managed.png",
+              "1024",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/mech.3mf",
+              "--output=artifacts/benchmark-cc0/mech-1024-quality-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 19116
+    },
+    {
+      "model": "dog.3mf",
+      "size": 512,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            820.9603490540758,
+            823.9935940364376,
+            698.4648309880868,
+            633.9814480161294,
+            734.0551760280505
+          ],
+          "f3dProcessMs": [
+            1218.6726740328595,
+            746.725793927908,
+            585.1825359277427,
+            586.2524560652673,
+            584.6273329807445
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 623.9513,
+              "renderMs": 86.9996000000001,
+              "pngMs": 13.409799999999905,
+              "totalMs": 724.3607
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 625.2229,
+              "renderMs": 86.62900000000002,
+              "pngMs": 14.447700000000054,
+              "totalMs": 726.2996
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 488.046,
+              "renderMs": 100.858,
+              "pngMs": 16.156299999999987,
+              "totalMs": 605.0603
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 446.6428,
+              "renderMs": 88.92469999999997,
+              "pngMs": 11.836900000000014,
+              "totalMs": 547.4044
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 544.0503,
+              "renderMs": 82.98120000000006,
+              "pngMs": 11.2654,
+              "totalMs": 638.2969
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 35256,
+              "loadMs": 349.6543,
+              "renderMs": 58.5686,
+              "pngMs": 6.518400000000042,
+              "totalMs": 414.7413
+            },
+            {
+              "iteration": 3,
+              "triangles": 35256,
+              "loadMs": 307.7658,
+              "renderMs": 58.5068,
+              "pngMs": 5.9827999999999975,
+              "totalMs": 372.2554
+            },
+            {
+              "iteration": 4,
+              "triangles": 35256,
+              "loadMs": 341.1591,
+              "renderMs": 47.6155,
+              "pngMs": 4.911199999999951,
+              "totalMs": 393.6858
+            },
+            {
+              "iteration": 5,
+              "triangles": 35256,
+              "loadMs": 295.8057,
+              "renderMs": 70.50139999999999,
+              "pngMs": 7.032500000000027,
+              "totalMs": 373.3396
+            },
+            {
+              "iteration": 6,
+              "triangles": 35256,
+              "loadMs": 284.8812,
+              "renderMs": 65.507,
+              "pngMs": 7.869799999999998,
+              "totalMs": 358.258
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/dog.3mf",
+              "artifacts/benchmark-cc0/dog-512-fast-managed.png",
+              "512",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/dog.3mf",
+              "--output=artifacts/benchmark-cc0/dog-512-fast-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            847.8823730256408,
+            786.9452710729092,
+            918.8336709048599,
+            787.4433159595355,
+            863.8481140369549
+          ],
+          "f3dProcessMs": [
+            766.5779340313748,
+            709.9981119390577,
+            745.4971149563789,
+            750.8627290371805,
+            663.2899279939011
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 516.2605,
+              "renderMs": 218.86940000000004,
+              "pngMs": 16.41829999999993,
+              "totalMs": 751.5482
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 473.4478,
+              "renderMs": 221.46200000000005,
+              "pngMs": 14.953499999999963,
+              "totalMs": 709.8633
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 560.7719,
+              "renderMs": 257.9381000000001,
+              "pngMs": 17.95519999999999,
+              "totalMs": 836.6652
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 452.6686,
+              "renderMs": 222.22649999999993,
+              "pngMs": 17.672000000000025,
+              "totalMs": 692.5671
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 476.0511,
+              "renderMs": 282.081,
+              "pngMs": 19.289499999999975,
+              "totalMs": 777.4216
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 35256,
+              "loadMs": 385.7182,
+              "renderMs": 224.4361,
+              "pngMs": 151.8671999999999,
+              "totalMs": 762.0215
+            },
+            {
+              "iteration": 3,
+              "triangles": 35256,
+              "loadMs": 185.7766,
+              "renderMs": 218.3925,
+              "pngMs": 204.01179999999994,
+              "totalMs": 608.1809
+            },
+            {
+              "iteration": 4,
+              "triangles": 35256,
+              "loadMs": 248.2855,
+              "renderMs": 139.02249999999998,
+              "pngMs": 40.16579999999999,
+              "totalMs": 427.4738
+            },
+            {
+              "iteration": 5,
+              "triangles": 35256,
+              "loadMs": 194.2109,
+              "renderMs": 166.2008,
+              "pngMs": 5.122400000000027,
+              "totalMs": 365.5341
+            },
+            {
+              "iteration": 6,
+              "triangles": 35256,
+              "loadMs": 201.5782,
+              "renderMs": 119.0615,
+              "pngMs": 5.239899999999977,
+              "totalMs": 325.8796
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/dog.3mf",
+              "artifacts/benchmark-cc0/dog-512-quality-managed.png",
+              "512",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/dog.3mf",
+              "--output=artifacts/benchmark-cc0/dog-512-quality-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 35256
+    },
+    {
+      "model": "dog.3mf",
+      "size": 1024,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            923.0595910921693,
+            900.986137916334,
+            1181.8556250073016,
+            624.7932879487053,
+            825.9847740409896
+          ],
+          "f3dProcessMs": [
+            646.4330080198124,
+            939.9294229224324,
+            797.2010519588366,
+            865.0572190526873,
+            648.9159900229424
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 425.5365,
+              "renderMs": 106.5129,
+              "pngMs": 303.4261,
+              "totalMs": 835.4755
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 395.5584,
+              "renderMs": 101.75029999999998,
+              "pngMs": 50.21610000000004,
+              "totalMs": 547.5248
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 360.0114,
+              "renderMs": 112.08570000000003,
+              "pngMs": 640.8404,
+              "totalMs": 1112.9375
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 425.0701,
+              "renderMs": 106.33870000000002,
+              "pngMs": 22.92719999999997,
+              "totalMs": 554.336
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 564.0713,
+              "renderMs": 129.27460000000008,
+              "pngMs": 35.95499999999993,
+              "totalMs": 729.3009
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 35256,
+              "loadMs": 331.0975,
+              "renderMs": 69.76999999999998,
+              "pngMs": 20.279299999999978,
+              "totalMs": 421.1468
+            },
+            {
+              "iteration": 3,
+              "triangles": 35256,
+              "loadMs": 343.1528,
+              "renderMs": 76.5453,
+              "pngMs": 18.330600000000004,
+              "totalMs": 438.0287
+            },
+            {
+              "iteration": 4,
+              "triangles": 35256,
+              "loadMs": 199.0152,
+              "renderMs": 83.15410000000003,
+              "pngMs": 14.8433,
+              "totalMs": 297.0126
+            },
+            {
+              "iteration": 5,
+              "triangles": 35256,
+              "loadMs": 210.7156,
+              "renderMs": 72.392,
+              "pngMs": 13.305900000000008,
+              "totalMs": 296.4135
+            },
+            {
+              "iteration": 6,
+              "triangles": 35256,
+              "loadMs": 230.3565,
+              "renderMs": 63.07559999999998,
+              "pngMs": 12.651400000000024,
+              "totalMs": 306.0835
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/dog.3mf",
+              "artifacts/benchmark-cc0/dog-1024-fast-managed.png",
+              "1024",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/dog.3mf",
+              "--output=artifacts/benchmark-cc0/dog-1024-fast-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            1066.7177239665762,
+            1179.3090919964015,
+            1080.4339349269867,
+            854.5927809318528,
+            1094.0795219503343
+          ],
+          "f3dProcessMs": [
+            1232.1574290981516,
+            1294.4461579900235,
+            1135.0223199697211,
+            1022.1098809270188,
+            979.5141509966925
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 435.6018,
+              "renderMs": 502.6644,
+              "pngMs": 31.040899999999965,
+              "totalMs": 969.3071
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 596.8659,
+              "renderMs": 484.1017999999999,
+              "pngMs": 21.448200000000043,
+              "totalMs": 1102.4159
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 479.6621,
+              "renderMs": 508.96759999999995,
+              "pngMs": 23.767400000000066,
+              "totalMs": 1012.3971
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 361.218,
+              "renderMs": 396.11089999999996,
+              "pngMs": 21.258500000000026,
+              "totalMs": 778.5874
+            },
+            {
+              "iteration": 0,
+              "triangles": 35256,
+              "loadMs": 559.6282,
+              "renderMs": 431.7732,
+              "pngMs": 26.60730000000001,
+              "totalMs": 1018.0087
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 35256,
+              "loadMs": 331.4712,
+              "renderMs": 253.0582,
+              "pngMs": 13.392200000000003,
+              "totalMs": 597.9216
+            },
+            {
+              "iteration": 3,
+              "triangles": 35256,
+              "loadMs": 209.2032,
+              "renderMs": 241.0839,
+              "pngMs": 19.911699999999996,
+              "totalMs": 470.1988
+            },
+            {
+              "iteration": 4,
+              "triangles": 35256,
+              "loadMs": 270.187,
+              "renderMs": 249.36810000000003,
+              "pngMs": 17.388399999999933,
+              "totalMs": 536.9435
+            },
+            {
+              "iteration": 5,
+              "triangles": 35256,
+              "loadMs": 209.3701,
+              "renderMs": 234.22220000000002,
+              "pngMs": 13.017299999999977,
+              "totalMs": 456.6096
+            },
+            {
+              "iteration": 6,
+              "triangles": 35256,
+              "loadMs": 209.5188,
+              "renderMs": 291.4485,
+              "pngMs": 20.573800000000006,
+              "totalMs": 521.5411
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/dog.3mf",
+              "artifacts/benchmark-cc0/dog-1024-quality-managed.png",
+              "1024",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/dog.3mf",
+              "--output=artifacts/benchmark-cc0/dog-1024-quality-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 35256
+    },
+    {
+      "model": "benchy.stl",
+      "size": 512,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            434.68207807745785,
+            527.9063930502161,
+            488.51582198403776,
+            406.6754359519109,
+            402.0640170201659
+          ],
+          "f3dProcessMs": [
+            502.5991479633376,
+            578.0365559039637,
+            922.1562049351633,
+            874.6126679470763,
+            491.9232310494408
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 47.8191,
+              "renderMs": 286.9134,
+              "pngMs": 17.421699999999987,
+              "totalMs": 352.1542
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 57.5411,
+              "renderMs": 360.61659999999995,
+              "pngMs": 17.64620000000002,
+              "totalMs": 435.8039
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 55.7026,
+              "renderMs": 329.0718,
+              "pngMs": 34.98689999999999,
+              "totalMs": 419.7613
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 41.1548,
+              "renderMs": 271.419,
+              "pngMs": 18.93889999999999,
+              "totalMs": 331.5127
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 38.306,
+              "renderMs": 274.8068,
+              "pngMs": 14.643000000000029,
+              "totalMs": 327.7558
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 225706,
+              "loadMs": 19.957,
+              "renderMs": 171.31140000000002,
+              "pngMs": 4.616299999999995,
+              "totalMs": 195.8847
+            },
+            {
+              "iteration": 3,
+              "triangles": 225706,
+              "loadMs": 31.4229,
+              "renderMs": 149.2302,
+              "pngMs": 4.501800000000003,
+              "totalMs": 185.1549
+            },
+            {
+              "iteration": 4,
+              "triangles": 225706,
+              "loadMs": 11.6419,
+              "renderMs": 160.1648,
+              "pngMs": 3.953399999999988,
+              "totalMs": 175.7601
+            },
+            {
+              "iteration": 5,
+              "triangles": 225706,
+              "loadMs": 21.0682,
+              "renderMs": 158.3844,
+              "pngMs": 4.780700000000024,
+              "totalMs": 184.2333
+            },
+            {
+              "iteration": 6,
+              "triangles": 225706,
+              "loadMs": 25.3406,
+              "renderMs": 149.89600000000002,
+              "pngMs": 5.069400000000002,
+              "totalMs": 180.306
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/benchy.stl",
+              "artifacts/benchmark-cc0/benchy-512-fast-managed.png",
+              "512",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/benchy.stl",
+              "--output=artifacts/benchmark-cc0/benchy-512-fast-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            932.4098599608988,
+            832.8991539310664,
+            1003.4230820601806,
+            1426.729558967054,
+            907.5367440236732
+          ],
+          "f3dProcessMs": [
+            714.2666250001639,
+            1114.0145889949054,
+            723.4886160586029,
+            807.9783139983192,
+            1450.3957980778068
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 45.1387,
+              "renderMs": 783.6892,
+              "pngMs": 16.369800000000055,
+              "totalMs": 845.1977
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 45.7496,
+              "renderMs": 681.808,
+              "pngMs": 32.144000000000005,
+              "totalMs": 759.7016
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 38.4535,
+              "renderMs": 752.4215,
+              "pngMs": 139.15459999999996,
+              "totalMs": 930.0296
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 41.1053,
+              "renderMs": 836.3021000000001,
+              "pngMs": 479.6041,
+              "totalMs": 1357.0115
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 39.8832,
+              "renderMs": 774.0468,
+              "pngMs": 19.01380000000006,
+              "totalMs": 832.9438
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 225706,
+              "loadMs": 19.1311,
+              "renderMs": 519.7795000000001,
+              "pngMs": 9.019499999999994,
+              "totalMs": 547.9301
+            },
+            {
+              "iteration": 3,
+              "triangles": 225706,
+              "loadMs": 20.9282,
+              "renderMs": 537.6586000000001,
+              "pngMs": 5.451399999999921,
+              "totalMs": 564.0382
+            },
+            {
+              "iteration": 4,
+              "triangles": 225706,
+              "loadMs": 13.3917,
+              "renderMs": 474.2464,
+              "pngMs": 5.429300000000012,
+              "totalMs": 493.0674
+            },
+            {
+              "iteration": 5,
+              "triangles": 225706,
+              "loadMs": 17.6743,
+              "renderMs": 480.75379999999996,
+              "pngMs": 5.114900000000034,
+              "totalMs": 503.543
+            },
+            {
+              "iteration": 6,
+              "triangles": 225706,
+              "loadMs": 10.3327,
+              "renderMs": 519.4757999999999,
+              "pngMs": 6.815799999999967,
+              "totalMs": 536.6243
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/benchy.stl",
+              "artifacts/benchmark-cc0/benchy-512-quality-managed.png",
+              "512",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/benchy.stl",
+              "--output=artifacts/benchmark-cc0/benchy-512-quality-f3d.png",
+              "--resolution=512,512",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 225706
+    },
+    {
+      "model": "benchy.stl",
+      "size": 1024,
+      "profiles": {
+        "fast": {
+          "managedProcessMs": [
+            539.6209920290858,
+            560.9587279614061,
+            554.7908720327541,
+            544.361402047798,
+            536.2757899565622
+          ],
+          "f3dProcessMs": [
+            684.8239520331845,
+            697.0080039463937,
+            731.2920299591497,
+            661.5233650663868,
+            661.0131349880248
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 40.3635,
+              "renderMs": 400.17810000000003,
+              "pngMs": 25.51490000000001,
+              "totalMs": 466.0565
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 45.0262,
+              "renderMs": 413.7829,
+              "pngMs": 23.698800000000006,
+              "totalMs": 482.5079
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 46.5534,
+              "renderMs": 412.1356,
+              "pngMs": 21.88639999999998,
+              "totalMs": 480.5754
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 52.3903,
+              "renderMs": 398.8701,
+              "pngMs": 19.879399999999976,
+              "totalMs": 471.1398
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 42.8271,
+              "renderMs": 401.22900000000004,
+              "pngMs": 19.325699999999983,
+              "totalMs": 463.3818
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 225706,
+              "loadMs": 27.3287,
+              "renderMs": 250.8101,
+              "pngMs": 13.628899999999987,
+              "totalMs": 291.7677
+            },
+            {
+              "iteration": 3,
+              "triangles": 225706,
+              "loadMs": 21.7891,
+              "renderMs": 230.7106,
+              "pngMs": 10.123999999999995,
+              "totalMs": 262.6237
+            },
+            {
+              "iteration": 4,
+              "triangles": 225706,
+              "loadMs": 16.9661,
+              "renderMs": 235.0375,
+              "pngMs": 10.129000000000019,
+              "totalMs": 262.1326
+            },
+            {
+              "iteration": 5,
+              "triangles": 225706,
+              "loadMs": 23.1565,
+              "renderMs": 231.2284,
+              "pngMs": 10.076500000000038,
+              "totalMs": 264.4614
+            },
+            {
+              "iteration": 6,
+              "triangles": 225706,
+              "loadMs": 20.9599,
+              "renderMs": 233.4628,
+              "pngMs": 12.532900000000012,
+              "totalMs": 266.9556
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/benchy.stl",
+              "artifacts/benchmark-cc0/benchy-1024-fast-managed.png",
+              "1024",
+              "1",
+              "fast"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/benchy.stl",
+              "--output=artifacts/benchmark-cc0/benchy-1024-fast-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--rendering-backend=glx"
+            ]
+          }
+        },
+        "quality": {
+          "managedProcessMs": [
+            1529.0813549654558,
+            1563.060495071113,
+            1522.076047025621,
+            1480.7917310390621,
+            1936.4888929994777
+          ],
+          "f3dProcessMs": [
+            1179.6806280035526,
+            1117.4876439617947,
+            1484.5715439878404,
+            1133.8986919727176,
+            1930.1299209473655
+          ],
+          "managedStages": [
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 40.4801,
+              "renderMs": 1380.3164,
+              "pngMs": 25.477800000000116,
+              "totalMs": 1446.2743
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 43.063,
+              "renderMs": 1399.5138,
+              "pngMs": 27.396799999999985,
+              "totalMs": 1469.9736
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 45.1949,
+              "renderMs": 1383.2224,
+              "pngMs": 23.815599999999904,
+              "totalMs": 1452.2329
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 43.3035,
+              "renderMs": 1294.3937,
+              "pngMs": 53.919399999999996,
+              "totalMs": 1391.6166
+            },
+            {
+              "iteration": 0,
+              "triangles": 225706,
+              "loadMs": 41.2393,
+              "renderMs": 1507.4715,
+              "pngMs": 313.7682,
+              "totalMs": 1862.479
+            }
+          ],
+          "managedWarmStages": [
+            {
+              "iteration": 2,
+              "triangles": 225706,
+              "loadMs": 26.6222,
+              "renderMs": 880.6199,
+              "pngMs": 15.117199999999912,
+              "totalMs": 922.3593
+            },
+            {
+              "iteration": 3,
+              "triangles": 225706,
+              "loadMs": 23.6077,
+              "renderMs": 977.92,
+              "pngMs": 16.543499999999995,
+              "totalMs": 1018.0712
+            },
+            {
+              "iteration": 4,
+              "triangles": 225706,
+              "loadMs": 14.6195,
+              "renderMs": 898.4843,
+              "pngMs": 19.528999999999996,
+              "totalMs": 932.6328
+            },
+            {
+              "iteration": 5,
+              "triangles": 225706,
+              "loadMs": 14.9493,
+              "renderMs": 1004.5326,
+              "pngMs": 21.49440000000004,
+              "totalMs": 1040.9763
+            },
+            {
+              "iteration": 6,
+              "triangles": 225706,
+              "loadMs": 16.274,
+              "renderMs": 940.2835,
+              "pngMs": 15.435600000000022,
+              "totalMs": 971.9931
+            }
+          ],
+          "commands": {
+            "managed": [
+              "dotnet",
+              "Benchmarks/Render.NET.Mesh.Benchmarks/bin/Release/net10.0/Render.NET.Mesh.Benchmarks.dll",
+              "Tests/Fixtures/benchy.stl",
+              "artifacts/benchmark-cc0/benchy-1024-quality-managed.png",
+              "1024",
+              "1",
+              "quality"
+            ],
+            "f3d": [
+              "xvfb-run",
+              "-a",
+              "-s",
+              "-screen 0 1024x768x24",
+              "<local root>/f3d/F3D-4.0.0-Linux-x86_64/bin/f3d",
+              "--no-config",
+              "--input=Tests/Fixtures/benchy.stl",
+              "--output=artifacts/benchmark-cc0/benchy-1024-quality-f3d.png",
+              "--resolution=1024,1024",
+              "--color=0.55,0.65,0.88",
+              "--roughness=0.32",
+              "--metallic=0.15",
+              "--no-background",
+              "--camera-direction=-1.6,2.4,-1.5",
+              "--camera-view-up=0,0,1",
+              "--up=+Z",
+              "--camera-orthographic",
+              "--ambient-occlusion",
+              "--anti-aliasing=fxaa",
+              "--tone-mapping",
+              "--rendering-backend=glx"
+            ]
+          }
+        }
+      },
+      "triangles": 225706
+    }
+  ],
+  "inputManifestSha256": "fd24cc7cbfb1bc6fba98c0738f6495b3307c4519537d0700cd7b069f3869833d"
+}

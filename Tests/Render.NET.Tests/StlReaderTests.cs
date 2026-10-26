@@ -105,7 +105,7 @@ namespace Render.NET.Tests
             return bytes;
         }
 
-        private class NonSeekableStream(Stream inner) : Stream
+        internal class NonSeekableStream(Stream inner) : Stream
         {
             public override bool CanRead => true;
             public override bool CanSeek => false;

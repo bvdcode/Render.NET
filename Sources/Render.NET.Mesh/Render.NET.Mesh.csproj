@@ -4,24 +4,24 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Mesh</RootNamespace>
-        <Version>0.2.0</Version>
+        <Version>0.3.0</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Mesh</Product>
         <Title>Render.NET.Mesh</Title>
-        <Description>Fully managed STL rendering on the CPU for .NET. Loads binary and ASCII STL and produces transparent previews with automatic framing, studio lighting, filtered shadows, ambient occlusion, and antialiasing. No native graphics dependencies or external renderer processes.</Description>
-        <Summary>Managed STL loading and studio-lit 3D previews.</Summary>
+        <Description>Fully managed STL, OBJ, and 3MF rendering on the CPU for .NET. Includes explicit 3MF build/object selection, automatic camera framing, model rotation, configurable color, studio lighting, filtered shadows, ambient occlusion, and antialiasing. No native graphics dependencies or external renderer processes.</Description>
+        <Summary>Managed STL, OBJ, and 3MF loading and studio-lit 3D previews.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageId>Render.NET.Mesh</PackageId>
-        <PackageTags>rendering;graphics;3d;mesh;stl;png;rasterization</PackageTags>
+        <PackageTags>rendering;graphics;3d;mesh;stl;obj;3mf;png;rasterization</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>packageIcon.png</PackageIcon>
         <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>First STL-to-PNG renderer: binary and ASCII STL, orthographic camera framing, crease-aware normals, studio lighting, filtered shadows, screen-space ambient occlusion, supersampling, transparent output, and cancellation.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds OBJ polygon triangulation, authored normals and smoothing groups; 3MF meshes, build/object selection, nested transforms, Production model-part references and separate thumbnail extraction; model rotation; bounded ZIP/XML loading; public-domain test models and a reproducible F3D comparison.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

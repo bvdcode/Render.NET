@@ -34,6 +34,7 @@ namespace Render.NET.Mesh
             }
 
             Positions = new Vector3[source.VertexData.Length];
+            Quaternion rotation = Quaternion.Normalize(options.ModelRotation);
             for (int index = 0; index < Positions.Length; index++)
             {
                 if ((index & 4095) == 0)
@@ -44,6 +45,7 @@ namespace Render.NET.Mesh
                 Vector3 vertex = source.VertexData[index];
                 Positions[index] = new Vector3((float)((vertex.X - centerX) * 2 / extent),
                     (float)((vertex.Y - centerY) * 2 / extent), (float)((vertex.Z - centerZ) * 2 / extent));
+                Positions[index] = Vector3.Transform(Positions[index], rotation);
             }
 
             Vector3[] faceNormals = new Vector3[source.TriangleCount];
@@ -114,6 +116,22 @@ namespace Render.NET.Mesh
                 if (sum.LengthSquared() > 1e-24f)
                 {
                     Normals[corner] = Vector3.Normalize(sum);
+                }
+            }
+
+            if (options.UseSourceNormals && source.NormalData.Length > 0)
+            {
+                for (int corner = 0; corner < Normals.Length; corner++)
+                {
+                    if ((corner & 4095) == 0)
+                    {
+                        token.ThrowIfCancellationRequested();
+                    }
+
+                    if (source.NormalData[corner] != Vector3.Zero && Normals[corner] != Vector3.Zero)
+                    {
+                        Normals[corner] = Vector3.Transform(GeometryMath.Normalize(source.NormalData[corner]), rotation);
+                    }
                 }
             }
         }

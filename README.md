@@ -8,7 +8,7 @@
 [![Build](https://github.com/bvdcode/Render.NET/actions/workflows/publish-release.yml/badge.svg)](https://github.com/bvdcode/Render.NET/actions/workflows/publish-release.yml)
 [![License](https://img.shields.io/github/license/bvdcode/Render.NET)](https://github.com/bvdcode/Render.NET/blob/main/LICENSE)
 
-Render STL models to transparent PNG previews in managed C#. Runs on the CPU using .NET 10 and the base class library, without a native graphics dependency, GPU, display server, or external renderer process.
+Render STL, OBJ, and 3MF models to transparent PNG previews in managed C#. Runs on the CPU using .NET 10 and the base class library, without a native graphics dependency, GPU, display server, or external renderer process.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/stl-preview.png" alt="A torus knot loaded from STL and rendered with Render.NET.Mesh" width="512" />
@@ -19,10 +19,15 @@ Render STL models to transparent PNG previews in managed C#. Runs on the CPU usi
 | Package | Available now |
 | --- | --- |
 | [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixel buffers, sRGB colors with straight alpha, and metadata-free PNG encoding. |
-| [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | Binary and ASCII STL loading, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
+| [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF geometry, explicit assembly selection, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
 | Render.NET.Pdf | Planned. |
 
-## STL to PNG
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
+  <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/benchy-lime.png" alt="3DBenchy rendered from STL with a caller-supplied lime color" width="320" />
+</p>
+
+## Mesh to PNG
 
 ```bash
 dotnet add package Render.NET.Mesh
@@ -32,14 +37,14 @@ dotnet add package Render.NET.Mesh
 using Render.NET;
 using Render.NET.Mesh;
 
-await using var source = File.OpenRead("model.stl");
-TriangleMesh mesh = await StlReader.ReadAsync(source);
+TriangleMesh mesh = await MeshReader.ReadFileAsync("model.3mf"); // Also .stl and .obj
 
 PixelBuffer image = MeshRenderer.Render(mesh, new MeshRenderOptions
 {
     Width = 768,
     Height = 768,
-    Supersampling = 2
+    Supersampling = 2,
+    BaseColor = new System.Numerics.Vector3(163 / 255f, 230 / 255f, 53 / 255f) // Lime #A3E635
 });
 
 await using var destination = File.Create("preview.png");
@@ -48,7 +53,7 @@ await PngEncoder.WriteAsync(image, destination);
 
 The camera automatically frames the complete model with padding. Rendering includes depth testing, area-weighted smooth normals with a configurable crease angle, three studio lights, a roughness/metallic material, filtered self-shadows, screen-space ambient occlusion, tone mapping, and supersampling. Lighting and downsampling use linear color; output pixels are straight-alpha sRGB. The default background is transparent.
 
-`MeshRenderOptions` controls the camera direction and up vector, dimensions, padding, surface color, roughness, metallic fraction, exposure, background, smoothing, shadows, and occlusion. Model coordinates are treated as Z-up by default. Camera direction points **from the model toward the camera**. Coordinates are normalized internally so preview framing does not depend on STL units.
+`MeshRenderOptions` controls model rotation, camera direction and up vector, dimensions, padding, surface color, roughness, metallic fraction, exposure, background, smoothing, shadows, and occlusion. Model coordinates are treated as Z-up by default. Camera direction points **from the model toward the camera**. Coordinates are normalized internally so preview framing does not depend on source units. Rotation is applied around the model's bounding-box center before automatic framing.
 
 ```csharp
 using System.Numerics;
@@ -57,6 +62,7 @@ var options = new MeshRenderOptions
 {
     CameraDirection = new Vector3(1.6f, -2.4f, 1.5f),
     CameraUp = Vector3.UnitZ,
+    ModelRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 4),
     BaseColor = new Vector3(0.55f, 0.65f, 0.88f), // sRGB components, 0–1
     Roughness = 0.32f,
     Metallic = 0.15f,
@@ -68,11 +74,50 @@ var options = new MeshRenderOptions
 };
 ```
 
+## Formats and 3MF selection
+
+| Format | Geometry behavior |
+| --- | --- |
+| STL | Binary and ASCII, including multiple ASCII solids. Facet normals are recomputed. |
+| OBJ | Positive and negative position/UV/normal indices, triangles and concave planar polygons, line continuations, authored normals, and smoothing groups. All objects and groups are combined. |
+| 3MF | Core meshes, all root build instances, nested components, transforms, units converted to millimeters, mirrored winding, and Production Extension references to other model parts. |
+
+OBJ material libraries, texture images, UV shading, and vertex colors are not loaded. Free-form curves and surfaces must be tessellated first. Authored `vn` normals and explicit smoothing groups take precedence over generated crease normals; set `UseSourceNormals = false` to regenerate them. OBJ files without a smoothing declaration use the renderer's crease smoothing.
+
+A 3MF package may contain many resources and positioned instances. `MeshReader` renders **every item in the root build**, preserving placement and excluding unused resources. It never guesses which object is the main one and never substitutes an embedded image. An empty build is an error when creating the build mesh; resources can still be selected explicitly.
+
+```csharp
+await using var source = File.OpenRead("project.3mf");
+ThreeMfDocument document = await ThreeMfReader.ReadAsync(source);
+
+TriangleMesh entireBuild = document.CreateBuildMesh();
+TriangleMesh firstInstance = document.CreateBuildItemMesh(0); // Zero-based, keeps placement
+
+// IDs belong to a model part, not to the whole ZIP. Inspect document.Objects
+// and document.BuildItems to present an application-specific selection.
+ThreeMfObject selected = document.Objects[0];
+TriangleMesh resource = document.CreateObjectMesh(selected.Id, selected.ModelPart);
+```
+
+The package thumbnail is a separate, explicit operation. It may show an entire project, another camera angle, or an outdated scene, so it cannot identify a selected model:
+
+```csharp
+await using var source = File.OpenRead("project.3mf");
+ThreeMfThumbnail? thumbnail = await ThreeMfReader.ReadThumbnailAsync(source);
+if (thumbnail is not null)
+{
+    await File.WriteAllBytesAsync("embedded-preview" +
+        (thumbnail.ContentType == "image/png" ? ".png" : ".jpg"), thumbnail.Data.ToArray());
+}
+```
+
+Thumbnail extraction does not parse geometry. It returns original encoded bytes, including original metadata, and checks the PNG/JPEG signature without decoding the image. Newly rendered PNGs contain no metadata. Source materials and the Materials and Properties Extension are deliberately replaced by the caller's preview material, including when that extension is marked required. Per-object thumbnails and alternative Production representations are unsupported; unknown required extensions fail explicitly. This library loads preview geometry and does not validate printability or implement the entire 3MF specification.
+
 ## Streams and limits
 
 `StlReader.ReadAsync` reads from the stream's current position, supports non-seekable streams, and leaves the source open. It accepts ASCII STL with invariant-culture numbers, an optional UTF-8 BOM, and multiple solids. Binary detection uses the declared triangle count and exact file length, including binary files whose header begins with `solid`. Truncated files, malformed facets, and non-finite coordinates are rejected. Stored facet normals are recomputed from geometry.
 
-The loader defaults to a 128 MiB input limit and one million triangles. Configure these limits for your application:
+All format readers read from the current stream position, support non-seekable streams, leave the source open, and accept cancellation. Loaders default to a 128 MiB input limit and one million triangles. Configure format-specific limits for your application:
 
 ```csharp
 TriangleMesh mesh = await StlReader.ReadAsync(source, new StlReaderOptions
@@ -85,14 +130,16 @@ PixelBuffer image = MeshRenderer.Render(mesh, options, cancellationToken);
 await PngEncoder.WriteAsync(image, destination, cancellationToken);
 ```
 
+`ObjReaderOptions` also bounds vertex and polygon sizes. `ThreeMfReaderOptions` bounds ZIP entries, compressed/decompressed bytes, part and thumbnail sizes, objects, component depth, and expanded instances/geometry. Its default uncompressed budget is 256 MiB, with 64 MiB per part and a component depth of 64. ZIP parts stay in memory; paths cannot resolve outside the package, external model references and XML DTDs are rejected. These are resource limits, not a process-level memory or CPU sandbox.
+
 Rendering is synchronous and cancellable. Supersampling supports 1–4 samples per axis; the internal raster is limited to 16,777,216 samples. Geometry and raster buffers are held in memory, so services should also limit concurrent renders. PNG encoding is asynchronous, leaves the destination open, and writes only IHDR, IDAT, and IEND chunks.
 
 ## Sample
 
-Render an existing model:
+Render an existing STL, OBJ, or 3MF model:
 
 ```bash
-dotnet run --project Samples/Render.NET.Mesh.Sample -c Release -- model.stl preview.png 768
+dotnet run --project Samples/Render.NET.Mesh.Sample -c Release -- model.3mf preview.png 768
 ```
 
 Reproduce the image above from a generated 20,480-triangle torus knot. The sample writes `preview.stl`, loads it through `StlReader`, and renders `preview.png`:
@@ -107,7 +154,7 @@ The command reports load, render, and total PNG generation times. Ctrl+C cancels
 
 This is an initial renderer for static previews, with opaque surfaces, an orthographic camera, and a single material. STL does not provide a standard scene orientation or material system; camera and color can be configured by the caller. Crease smoothing joins vertices at identical positions and retains flat normals at unusually high-valence vertices to bound processing work.
 
-OBJ and 3MF loading, textures, perspective projection, transparent materials, ground planes, and PDF rendering are planned. Filtered shadow maps and screen-space occlusion are approximations. Visual and performance parity with F3D has not been established across a representative model collection.
+Textures, perspective projection, transparent materials, ground planes, animation, and PDF rendering are not implemented. Filtered shadow maps and screen-space occlusion are approximations. See the [F3D comparison](https://github.com/bvdcode/Render.NET/blob/main/docs/benchmarks.md) for measured timings, matching inputs, images, and the limits of that comparison.
 
 ## Build and test
 
@@ -120,7 +167,7 @@ dotnet test Sources/Render.NET.sln --configuration Release --no-build --no-resto
 dotnet pack Sources/Render.NET.sln --configuration Release --no-build --output artifacts/packages
 ```
 
-Tests cover binary/ASCII STL, malformed inputs, stream limits, cancellation, camera framing across coordinate scales, depth ordering, transparent antialiasing, shadows, ambient occlusion, and PNG decoding/checksums.
+Tests cover STL, OBJ triangulation/normals, 3MF build selection and cross-part components, malformed inputs, limits, cancellation, camera rotation/framing, depth ordering, transparent antialiasing, shadows, occlusion, and PNG decoding/checksums. The repository includes [eight public-domain model files](https://github.com/bvdcode/Render.NET/tree/main/Tests/Fixtures), with source declarations and SHA-256 checks. Tests run offline after package restore. Fixtures and benchmarks are excluded from NuGet packages.
 
 GitHub Actions builds, tests, and packs changes on `main` and pull requests. Successful builds on `main` publish both packages to NuGet.org using Trusted Publishing and create a GitHub release. Versions are calculated by GitVersion.
 

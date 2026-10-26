@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Render.NET.Mesh
 {
-    /// <summary>Controls a studio-lit, orthographic mesh preview. STL coordinates are treated as Z-up.</summary>
+    /// <summary>Controls a studio-lit, orthographic mesh preview. Coordinates are treated as Z-up by default.</summary>
     public class MeshRenderOptions
     {
         /// <summary>Gets the output width in pixels.</summary>
@@ -20,6 +20,12 @@ namespace Render.NET.Mesh
 
         /// <summary>Gets the camera's preferred upward direction.</summary>
         public Vector3 CameraUp { get; init; } = Vector3.UnitZ;
+
+        /// <summary>Gets the model rotation about its bounding-box center, applied before automatic camera framing.</summary>
+        public Quaternion ModelRotation { get; init; } = Quaternion.Identity;
+
+        /// <summary>Gets whether authored per-corner normals take precedence over generated normals.</summary>
+        public bool UseSourceNormals { get; init; } = true;
 
         /// <summary>Gets the fraction of each image dimension reserved for padding on each side.</summary>
         public float Padding { get; init; } = 0.08f;
@@ -39,7 +45,7 @@ namespace Render.NET.Mesh
         /// <summary>Gets the background color. The default is transparent.</summary>
         public Rgba32 Background { get; init; }
 
-        /// <summary>Gets whether adjacent STL faces are smoothed while retaining sharp creases.</summary>
+        /// <summary>Gets whether generated normals smooth adjacent faces while retaining sharp creases.</summary>
         public bool SmoothNormals { get; init; } = true;
 
         /// <summary>Gets the maximum angle in degrees between faces contributing to a smooth normal.</summary>
@@ -73,6 +79,11 @@ namespace Render.NET.Mesh
 
             ValidateDirection(CameraDirection, nameof(CameraDirection));
             ValidateDirection(CameraUp, nameof(CameraUp));
+            float rotationLength = ModelRotation.LengthSquared();
+            if (!float.IsFinite(rotationLength) || rotationLength < 1e-8f)
+            {
+                throw new ArgumentException("ModelRotation must be a finite, nonzero quaternion.", nameof(ModelRotation));
+            }
             if (Vector3.Cross(Vector3.Normalize(CameraDirection), Vector3.Normalize(CameraUp)).LengthSquared() < 0.000001f)
             {
                 throw new ArgumentException("The camera direction and up vector must not be parallel.", nameof(CameraUp));

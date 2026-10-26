@@ -146,6 +146,25 @@ namespace Render.NET.Tests
                 Is.EqualTo(MeshRenderer.Render(valid, options).Pixels.ToArray()));
         }
 
+        [Test]
+        public void ModelRotationMatchesRotatedGeometryAndSourceNormalsCanBeOverridden()
+        {
+            Vector3[] vertices = [new(-1, -1, 0), new(1, -1, 0), new(0, 1, 0)];
+            Vector3[] normals = [Vector3.UnitZ, Vector3.UnitZ, Vector3.UnitZ];
+            Quaternion rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2);
+            TriangleMesh source = new(vertices, [0, 1, 2], normals);
+            TriangleMesh rotated = new(vertices.Select(vertex => Vector3.Transform(vertex, rotation)).ToArray(), [0, 1, 2],
+                normals.Select(normal => Vector3.Transform(normal, rotation)).ToArray());
+            PixelBuffer actual = MeshRenderer.Render(source, new MeshRenderOptions { Width = 64, Height = 64, Shadows = false, AmbientOcclusion = false, ModelRotation = rotation });
+            PixelBuffer expected = MeshRenderer.Render(rotated, new MeshRenderOptions { Width = 64, Height = 64, Shadows = false, AmbientOcclusion = false });
+            Assert.That(actual.Pixels.ToArray(), Is.EqualTo(expected.Pixels.ToArray()));
+
+            TriangleMesh unusualNormals = new(vertices, [0, 1, 2], [Vector3.UnitX, Vector3.UnitX, Vector3.UnitX]);
+            MeshRenderOptions generated = new() { Width = 64, Height = 64, Shadows = false, AmbientOcclusion = false, UseSourceNormals = false };
+            Assert.That(MeshRenderer.Render(unusualNormals, generated).Pixels.ToArray(), Is.EqualTo(MeshRenderer.Render(source, generated).Pixels.ToArray()));
+            Assert.Throws<ArgumentException>(() => MeshRenderer.Render(source, new MeshRenderOptions { ModelRotation = new Quaternion() }));
+        }
+
         private static int DarkerPixels(PixelBuffer reference, PixelBuffer shaded)
         {
             int count = 0;

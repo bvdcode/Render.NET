@@ -1,0 +1,61 @@
+[
+  {
+    "file": "spot_triangulated.obj",
+    "source": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/spot.zip",
+    "archiveMember": "spot/spot_triangulated.obj",
+    "publicDomainDeclaration": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/",
+    "sha256": "0738b5e8608fed74e5e8c7aa8dd0af97b4b74f9f6cbf7aac84cd7e40b2e44a75",
+    "bytes": 330624
+  },
+  {
+    "file": "spot_quadrangulated.obj",
+    "source": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/spot.zip",
+    "archiveMember": "spot/spot_quadrangulated.obj",
+    "publicDomainDeclaration": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/",
+    "sha256": "08bf90be56612f0d2643a75a8764c4ca8fac7fe983ab91b53b51d37981e5757c",
+    "bytes": 270477
+  },
+  {
+    "file": "bob_tri.obj",
+    "source": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/bob.zip",
+    "archiveMember": "bob/bob_tri.obj",
+    "publicDomainDeclaration": "https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/",
+    "sha256": "2b15031b59c79c5e48a68dba17a13ec081bc62e359fb808a768312a6f41be406",
+    "bytes": 935736
+  },
+  {
+    "file": "benchy.stl",
+    "source": "https://raw.githubusercontent.com/CreativeTools/3DBenchy/b542785f9642ab39db8a778a0ccc934b3ebd829a/Single-part/3DBenchy.stl",
+    "publicDomainDeclaration": "https://www.3dbenchy.com/3dbenchy-sets-sail-into-the-public-domain/",
+    "sha256": "6ab57f1c3f8e86bc3cbd302c6fa6270acf06277c6335454e922419c25d42e97e",
+    "bytes": 11285384
+  },
+  {
+    "file": "benchy.3mf",
+    "source": "https://raw.githubusercontent.com/CreativeTools/3DBenchy/b542785f9642ab39db8a778a0ccc934b3ebd829a/Single-part/3DBenchy.3mf",
+    "publicDomainDeclaration": "https://www.3dbenchy.com/3dbenchy-sets-sail-into-the-public-domain/",
+    "sha256": "74ec6ee3dba54a4973bad319c13e4d7df20a860ef82209912adceedeb8e8e643",
+    "bytes": 3084864
+  },
+  {
+    "file": "dog.3mf",
+    "source": "https://www.innerscene.com/api/library/medium-dog-standing-3mf-7352caef/download",
+    "publicDomainDeclaration": "https://www.innerscene.com/tools/library/3d-parts/medium-dog-standing-3mf-7352caef",
+    "sha256": "6bf89d150866041766f3b7da3776470960ca63855ffdf968aa6f8978b7511f4b",
+    "bytes": 1287545
+  },
+  {
+    "file": "mug.3mf",
+    "source": "https://www.innerscene.com/api/library/mug-original-drink-vessel-3mf-bda22d50/download",
+    "publicDomainDeclaration": "https://www.innerscene.com/tools/library/3d-parts/mug-original-drink-vessel-3mf-bda22d50",
+    "sha256": "fec5be6ba569503db242c650f903f88a027511bba2dcd13b08bca533cbcdf17d",
+    "bytes": 61906
+  },
+  {
+    "file": "mech.3mf",
+    "source": "https://www.innerscene.com/api/library/surveyor-bipedal-utility-mech-3mf-49c35bf5/download",
+    "publicDomainDeclaration": "https://www.innerscene.com/tools/library/3d-parts/surveyor-bipedal-utility-mech-3mf-49c35bf5",
+    "sha256": "3d540eebebf01b3dc64bc7b1f1685c21ba40345fc916e8a4fd9c3e2698ee2b61",
+    "bytes": 559911
+  }
+]
