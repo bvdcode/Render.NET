@@ -44,6 +44,9 @@ jobs:
       - name: Build
         run: dotnet build Sources/Render.NET.sln --configuration Release --no-restore -p:Version=${{ steps.gitversion.outputs.MajorMinorPatch }}
 
+      - name: Test
+        run: dotnet test Sources/Render.NET.sln --configuration Release --no-build --no-restore
+
       - name: Pack
         run: dotnet pack Sources/Render.NET.sln --configuration Release --no-build --output artifacts/packages -p:Version=${{ steps.gitversion.outputs.MajorMinorPatch }}
 

@@ -4,13 +4,13 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET</RootNamespace>
-        <Version>0.1.0</Version>
+        <Version>0.2.0</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET</Product>
         <Title>Render.NET</Title>
-        <Description>Foundation package for Render.NET, a .NET rendering library. This initial release is an empty placeholder; rendering APIs are not implemented yet.</Description>
-        <Summary>Foundation for pixel buffers, drawing, transparency, and antialiasing.</Summary>
+        <Description>Managed RGBA8 pixel buffers and metadata-free PNG encoding for .NET. Supports sRGB colors and straight alpha without native graphics dependencies.</Description>
+        <Summary>RGBA pixel buffers and managed PNG encoding.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageId>Render.NET</PackageId>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Initial placeholder package. No public rendering APIs are available yet.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds Rgba32, PixelBuffer, and cancellable, metadata-free PNG encoding using .NET compression APIs.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET", "Render.NET\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Mesh", "Render.NET.Mesh\Render.NET.Mesh.csproj", "{C0221154-4E55-4735-AA05-EE654C0D592D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Mesh.Sample", "..\Samples\Render.NET.Mesh.Sample\Render.NET.Mesh.Sample.csproj", "{66B82F14-DC0F-4B42-A750-1C0CF2201E25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Tests", "..\Tests\Render.NET.Tests\Render.NET.Tests.csproj", "{13F30964-8A6A-48FC-AE6D-DEF430430830}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,30 @@ Global
 		{C0221154-4E55-4735-AA05-EE654C0D592D}.Release|x64.Build.0 = Release|Any CPU
 		{C0221154-4E55-4735-AA05-EE654C0D592D}.Release|x86.ActiveCfg = Release|Any CPU
 		{C0221154-4E55-4735-AA05-EE654C0D592D}.Release|x86.Build.0 = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|x64.Build.0 = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Debug|x86.Build.0 = Debug|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|x64.ActiveCfg = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|x64.Build.0 = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|x86.ActiveCfg = Release|Any CPU
+		{66B82F14-DC0F-4B42-A750-1C0CF2201E25}.Release|x86.Build.0 = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|x64.Build.0 = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Debug|x86.Build.0 = Debug|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|x64.ActiveCfg = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|x64.Build.0 = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|x86.ActiveCfg = Release|Any CPU
+		{13F30964-8A6A-48FC-AE6D-DEF430430830}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

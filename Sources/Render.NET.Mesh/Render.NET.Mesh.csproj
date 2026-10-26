@@ -4,24 +4,24 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Mesh</RootNamespace>
-        <Version>0.1.0</Version>
+        <Version>0.2.0</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Mesh</Product>
         <Title>Render.NET.Mesh</Title>
-        <Description>Foundation package for fully managed 3D model rendering with Render.NET. This initial release establishes the package structure; model loading and rendering APIs are not implemented yet.</Description>
-        <Summary>Managed 3D model loading, cameras, materials, lighting, and triangle rendering.</Summary>
+        <Description>Fully managed STL rendering on the CPU for .NET. Loads binary and ASCII STL and produces transparent previews with automatic framing, studio lighting, filtered shadows, ambient occlusion, and antialiasing. No native graphics dependencies or external renderer processes.</Description>
+        <Summary>Managed STL loading and studio-lit 3D previews.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageId>Render.NET.Mesh</PackageId>
-        <PackageTags>rendering;graphics;3d;mesh;stl;obj;3mf;rasterization</PackageTags>
+        <PackageTags>rendering;graphics;3d;mesh;stl;png;rasterization</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>packageIcon.png</PackageIcon>
         <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Initial Mesh package referencing Render.NET. No public model loading or rendering APIs are available yet.</PackageReleaseNotes>
+        <PackageReleaseNotes>First STL-to-PNG renderer: binary and ASCII STL, orthographic camera framing, crease-aware normals, studio lighting, filtered shadows, screen-space ambient occlusion, supersampling, transparent output, and cancellation.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
