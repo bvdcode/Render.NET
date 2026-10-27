@@ -33,6 +33,23 @@ namespace Render.NET.Pdf
 
         private IPdfDrawCommand? CreatePatternPaint(IColor? color, double opacity, ColorBlendMode blend)
         {
+            if (color is PatternOrigin origin)
+            {
+                TransformationMatrix savedMatrix = _patternMatrix;
+                CurrentGraphicsState savedState = _patternState;
+                try
+                {
+                    _patternMatrix = origin.Matrix;
+                    _patternState = origin.State;
+                    return CreatePatternPaint(origin.Color, opacity, blend);
+                }
+                finally
+                {
+                    _patternMatrix = savedMatrix;
+                    _patternState = savedState;
+                }
+            }
+
             IColor? ink = color is PatternInk stencil ? stencil.Ink : null;
             if (color is PatternInk selected)
             {
@@ -73,6 +90,7 @@ namespace Render.NET.Pdf
 
             var savedStack = GraphicsStack;
             bool savedUncolored = _uncoloredPattern;
+            bool savedType3 = _uncoloredType3;
             int start = Commands.Count;
             Matrix3x2 placement = Matrix(pattern.Matrix.Multiply(_patternMatrix));
             try
@@ -92,6 +110,7 @@ namespace Render.NET.Pdf
                 GraphicsStack = new Stack<CurrentGraphicsState>();
                 GraphicsStack.Push(state);
                 _uncoloredPattern = (int)pattern.PaintType == 2;
+                _uncoloredType3 = false;
                 // Data is already decoded by PdfPig. A form supplies the same resource and BBox scope,
                 // while placement is applied later, independently of the paint-time CTM.
                 var dictionary = new Dictionary<NameToken, IToken>
@@ -109,6 +128,7 @@ namespace Render.NET.Pdf
                 Commands.RemoveRange(start, Commands.Count - start);
                 GraphicsStack = savedStack;
                 _uncoloredPattern = savedUncolored;
+                _uncoloredType3 = savedType3;
                 _activePatterns.Remove(pattern.PatternStream);
                 _captureDepth--;
             }

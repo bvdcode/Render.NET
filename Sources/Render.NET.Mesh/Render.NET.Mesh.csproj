@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Companion release for managed PDF tiling patterns and raster clipping APIs. Mesh parsing, rendering and runtime dependencies are unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Companion release for managed PDF Type 3 font programs. Mesh parsing, rendering and runtime dependencies are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

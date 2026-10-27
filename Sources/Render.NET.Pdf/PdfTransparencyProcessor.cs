@@ -17,8 +17,14 @@ namespace Render.NET.Pdf
         public override void SetNamedGraphicsState(NameToken stateName)
         {
             CheckPatternGraphicsState(stateName);
+            var savedIntent = GetCurrentState().RenderingIntent;
             base.SetNamedGraphicsState(stateName);
             var state = GetCurrentState();
+            if (_uncoloredType3)
+            {
+                state.RenderingIntent = savedIntent;
+            }
+
             if (state.SoftMask != null && !_maskMatrices.ContainsKey(state.SoftMask))
             {
                 _maskMatrices.Add(state.SoftMask, CurrentTransformationMatrix);
@@ -43,6 +49,7 @@ namespace Render.NET.Pdf
             }
 
             var savedStack = GraphicsStack;
+            bool savedType3 = _uncoloredType3;
             int start = Commands.Count;
             try
             {
@@ -54,6 +61,7 @@ namespace Render.NET.Pdf
                 state.CurrentTransformationMatrix = _maskMatrices[mask];
                 GraphicsStack = new Stack<CurrentGraphicsState>();
                 GraphicsStack.Push(state);
+                _uncoloredType3 = false;
                 ProcessFormXObject(mask.TransparencyGroup, NameToken.Create("RenderSoftMask"));
                 var commands = Commands.GetRange(start, Commands.Count - start).ToArray();
                 Rgba32 background = MaskBackground(mask);
@@ -72,6 +80,7 @@ namespace Render.NET.Pdf
             {
                 Commands.RemoveRange(start, Commands.Count - start);
                 GraphicsStack = savedStack;
+                _uncoloredType3 = savedType3;
                 _captureDepth--;
             }
         }
@@ -108,6 +117,7 @@ namespace Render.NET.Pdf
             _pendingClip = null;
             var savedText = TextMatrices.TextMatrix;
             var savedTextLine = TextMatrices.TextLineMatrix;
+            var savedExtendedFont = ActiveExtendedGraphicsStateFont;
             VectorPath? savedTextClip = _textClip;
             _textClip = null;
             int start = Commands.Count;
@@ -137,6 +147,7 @@ namespace Render.NET.Pdf
                 _pendingClip = savedClip;
                 TextMatrices.TextMatrix = savedText;
                 TextMatrices.TextLineMatrix = savedTextLine;
+                ActiveExtendedGraphicsStateFont = savedExtendedFont;
                 _textClip = savedTextClip;
             }
         }

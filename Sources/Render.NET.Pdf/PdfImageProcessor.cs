@@ -24,6 +24,11 @@ namespace Render.NET.Pdf
                 throw new InvalidDataException("Uncolored tiling pattern contains a color image.");
             }
 
+            if (_uncoloredType3 && !image.IsImageMask)
+            {
+                throw new InvalidDataException("Uncolored Type 3 glyph contains a color image.");
+            }
+
             CurrentGraphicsState state = GetCurrentState();
             CheckState(state);
             try

@@ -19,14 +19,21 @@ namespace Render.NET.Pdf
         {
             _cancellationToken.ThrowIfCancellationRequested();
             int mode = (int)currentState.FontState.TextRenderingMode;
-            if (mode == 3)
+            if (font is IType3Font type3)
             {
+                if (mode != 3)
+                {
+                    RenderType3Glyph(type3, code, renderingMatrix.Multiply(textMatrix).Multiply(transformationMatrix));
+                }
+
+                // PdfPig transforms Type 3 widths as coordinates. An advance is a vector:
+                // FontMatrix translation places the outline but must not add text spacing.
+                TextMatrices.TextMatrix = TextMatrices.TextMatrix.Translate(-type3.GetFontMatrix().E * renderingMatrix.A, 0);
                 return;
             }
 
-            if (font is IType3Font)
+            if (mode == 3)
             {
-                Warn("Type 3 glyph programs");
                 return;
             }
 

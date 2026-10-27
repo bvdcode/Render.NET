@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds colored and uncolored tiling patterns for paths, text and stencil images, plus shading-pattern strokes. Supports local cell resources, transforms, nesting and transparency, with bounded replay and authored regression fixtures. No new runtime dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds managed Type 3 font rendering: colored and stencil glyph programs, font and text matrices, local resources, nested text and forms, images and image masks. Preserves inherited patterns and graphics state, corrects translated font advance widths, and bounds recursive glyph execution. Includes 50 focused tests and an authored PDF fixture; no new runtime dependencies.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

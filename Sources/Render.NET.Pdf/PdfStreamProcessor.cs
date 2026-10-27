@@ -35,12 +35,13 @@ namespace Render.NET.Pdf
 
         internal PdfStreamProcessor(int number, IResourceStore resources, IPdfTokenScanner scanner, IPageContentParser parser,
             ILookupFilterProvider filters, CropBox crop, UserSpaceUnit units, PageRotationDegrees rotation,
-            TransformationMatrix initial, RenderParsingOptions options)
+            TransformationMatrix initial, RenderParsingOptions options, DictionaryToken pageDictionary)
             : base(number, resources, scanner, parser, filters, crop, units, rotation, initial, options)
         {
             _limits = options.Limits;
             _cancellationToken = options.CancellationToken;
             _images = new PdfImageDecoder(_limits, filters, scanner, _cancellationToken);
+            _pageDictionary = pageDictionary;
         }
 
         public override int Process(int pageNumberCurrent, IReadOnlyList<IGraphicsStateOperation> operations)
@@ -55,6 +56,7 @@ namespace Render.NET.Pdf
             CurrentGraphicsState savedPatternState = _patternState;
             _patternMatrix = CurrentTransformationMatrix;
             _patternState = GetCurrentState().DeepClone();
+            bool glyphProgram = _type3Programs.Contains(operations);
             try
             {
                 foreach (IGraphicsStateOperation operation in operations)
@@ -63,6 +65,11 @@ namespace Render.NET.Pdf
                     if (++_operations > _limits.MaximumOperations)
                     {
                         throw new InvalidDataException("PDF page exceeds MaximumOperations.");
+                    }
+
+                    if (SkipType3Operation(operation, glyphProgram))
+                    {
+                        continue;
                     }
 
                     CheckPatternOperation(operation);
