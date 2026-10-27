@@ -70,14 +70,14 @@ namespace Render.NET.Pdf
             return paint;
         }
 
-        private ShadingCommand? CreatePatternShading(ShadingPatternColor pattern, double opacity, ColorBlendMode blend)
+        private IPdfDrawCommand? CreatePatternShading(ShadingPatternColor pattern, double opacity, ColorBlendMode blend)
         {
             if (pattern.ExtGState?.Data.Count > 0)
             {
                 Warn("Shading pattern graphics-state overrides");
             }
 
-            return CreateShading(pattern.Shading, Matrix(pattern.Matrix.Multiply(_patternMatrix)), opacity, blend);
+            return CreateShading(pattern.Shading, Matrix(pattern.Matrix.Multiply(_patternMatrix)), opacity, blend, true);
         }
 
         private TilingPatternCommand CreateTilingPattern(TilingPatternColor pattern, IColor? ink, double opacity, ColorBlendMode blend)

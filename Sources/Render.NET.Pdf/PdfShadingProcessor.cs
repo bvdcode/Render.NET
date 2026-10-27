@@ -8,24 +8,44 @@ namespace Render.NET.Pdf
 {
     internal sealed partial class PdfStreamProcessor
     {
+        private long _shadingBytes;
         public override void PaintShading(NameToken shadingName)
         {
             Shading shading = ResourceStore.GetShading(shadingName);
             var state = GetCurrentState();
             CheckState(state);
-            ShadingCommand? command = CreateShading(shading, Matrix(CurrentTransformationMatrix), state.AlphaConstantNonStroking, Blend(state.BlendMode));
+            IPdfDrawCommand? command = CreateShading(shading, Matrix(CurrentTransformationMatrix), state.AlphaConstantNonStroking, Blend(state.BlendMode));
             if (command != null)
             {
                 AddPaint(command, state);
             }
         }
 
-        private ShadingCommand? CreateShading(Shading shading, Matrix3x2 placement, double opacity, ColorBlendMode blend)
+        private IPdfDrawCommand? CreateShading(Shading shading, Matrix3x2 placement, double opacity, ColorBlendMode blend, bool paintBackground = false)
         {
+            Rgba32 background = paintBackground && shading.Background != null
+                ? Color(shading.ColorSpace.GetColor(shading.Background), opacity) : default;
+            if (shading is FunctionBasedShading function)
+            {
+                return new FunctionShadingCommand(function, placement, opacity, blend, background);
+            }
+
             if (shading is not AxialShading && shading is not RadialShading)
             {
-                Warn("Shading type " + shading.ShadingType);
-                return null;
+                PdfShadingMesh mesh = PdfShadingMesh.Read(shading, _limits, _cancellationToken);
+                _shadingBytes = checked(_shadingBytes + mesh.StorageBytes);
+                if (_shadingBytes > _limits.MaximumShadingBytes)
+                {
+                    throw new System.IO.InvalidDataException("PDF page exceeds MaximumShadingBytes.");
+                }
+
+                _pathCommands = checked(_pathCommands + (mesh.Triangles.Count * 3) + (mesh.Patches.Count * 16));
+                if (_pathCommands > _limits.MaximumPathCommands)
+                {
+                    throw new System.IO.InvalidDataException("PDF page exceeds MaximumPathCommands including mesh shadings.");
+                }
+
+                return new MeshShadingCommand(mesh, placement, opacity, blend, background);
             }
 
             double[] domain = shading is AxialShading axial ? axial.Domain : ((RadialShading)shading).Domain;
@@ -37,7 +57,7 @@ namespace Render.NET.Pdf
                 colors[i] = Color(shading.ColorSpace.GetColor(shading.Eval(t)), opacity);
             }
 
-            return new ShadingCommand(shading, colors, placement, blend);
+            return new ShadingCommand(shading, colors, placement, blend, background);
         }
 
         private void AddFill(VectorPath path, FillRule rule, UglyToad.PdfPig.Graphics.CurrentGraphicsState state)
@@ -83,7 +103,7 @@ namespace Render.NET.Pdf
         }
     }
 
-    internal sealed record ShadingCommand(Shading Shading, Rgba32[] Colors, Matrix3x2 Placement, ColorBlendMode Blend) : IPdfDrawCommand
+    internal sealed record ShadingCommand(Shading Shading, Rgba32[] Colors, Matrix3x2 Placement, ColorBlendMode Blend, Rgba32 Background = default) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken cancellationToken)
         {
@@ -115,7 +135,7 @@ namespace Render.NET.Pdf
                 double length = (dx * dx) + (dy * dy);
                 if (length == 0)
                 {
-                    return default;
+                    return Background;
                 }
 
                 t = (((point.X - axial.Coords[0]) * dx) + ((point.Y - axial.Coords[1]) * dy)) / length;
@@ -128,7 +148,7 @@ namespace Render.NET.Pdf
                 extend = radial.Extend;
             }
 
-            return Valid(t, extend) ? Colors[(int)Math.Round(Math.Clamp(t, 0, 1) * (Colors.Length - 1))] : default;
+            return Valid(t, extend) ? Colors[(int)Math.Round(Math.Clamp(t, 0, 1) * (Colors.Length - 1))] : Background;
         }
 
         private static bool Valid(double t, bool[] extend)

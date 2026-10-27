@@ -50,6 +50,7 @@ namespace Render.NET.Pdf
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.MaximumPathCommands);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.MaximumImagePixels);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.MaximumImageBytes);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.MaximumShadingBytes);
         }
     }
 }

@@ -20,5 +20,8 @@ namespace Render.NET.Pdf
         public int MaximumImagePixels { get; init; } = 16_777_216;
         /// <summary>Gets the total decoded image byte budget per page.</summary>
         public int MaximumImageBytes { get; init; } = 128 * 1024 * 1024;
+        /// <summary>Gets the decoded stream and stored geometry budget for mesh shadings per page; defaults to 64 MiB.
+        /// Patch tessellation is separately bounded by this budget for each shading invocation.</summary>
+        public int MaximumShadingBytes { get; init; } = 64 * 1024 * 1024;
     }
 }

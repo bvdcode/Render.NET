@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Companion release for managed PDF Type 3 font programs. JBIG2 decoding, PDF globals and dependency-free packaging are unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Companion release for managed PDF function and mesh shadings. Existing APIs and runtime dependencies remain compatible.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

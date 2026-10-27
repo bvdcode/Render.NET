@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds managed Type 3 font rendering: colored and stencil glyph programs, font and text matrices, local resources, nested text and forms, images and image masks. Preserves inherited patterns and graphics state, corrects translated font advance widths, and bounds recursive glyph execution. Includes 50 focused tests and an authored PDF fixture; no new runtime dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds all remaining PDF shading types: function-based, free-form and lattice triangles, Coons and tensor-product patches. Supports arbitrary bit widths, continuation edges, nonlinear color functions, affine placement, clipping, transparency and shading-pattern backgrounds. Adds bounded mesh storage and adaptive tessellation with a spatial triangle index, 36 regression tests and an authored comparison PDF. No new runtime dependencies.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
