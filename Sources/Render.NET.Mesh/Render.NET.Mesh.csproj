@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Uses the updated Render.NET core; preserves the existing STL, OBJ and 3MF preview API and rendering behavior.</PackageReleaseNotes>
+        <PackageReleaseNotes>Republished with corrected PDF support documentation and the matching core package. STL, OBJ and 3MF loading and rendering are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

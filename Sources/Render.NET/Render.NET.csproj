@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds shader painting, isolated and non-isolated compositing layers, alpha masks, and all 16 PDF color blend modes for managed vector rendering.</PackageReleaseNotes>
+        <PackageReleaseNotes>Republished with corrected PDF support documentation. The core remains dependency-free with unchanged drawing and compositing behavior.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

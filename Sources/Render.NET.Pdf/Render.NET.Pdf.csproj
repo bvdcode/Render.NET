@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds managed JPEG 2000 and JBIG2 scan decoding with global symbol dictionaries, public-domain Cyrillic and Greek fallback fonts, axial/radial gradients and shading-pattern fills, transparency groups and graphics soft masks, and annotation/form appearance rendering. Includes offline compatibility and exact scan round-trip regression fixtures.</PackageReleaseNotes>
+        <PackageReleaseNotes>Removes CoreJ2K because its source retains additional JJ2000 licensing conditions beyond the advertised BSD license. JPEG 2000 images are now explicitly reported as unsupported and rejected by default. Preserves JPEG, JBIG2, fonts, gradients, transparency, and form appearances; includes third-party licenses and notices.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
@@ -33,9 +33,9 @@
     <ItemGroup>
         <EmbeddedResource Include="Fonts/*.ttf" />
         <None Update="Fonts/provenance.json" Pack="true" PackagePath="/fonts/" />
+        <None Update="ThirdPartyNotices.txt" Pack="true" PackagePath="/" />
         <PackageReference Include="PdfPig" Version="0.1.16" />
         <PackageReference Include="StbImageSharp" Version="2.30.16" />
-        <PackageReference Include="CoreJ2K" Version="2.4.1.108" />
         <PackageReference Include="PdfPig.Filters.Jbig2.PdfboxJbig2" Version="0.1.16.2" />
         <ProjectReference Include="../Render.NET/Render.NET.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
