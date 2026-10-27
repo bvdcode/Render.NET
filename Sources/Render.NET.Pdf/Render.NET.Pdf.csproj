@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Restores JP2 and raw JPEG 2000 images with our original managed Render.NET.Jpeg2000 decoder. Supports gray, RGB, CMYK, 16-bit samples, embedded opacity and external masks without CoreJ2K or native codecs. Adds independent pixel regression cases and documents unsupported extensions.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses the matching JPEG 2000 package after consolidation of MQ probability states. JP2/J2K decoding, PDF colours, opacity and rendered output are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

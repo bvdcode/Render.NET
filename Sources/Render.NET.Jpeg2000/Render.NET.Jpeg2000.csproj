@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Introduces an original managed JPEG 2000 Part 1 decoder for JP2 and raw J2K, reversible and irreversible wavelets, and component samples for PDF integration. No third-party codec dependency.</PackageReleaseNotes>
+    <PackageReleaseNotes>Consolidates each MQ arithmetic-coder probability and its transitions into one state table, removing duplicate sequences and keeping all 47 states unchanged. The independent pixel regression suite verifies identical decoding.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

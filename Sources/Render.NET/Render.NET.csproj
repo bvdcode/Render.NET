@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds the matching standalone Render.NET.Jpeg2000 package and PDF integration; core drawing and compositing behavior is unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Republished with matching JPEG 2000 and PDF packages after a decoder table refactor. Core drawing and compositing behavior is unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
