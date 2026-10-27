@@ -32,6 +32,11 @@
       "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
     },
     {
+      "file": "generate_patterns.py",
+      "bytes": 4909,
+      "sha256": "56e09c10238382651403e160faad25618d4970fc753b134e5df6abf374285681"
+    },
+    {
       "file": "graphics.pdf",
       "bytes": 1900,
       "sha256": "af4caa52dea88dfac6c75c36a7078742c36a740ab982dc733cb2452588fb3478"
@@ -40,6 +45,11 @@
       "file": "images.pdf",
       "bytes": 3503,
       "sha256": "63047323f24ae3e68a6329907a3ca2f9b1871244579eb9e5f1b527754a5b47f5"
+    },
+    {
+      "file": "patterns.pdf",
+      "bytes": 3808,
+      "sha256": "daade044ef251164556a411cb2eef1bc52ab6c927ae1f2de2c0515afcbe6e7b0"
     },
     {
       "file": "preview.pdf",

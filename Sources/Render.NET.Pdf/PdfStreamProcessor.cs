@@ -28,6 +28,7 @@ namespace Render.NET.Pdf
         private int _operations;
         private int _pathCommands;
         private TransformationMatrix _patternMatrix;
+        private CurrentGraphicsState _patternState = null!;
 
         internal List<IPdfDrawCommand> Commands { get; } = new List<IPdfDrawCommand>();
         internal List<string> Unsupported { get; } = new List<string>();
@@ -51,7 +52,9 @@ namespace Render.NET.Pdf
         protected override void ProcessOperations(IReadOnlyList<IGraphicsStateOperation> operations)
         {
             TransformationMatrix savedPatternMatrix = _patternMatrix;
+            CurrentGraphicsState savedPatternState = _patternState;
             _patternMatrix = CurrentTransformationMatrix;
+            _patternState = GetCurrentState().DeepClone();
             try
             {
                 foreach (IGraphicsStateOperation operation in operations)
@@ -62,7 +65,9 @@ namespace Render.NET.Pdf
                         throw new InvalidDataException("PDF page exceeds MaximumOperations.");
                     }
 
+                    CheckPatternOperation(operation);
                     operation.Run(this);
+                    PreservePatternInk(operation);
                     if (_path.CommandCount > _limits.MaximumPathCommands)
                     {
                         throw new InvalidDataException("PDF path exceeds MaximumPathCommands.");
@@ -72,6 +77,7 @@ namespace Render.NET.Pdf
             finally
             {
                 _patternMatrix = savedPatternMatrix;
+                _patternState = savedPatternState;
             }
         }
 
@@ -194,11 +200,12 @@ namespace Render.NET.Pdf
             {
                 if (state.CurrentStrokingColor?.ColorSpace == ColorSpace.Pattern)
                 {
-                    Warn("Pattern strokes");
-                    return;
+                    AddPatternPaint(path, rule, state, true);
                 }
-
-                AddPaint(new StrokeCommand(path, Color(state.CurrentStrokingColor, state.AlphaConstantStroking), Stroke(state), Matrix(state.CurrentTransformationMatrix), blend), state);
+                else
+                {
+                    AddPaint(new StrokeCommand(path, Color(state.CurrentStrokingColor, state.AlphaConstantStroking), Stroke(state), Matrix(state.CurrentTransformationMatrix), blend), state);
+                }
             }
         }
 

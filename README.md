@@ -21,7 +21,7 @@ Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the C
 | --- | --- |
 | [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixels, vector paths, fills and strokes, clipping, affine images, alpha compositing, and metadata-free PNG encoding. |
 | [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF geometry, explicit assembly selection, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
-| [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Includes Cyrillic fallback fonts, gradients, transparency groups, soft masks, annotation/form appearances and JBIG2 scans. JPEG 2000 scans use our own managed decoder. |
+| [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Includes Cyrillic fallback fonts, gradients, colored/stencil tiling patterns, transparency groups, soft masks and annotation/form appearances. JPEG 2000 and JBIG2 scans use our own managed decoders. |
 | [Render.NET.Jpeg2000](https://www.nuget.org/packages/Render.NET.Jpeg2000/) | Original managed JPEG 2000 Part 1 decoder: JP2/J2K, lossless/lossy wavelets, 1–16-bit component samples, tiles and subsampling. No runtime dependencies. [Supported subset and API](docs/jpeg2000.md). |
 | [Render.NET.Jbig2](https://www.nuget.org/packages/Render.NET.Jbig2/) | Original managed monochrome JBIG2 decoder: MMR, arithmetic/Huffman symbols, globals, refinement, and halftones. No runtime dependencies. [Supported subset and API](docs/jbig2.md). |
 
@@ -57,7 +57,11 @@ await PngEncoder.WriteAsync(image, destination);
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/pdf-preview.png" alt="A PDF page with embedded fonts, rounded vector shapes, a chart, and text rendered by Render.NET.Pdf" width="420" />
 </p>
 
-PDF is a large format: this first renderer supports paths, embedded font outlines, substituted fonts, images, forms, clipping, constant alpha, and separable blend modes. Unsupported features are listed on `page.UnsupportedFeatures` and **rendering rejects them by default**. Shadings, patterns, Type 3 glyphs, annotation appearances, and transparency groups are not yet rendered faithfully. See [the PDF guide](https://github.com/bvdcode/Render.NET/blob/main/docs/pdf.md) for the support matrix, fonts, limits, and CLI example.
+The PDF renderer also supports axial/radial gradients, colored and stencil tiling patterns for paths and text, all 16 blend modes, transparency groups, soft masks and existing annotation/form appearances. PDF remains a large format: known unsupported features include Type 3 glyph programs, mesh shadings and knockout groups. They are listed on `page.UnsupportedFeatures`, and **rendering rejects them by default**. See [the PDF guide](https://github.com/bvdcode/Render.NET/blob/main/docs/pdf.md) for the support matrix, fonts, limits, and CLI example.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/pdf-patterns.png" alt="Colored and lime stencil patterns, rotation, patterned strokes, transparency, nested forms and images rendered by Render.NET.Pdf" width="600" />
+</p>
 
 ## Mesh performance
 

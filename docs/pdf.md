@@ -4,6 +4,8 @@
 
 Version 0.3.9 replaces the external JBIG2 codec with our original managed decoder, including PDF globals and chained filters. See the [JBIG2 API and limits](jbig2.md).
 
+Version 0.3.11 adds colored and uncolored tiling patterns for fills, strokes, text and stencil images, plus shading-pattern strokes. Pattern content uses our existing managed rasterizer; no new runtime dependency is introduced.
+
 Version 0.3.7 restores JP2 and raw JPEG 2000 decoding through our original managed decoder. See the [implemented subset and limits](jpeg2000.md). CoreJ2K was removed in 0.3.6 because its source retains JJ2000 conditions beyond its advertised BSD license; version 0.3.5 still has that dependency.
 
 The remaining PDF runtime dependencies are PdfPig 0.1.16 (Apache-2.0 with additional component notices) and StbImageSharp 2.30.16 (Unlicense OR MIT). Their license texts and upstream notices are included in the PDF package as `ThirdPartyNotices.txt`. The bundled fonts are public domain/CC0; their provenance is recorded separately below. Preserve the applicable licenses and notices when redistributing dependency binaries. Render.NET's own code remains MIT.
@@ -55,12 +57,13 @@ Supersampling is 1–4, default 2. Rendering occurs at the enlarged resolution a
 | Image masks | Stencil masks, image soft masks (including different sizes), sample Decode arrays, color-key masks for sample images. |
 | Forms | Nested Form XObjects, local resources, matrices, bounding boxes, graphics state save/restore. |
 | Gradients | Axial and radial shadings, domains/functions, extension, bounding boxes and transforms; shading-pattern fills clipped to the painted path. |
+| Patterns | Colored and uncolored (stencil) tiling patterns, RGB/gray/CMYK and other parser-supported base color spaces, positive/negative spacing, cell BBox clipping, pattern matrices, local fonts/images/forms and nested patterns. Fill, stroke, text and image-mask painting; shading-pattern strokes. |
 | Annotations and widgets | Normal appearance streams, selected appearance states, local fonts/resources, transformed bounding boxes mapped into annotation rectangles, hidden/invisible/NoView flags. Existing filled-field appearances are rendered. |
 | Clipping | Intersections, empty clips, text clipping at ET, graphics state restoration. |
 | Transparency | Constant fill/stroke alpha, all 16 PDF blend modes, isolated and non-isolated transparency groups with opacity applied once, alpha/luminosity graphics-state soft masks with backdrop and transfer functions. |
 | Color conversion | PdfPig's conversion to RGB; no color-managed ICC/proofing or CMYK print fidelity guarantee. |
 
-Known unsupported rendering features include JPEG 2000 extensions listed in the codec documentation, function-based and mesh shadings (types 1 and 4–7), tiling patterns, pattern strokes, shading-pattern graphics-state overrides, Type 3 glyph programs, optional-content visibility, knockout transparency groups, overprint, annotation NoZoom/NoRotate flags, and JPEG Decode arrays/color-key masks. Form values without a normal appearance stream are reported, including inherited values; the renderer does not generate missing appearances. JBIG2 segments with unknown lengths and striped pages with unknown height are reported as unsupported. Missing glyphs are reported. Documents can contain additional producer-specific features not recognized by this implementation; a clean feature list is not a general PDF conformance guarantee.
+Known unsupported rendering features include JPEG 2000 extensions listed in the codec documentation, function-based and mesh shadings (types 1 and 4–7), shading-pattern graphics-state overrides, Type 3 glyph programs, optional-content visibility, knockout transparency groups, overprint, annotation NoZoom/NoRotate flags, and JPEG Decode arrays/color-key masks. Form values without a normal appearance stream are reported, including inherited values; the renderer does not generate missing appearances. JBIG2 segments with unknown lengths and striped pages with unknown height are reported as unsupported. Missing glyphs are reported. Documents can contain additional producer-specific features not recognized by this implementation; a clean feature list is not a general PDF conformance guarantee.
 
 Hyperlink actions, scripts, attachments, and interactive forms are not executed. Existing annotation and form appearances are painted after page content. Actions and field calculations are not run. Ordinary links without appearance streams do not add a generated border or highlight.
 
@@ -74,6 +77,16 @@ PixelBuffer partial = PdfRenderer.Render(page,
 ```
 
 The default throws `NotSupportedException` when `UnsupportedFeatures` is nonempty. Partial rendering skips unsupported image codecs and shadings and approximates other reported operations; it does not make them supported. Malformed documents and exhausted limits still fail.
+
+## Tiling patterns
+
+Graphics-state and compositing behavior follows sections 8.7.2, 8.7.3 and 11.6.7 of the [PDF 1.7 specification](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf).
+
+Patterns stay anchored to the initial coordinate system of their page, form or parent pattern; subsequent `cm` operators move the painted shape without moving the pattern grid. Cell content inherits the parent's initial graphics state, with transparency reset to its defaults. Uncolored cells receive their separately specified ink in both fill and stroke state. Color-setting operators and ordinary color images inside an uncolored cell are rejected as invalid PDF; image masks are permitted.
+
+Tiling types 1 and 3 can reuse a rasterized cell when its objects use Normal blending and cells do not overlap. Cell texture size is bounded by the current canvas sample count. Type 2 retains vector geometry without raster-cell resizing. Backdrop-dependent blends, overlapping cells and oversized textures replay the cells into one non-isolated group, with the outer alpha/blend/soft mask applied once. Rotation, sampling and device pixel rounding can differ from another renderer; this is not a print-conformance claim for device-dependent tiling hints.
+
+Replay considers the visible clipping rectangle and is limited to 4,096 candidate cells and 1,000,000 stored command replays per invocation. Pattern/soft-mask interpretation is limited to eight nested captures; recursive patterns fail. Cell operations, paths and decoded images also count against the page reader limits. These are resource limits, not unsupported-feature warnings, and `AllowPartialRendering` does not bypass them.
 
 ## Fonts
 
@@ -103,7 +116,7 @@ Transparency groups and soft masks allocate temporary canvas-sized buffers. Non-
 
 The output budget defaults to 16,777,216 samples, **including supersampling**. For example, 2× antialiasing uses four samples per output pixel. Adjust `MaximumSamples` deliberately when rendering large pages.
 
-Reader limits are configurable through `PdfReaderOptions`; output limits through `PdfRenderOptions`. Cancellation is checked during input reads, operation/glyph/image interpretation, scanline painting, curve flattening, dashed strokes, and downsampling. PdfPig's internal parsing/decompression, JBIG2 decoding, and StbImageSharp's JPEG decode are synchronous and cannot be interrupted midway by this token. Input, interpreted-geometry, and decoded-image limits do not bound every temporary parser/decoder allocation. Use an isolated worker with external time/memory limits for untrusted documents.
+Reader limits are configurable through `PdfReaderOptions`; output limits through `PdfRenderOptions`. Cancellation is checked during input reads, operation/glyph/image interpretation, our JPEG 2000/JBIG2 decoding, pattern-cell replay, clipping-bound scans, scanline painting, curve flattening, dashed strokes, and downsampling. PdfPig's internal parsing/decompression and StbImageSharp's JPEG decode are synchronous and cannot be interrupted midway by this token. Input, interpreted-geometry, and decoded-image limits do not bound every temporary parser/decoder allocation. Use an isolated worker with external time/memory limits for untrusted documents.
 
 ## Command-line example
 
@@ -116,8 +129,12 @@ Optional flags: `--transparent` and `--allow-partial`. The CLI writes feature wa
 
 ## Verification fixtures
 
-`Tests/Fixtures/Pdf` contains nine documents authored for this repository: vector graphics/clipping and alpha, embedded and substituted text, JPEG/inline/soft-masked images, a complete typeset preview, deliberately unsupported optional content, a password-protected document, codec scans (JP2, raw JPEG 2000, and JBIG2), a JBIG2 scan with global symbols, and a compatibility page with unembedded Cyrillic, gradients, a luminosity mask, group opacity and a filled widget. Their deterministic generator, original synthetic scan, encoded scan inputs, and SHA-256 manifest are committed. The JBIG2 global-symbol round trip is tested pixel-for-pixel against the original synthetic scan. Tests run offline after package restore; Python, ReportLab, Pillow, and Poppler are development tools only and are not runtime package dependencies.
+`Tests/Fixtures/Pdf` contains ten documents authored for this repository: vector graphics/clipping and alpha, embedded and substituted text, JPEG/inline/soft-masked images, a complete typeset preview, deliberately unsupported optional content, a password-protected document, codec scans (JP2, raw JPEG 2000, and JBIG2), a JBIG2 scan with global symbols, a compatibility page with unembedded Cyrillic, gradients, a luminosity mask, group opacity and a filled widget, and a tiling-pattern page. Their deterministic generators, original synthetic scan, encoded scan inputs, and SHA-256 manifest are committed. `generate_patterns.py` builds the pattern fixture with Python's standard library only. The JBIG2 global-symbol round trip is tested pixel-for-pixel against the original synthetic scan. Tests run offline after package restore; Python, ReportLab, Pillow, and Poppler are development tools only and are not runtime package dependencies.
 
 The preview was also rendered with Poppler at 96 DPI and inspected side by side. Both outputs are 720 × 854. On this fixture, mean absolute RGB channel error is 1.54/255 and 96.78% of pixels differ by at most 8 in every channel. This is one regression comparison, not a broad claim of PDF rendering equivalence. Font hinting and edge coverage differ.
 
 ![Cyrillic, gradients, transparency and form appearances](images/pdf-compatibility.png)
+
+The original nine-panel `patterns.pdf` covers colored/stencil patterns, rotation, patterned dashed strokes, internal/outer alpha, Multiply against the page backdrop, nested forms/patterns, color images and stencil images. At 96 DPI with 2x supersampling our output and Poppler 24.02.0 are both 800 x 534; mean absolute RGB error is 4.60/255 and 90.29% of pixels differ by at most 8 in every channel. Differences remain around densely repeated edges and pixel-grid placement. This single synthetic comparison does not establish compatibility with arbitrary PDF files.
+
+![Colored and stencil PDF tiling patterns](images/pdf-patterns.png)

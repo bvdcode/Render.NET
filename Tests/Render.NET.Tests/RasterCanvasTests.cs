@@ -6,6 +6,22 @@ namespace Render.NET.Tests
     public class RasterCanvasTests
     {
         [Test]
+        public void ClipBoundsFollowIntersectionsEmptyClipsAndStateRestoration()
+        {
+            var canvas = new RasterCanvas(new PixelBuffer(50, 40));
+            Assert.That(canvas.GetClipBounds(), Is.EqualTo((0, 0, 50, 40)));
+            canvas.ClipPath(new VectorPath().Rectangle(5, 8, 20, 10), Matrix3x2.Identity);
+            Assert.That(canvas.GetClipBounds(), Is.EqualTo((5, 8, 20, 10)));
+            canvas.Save();
+            canvas.ClipPath(new VectorPath().Rectangle(20, 0, 30, 40), Matrix3x2.Identity);
+            Assert.That(canvas.GetClipBounds(), Is.EqualTo((20, 8, 5, 10)));
+            canvas.ClipPath(new VectorPath(), Matrix3x2.Identity);
+            Assert.That(canvas.GetClipBounds(), Is.EqualTo((0, 0, 0, 0)));
+            canvas.Restore();
+            Assert.That(canvas.GetClipBounds(), Is.EqualTo((5, 8, 20, 10)));
+        }
+
+        [Test]
         public void FillRulesDistinguishNestedContoursAndClipRestores()
         {
             var image = new PixelBuffer(50, 50);

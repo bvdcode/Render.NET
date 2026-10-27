@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Maintenance release after the JBIG2 fixture generator cleanup. JPEG 2000 decoding and shared MQ probability states are unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Companion release for managed PDF tiling patterns. JPEG 2000 decoding and dependency-free packaging are unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

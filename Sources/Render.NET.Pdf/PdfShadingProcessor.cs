@@ -42,42 +42,39 @@ namespace Render.NET.Pdf
 
         private void AddFill(VectorPath path, FillRule rule, UglyToad.PdfPig.Graphics.CurrentGraphicsState state)
         {
-            if (state.CurrentNonStrokingColor is ShadingPatternColor pattern)
+            if (state.CurrentNonStrokingColor?.ColorSpace == ColorSpace.Pattern)
             {
-                if (pattern.ExtGState?.Data.Count > 0)
-                {
-                    Warn("Shading pattern graphics-state overrides");
-                }
-
-                ShadingCommand? shading = CreateShading(pattern.Shading, Matrix(pattern.Matrix.Multiply(_patternMatrix)),
-                    state.AlphaConstantNonStroking, Blend(state.BlendMode));
-                if (shading != null)
-                {
-                    AddPaint(new PatternFillCommand(path, rule, shading), state);
-                }
+                AddPatternPaint(path, rule, state, false);
             }
             else
             {
-                if (state.CurrentNonStrokingColor?.ColorSpace == ColorSpace.Pattern)
-                {
-                    Warn("Tiling pattern fills");
-                    return;
-                }
-
                 AddPaint(new FillCommand(path, Color(state.CurrentNonStrokingColor, state.AlphaConstantNonStroking), rule, Blend(state.BlendMode)), state);
             }
         }
     }
 
-    internal sealed record PatternFillCommand(VectorPath Path, FillRule Rule, ShadingCommand Shading) : IPdfDrawCommand
+    internal sealed record PatternPaintCommand(VectorPath Path, FillRule Rule, IPdfDrawCommand Pattern,
+        StrokeStyle? Stroke = null, Matrix3x2 Pen = default) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
         {
             canvas.Save();
             try
             {
-                canvas.ClipPath(Path, device, Rule, token);
-                Shading.Draw(canvas, device, token);
+                if (Stroke == null)
+                {
+                    canvas.ClipPath(Path, device, Rule, token);
+                }
+                else if (Matrix3x2.Invert(Pen, out Matrix3x2 inverse))
+                {
+                    canvas.ClipStrokePath(Path.Transform(inverse), Stroke, Pen * device, token);
+                }
+                else
+                {
+                    return;
+                }
+
+                Pattern.Draw(canvas, device, token);
             }
             finally
             {

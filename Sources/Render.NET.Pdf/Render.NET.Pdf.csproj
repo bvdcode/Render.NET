@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Maintenance release using the matching original JBIG2 package after its fixture generator cleanup. PDF globals, chained filters and rendered scan pixels remain unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds colored and uncolored tiling patterns for paths, text and stencil images, plus shading-pattern strokes. Supports local cell resources, transforms, nesting and transparency, with bounded replay and authored regression fixtures. No new runtime dependencies.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

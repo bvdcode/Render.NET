@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Splits the authored symbol-fixture generator into smaller functions to remove the CodeFactor complexity issue. All 98 encoded fixtures and expected pixels remain byte-for-byte identical; decoder behavior and dependency-free packaging are unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Companion release for managed PDF tiling patterns. JBIG2 decoding, PDF global dictionaries and dependency-free packaging are unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

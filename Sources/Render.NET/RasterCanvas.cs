@@ -136,6 +136,45 @@ namespace Render.NET
             _clip = next;
         }
 
+        /// <summary>Intersects the clipping region with a stroke, including its affine pen and dash pattern.</summary>
+        public void ClipStrokePath(VectorPath path, StrokeStyle style, Matrix3x2 transform, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(style);
+            ClipPath(PathStroker.Outline(path, style, transform, cancellationToken), transform, cancellationToken: cancellationToken);
+        }
+
+        /// <summary>Gets the smallest pixel rectangle containing the current clipping region. An empty clip has zero size.</summary>
+        public (int X, int Y, int Width, int Height) GetClipBounds(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (_clip == null)
+            {
+                return (0, 0, _target.Width, _target.Height);
+            }
+
+            int left = _target.Width;
+            int top = _target.Height;
+            int right = 0;
+            int bottom = 0;
+            for (int y = 0; y < _target.Height; y++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                for (int x = 0; x < _target.Width; x++)
+                {
+                    if (_clip[(y * _target.Width) + x] != 0)
+                    {
+                        left = Math.Min(left, x);
+                        right = Math.Max(right, x + 1);
+                        top = Math.Min(top, y);
+                        bottom = y + 1;
+                    }
+                }
+            }
+
+            return right <= left ? (0, 0, 0, 0) : (left, top, right - left, bottom - top);
+        }
+
         /// <summary>Fills a transformed path using straight-alpha source-over or a separable blend mode.</summary>
         public void FillPath(VectorPath path, Rgba32 color, Matrix3x2 transform, FillRule rule = FillRule.NonZero,
             ColorBlendMode blendMode = ColorBlendMode.Normal, CancellationToken cancellationToken = default)

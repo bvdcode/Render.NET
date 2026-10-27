@@ -16,6 +16,7 @@ namespace Render.NET.Pdf
 
         public override void SetNamedGraphicsState(NameToken stateName)
         {
+            CheckPatternGraphicsState(stateName);
             base.SetNamedGraphicsState(stateName);
             var state = GetCurrentState();
             if (state.SoftMask != null && !_maskMatrices.ContainsKey(state.SoftMask))

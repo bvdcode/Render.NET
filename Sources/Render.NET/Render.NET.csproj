@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Maintenance release: simplifies the JBIG2 fixture generator for clean code analysis. Core rendering and PNG output are unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds stroke clipping and visible clipping bounds to the managed raster canvas, enabling patterned PDF strokes and bounded pattern-cell replay. Existing pixel and PNG APIs remain compatible.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
