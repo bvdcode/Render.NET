@@ -1,0 +1,96 @@
+%PDF-1.7
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 600 440] /Resources << /Font << /F 5 0 R /Cyr 6 0 R >> /Shading << /Linear 9 0 R /Radial 10 0 R >> /ExtGState << /Mask 11 0 R /Half 13 0 R >> /XObject << /Group 14 0 R >> >> /Contents 4 0 R /Annots [15 0 R] >>
+endobj
+4 0 obj
+<< /Length 575  >>
+stream
+0.96 0.97 0.98 rg 0 0 600 440 re f 0.08 0.12 0.18 rg 0 390 600 50 re f 1 1 1 rg BT /F 22 Tf 30 407 Td (Render.NET.Pdf) Tj ET 0.08 0.12 0.18 rg BT /Cyr 26 Tf 30 345 Td <041F04400438043204350442002C00200043006F00740074006F006E0021> Tj ET BT /F 12 Tf 30 315 Td (Cyrillic font fallback, gradients, soft masks and form appearances) Tj ET q 30 190 250 100 re W n 1 0 0 1 30 190 cm /Linear sh Q q 320 190 250 100 re W n 1 0 0 1 320 190 cm /Radial sh Q q 1 0 0 1 30 110 cm 0.1 0.3 0.8 rg 0 0 250 55 re f /Mask gs 1 0.5 0 rg 0 0 250 55 re f Q q 1 0 0 1 320 110 cm /Half gs /Group Do Q
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type0 /BaseFont /Arial /Encoding /Identity-H /DescendantFonts [7 0 R] /ToUnicode 8 0 R >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /CIDFontType2 /BaseFont /Arial /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /DW 600 /FontDescriptor 16 0 R >>
+endobj
+8 0 obj
+<< /Length 341  >>
+stream
+/CIDInit /ProcSet findresource begin 12 dict begin begincmap /CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def /CMapName /RenderUnicode def /CMapType 2 def 1 begincodespacerange <0000> <FFFF> endcodespacerange 1 beginbfrange <0000> <FFFF> <0000> endbfrange endcmap CMapName currentdict /CMap defineresource pop end end
+endstream
+endobj
+9 0 obj
+<< /ShadingType 2 /ColorSpace /DeviceRGB /Coords [0 0 250 0] /Extend [true true] /Function << /FunctionType 2 /Domain [0 1] /C0 [0.64 0.9 0.21] /C1 [0.22 0.74 0.97] /N 1 >> >>
+endobj
+10 0 obj
+<< /ShadingType 3 /ColorSpace /DeviceRGB /Coords [125 50 0 125 50 130] /Extend [true true] /Function << /FunctionType 2 /Domain [0 1] /C0 [1 0.8 0.3] /C1 [0.55 0.3 0.85] /N 1 >> >>
+endobj
+11 0 obj
+<< /SMask << /S /Luminosity /G 12 0 R >> >>
+endobj
+12 0 obj
+<< /Length 8 /Type /XObject /Subtype /Form /BBox [0 0 250 55] /Group << /S /Transparency /CS /DeviceGray /I true >> /Resources << /Shading << /Fade 17 0 R >> >> >>
+stream
+/Fade sh
+endstream
+endobj
+13 0 obj
+<< /ca 0.5 >>
+endobj
+14 0 obj
+<< /Length 56 /Type /XObject /Subtype /Form /BBox [0 0 250 55] /Group << /S /Transparency /I true >> >>
+stream
+1 0 0 rg 0 0 160 55 re f 0.5 0.9 0.1 rg 80 0 170 55 re f
+endstream
+endobj
+15 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Tx /Rect [30 30 570 85] /V (Filled form appearance) /AP << /N 18 0 R >> >>
+endobj
+16 0 obj
+<< /Type /FontDescriptor /FontName /Arial /Flags 32 /FontBBox [0 -200 1000 1000] /ItalicAngle 0 /Ascent 800 /Descent -200 /CapHeight 700 /StemV 80 >>
+endobj
+17 0 obj
+<< /ShadingType 2 /ColorSpace /DeviceGray /Coords [0 0 250 0] /Extend [true true] /Function << /FunctionType 2 /Domain [0 1] /C0 [0] /C1 [1] /N 1 >> >>
+endobj
+18 0 obj
+<< /Length 129 /Type /XObject /Subtype /Form /BBox [0 0 540 55] /Resources << /Font << /F 5 0 R >> >> >>
+stream
+1 g 0 0 540 55 re f 0.2 0.35 0.5 RG 1 w 0.5 0.5 539 54 re S 0.08 0.12 0.18 rg BT /F 18 Tf 16 19 Td (Filled form appearance) Tj ET
+endstream
+endobj
+xref
+0 19
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000384 00000 n 
+0000001011 00000 n 
+0000001081 00000 n 
+0000001211 00000 n 
+0000001389 00000 n 
+0000001782 00000 n 
+0000001973 00000 n 
+0000002170 00000 n 
+0000002230 00000 n 
+0000002436 00000 n 
+0000002466 00000 n 
+0000002660 00000 n 
+0000002789 00000 n 
+0000002955 00000 n 
+0000003123 00000 n 
+trailer
+<< /Size 19 /Root 1 0 R >>
+startxref
+3391
+%%EOF

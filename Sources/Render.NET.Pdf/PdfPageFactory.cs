@@ -37,8 +37,10 @@ namespace Render.NET.Pdf
             TransformationMatrix matrix = initialMatrix.Multiply(TransformationMatrix.GetScaleMatrix(units, units));
             var processor = new PdfStreamProcessor(pageNumber, ResourceStore, PdfScanner, PageContentParser, FilterProvider,
                 cropBox, userSpaceUnit, rotation, matrix, (RenderParsingOptions)ParsingOptions);
-            processor.CheckPageFeatures(dictionary);
+            processor.PushState();
             processor.Process(pageNumber, operations);
+            processor.PopState();
+            processor.ProcessAnnotations(dictionary);
             return new PdfPage(pageNumber, width, height, processor.Commands, processor.Unsupported, processor.SubstitutedFonts);
         }
     }

@@ -1,0 +1,171 @@
+using System;
+using System.Numerics;
+using System.Threading;
+using UglyToad.PdfPig.Graphics.Colors;
+using UglyToad.PdfPig.Tokens;
+
+namespace Render.NET.Pdf
+{
+    internal sealed partial class PdfStreamProcessor
+    {
+        public override void PaintShading(NameToken shadingName)
+        {
+            Shading shading = ResourceStore.GetShading(shadingName);
+            var state = GetCurrentState();
+            CheckState(state);
+            ShadingCommand? command = CreateShading(shading, Matrix(CurrentTransformationMatrix), state.AlphaConstantNonStroking, Blend(state.BlendMode));
+            if (command != null)
+            {
+                AddPaint(command, state);
+            }
+        }
+
+        private ShadingCommand? CreateShading(Shading shading, Matrix3x2 placement, double opacity, ColorBlendMode blend)
+        {
+            if (shading is not AxialShading && shading is not RadialShading)
+            {
+                Warn("Shading type " + shading.ShadingType);
+                return null;
+            }
+
+            double[] domain = shading is AxialShading axial ? axial.Domain : ((RadialShading)shading).Domain;
+            var colors = new Rgba32[2049];
+            for (int i = 0; i < colors.Length; i++)
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                double t = domain[0] + (((domain[1] - domain[0]) * i) / (colors.Length - 1));
+                colors[i] = Color(shading.ColorSpace.GetColor(shading.Eval(t)), opacity);
+            }
+
+            return new ShadingCommand(shading, colors, placement, blend);
+        }
+
+        private void AddFill(VectorPath path, FillRule rule, UglyToad.PdfPig.Graphics.CurrentGraphicsState state)
+        {
+            if (state.CurrentNonStrokingColor is ShadingPatternColor pattern)
+            {
+                if (pattern.ExtGState?.Data.Count > 0)
+                {
+                    Warn("Shading pattern graphics-state overrides");
+                }
+
+                ShadingCommand? shading = CreateShading(pattern.Shading, Matrix(pattern.Matrix.Multiply(_patternMatrix)),
+                    state.AlphaConstantNonStroking, Blend(state.BlendMode));
+                if (shading != null)
+                {
+                    AddPaint(new PatternFillCommand(path, rule, shading), state);
+                }
+            }
+            else
+            {
+                if (state.CurrentNonStrokingColor?.ColorSpace == ColorSpace.Pattern)
+                {
+                    Warn("Tiling pattern fills");
+                    return;
+                }
+
+                AddPaint(new FillCommand(path, Color(state.CurrentNonStrokingColor, state.AlphaConstantNonStroking), rule, Blend(state.BlendMode)), state);
+            }
+        }
+    }
+
+    internal sealed record PatternFillCommand(VectorPath Path, FillRule Rule, ShadingCommand Shading) : IPdfDrawCommand
+    {
+        public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
+        {
+            canvas.Save();
+            try
+            {
+                canvas.ClipPath(Path, device, Rule, token);
+                Shading.Draw(canvas, device, token);
+            }
+            finally
+            {
+                canvas.Restore();
+            }
+        }
+    }
+
+    internal sealed record ShadingCommand(Shading Shading, Rgba32[] Colors, Matrix3x2 Placement, ColorBlendMode Blend) : IPdfDrawCommand
+    {
+        public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken cancellationToken)
+        {
+            canvas.Save();
+            try
+            {
+                if (Shading.BBox is { } box)
+                {
+                    canvas.ClipPath(new VectorPath().Rectangle((float)box.Left, (float)box.Bottom, (float)box.Width, (float)box.Height),
+                        Placement * device, cancellationToken: cancellationToken);
+                }
+
+                canvas.DrawShader(Sample, Placement * device, Blend, cancellationToken);
+            }
+            finally
+            {
+                canvas.Restore();
+            }
+        }
+
+        private Rgba32 Sample(Vector2 point)
+        {
+            double t;
+            bool[] extend;
+            if (Shading is AxialShading axial)
+            {
+                double dx = axial.Coords[2] - axial.Coords[0];
+                double dy = axial.Coords[3] - axial.Coords[1];
+                double length = (dx * dx) + (dy * dy);
+                if (length == 0)
+                {
+                    return default;
+                }
+
+                t = (((point.X - axial.Coords[0]) * dx) + ((point.Y - axial.Coords[1]) * dy)) / length;
+                extend = axial.Extend;
+            }
+            else
+            {
+                var radial = (RadialShading)Shading;
+                t = RadialParameter(radial, point);
+                extend = radial.Extend;
+            }
+
+            return Valid(t, extend) ? Colors[(int)Math.Round(Math.Clamp(t, 0, 1) * (Colors.Length - 1))] : default;
+        }
+
+        private static bool Valid(double t, bool[] extend)
+            => double.IsFinite(t) && (t >= 0 || extend[0]) && (t <= 1 || extend[1]);
+
+        private static double RadialParameter(RadialShading shading, Vector2 point)
+        {
+            double[] c = shading.Coords;
+            double dx = c[3] - c[0];
+            double dy = c[4] - c[1];
+            double dr = c[5] - c[2];
+            double x = point.X - c[0];
+            double y = point.Y - c[1];
+            double a = ((dx * dx) + (dy * dy)) - (dr * dr);
+            double b = -2 * ((x * dx) + (y * dy) + (c[2] * dr));
+            double constant = ((x * x) + (y * y)) - (c[2] * c[2]);
+            if (Math.Abs(a) < 1e-12)
+            {
+                double t = -constant / b;
+                return c[2] + (t * dr) >= 0 ? t : double.NaN;
+            }
+
+            double discriminant = (b * b) - (4 * a * constant);
+            if (discriminant < 0)
+            {
+                return double.NaN;
+            }
+
+            double first = (-b - Math.Sqrt(discriminant)) / (2 * a);
+            double second = (-b + Math.Sqrt(discriminant)) / (2 * a);
+            double larger = Math.Max(first, second);
+            double smaller = Math.Min(first, second);
+            return Valid(larger, shading.Extend) && c[2] + (larger * dr) >= 0 ? larger
+                : Valid(smaller, shading.Extend) && c[2] + (smaller * dr) >= 0 ? smaller : double.NaN;
+        }
+    }
+}

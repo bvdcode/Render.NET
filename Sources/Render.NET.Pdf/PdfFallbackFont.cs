@@ -11,13 +11,16 @@ namespace Render.NET.Pdf
     internal sealed class PdfFallbackFont
     {
         private readonly TrueTypeFont _font;
+        private readonly string _name;
+        private TrueTypeFont? _unicodeFont;
 
         internal PdfFallbackFont(string name, Func<string, ReadOnlyMemory<byte>>? resolver)
         {
+            _name = name;
             ReadOnlyMemory<byte> bytes = resolver?.Invoke(name) ?? default;
             if (bytes.IsEmpty)
             {
-                bytes = ReadBundled(name);
+                bytes = ReadBundled(name, "Aileron");
             }
 
             _font = TrueTypeFontParser.Parse(new TrueTypeDataBytes(bytes.ToArray()));
@@ -32,24 +35,35 @@ namespace Render.NET.Pdf
             }
 
             int character = char.ConvertToUtf32(unicode, 0);
-            if (!_font.TryGetPath(character, out var glyph))
+            TrueTypeFont font = _font;
+            if (!HasCharacter(font, character))
+            {
+                _unicodeFont ??= TrueTypeFontParser.Parse(new TrueTypeDataBytes(ReadBundled(_name, "Canada1500")));
+                font = _unicodeFont;
+            }
+
+            if (!HasCharacter(font, character) || !font.TryGetPath(character, out var glyph))
             {
                 return false;
             }
 
-            double scale = 1d / _font.GetUnitsPerEm();
-            double horizontal = _font.TryGetAdvanceWidth(character, out double advance) && advance > 0 && pdfAdvance > 0
+            double scale = 1d / font.GetUnitsPerEm();
+            double horizontal = font.TryGetAdvanceWidth(character, out double advance) && advance > 0 && pdfAdvance > 0
                 ? pdfAdvance / advance : scale;
             paths = TransformationMatrix.GetScaleMatrix(horizontal, scale).Transform(glyph).ToArray();
             return true;
         }
 
-        private static byte[] ReadBundled(string name)
+        private static bool HasCharacter(TrueTypeFont font, int character)
+            => font.TableRegister.CMapTable != null
+                && font.TableRegister.CMapTable.TryGetGlyphIndex(character, out int index) && index != 0;
+
+        private static byte[] ReadBundled(string name, string family)
         {
             bool bold = name.Contains("Bold", StringComparison.OrdinalIgnoreCase);
             bool italic = name.Contains("Italic", StringComparison.OrdinalIgnoreCase) || name.Contains("Oblique", StringComparison.OrdinalIgnoreCase);
             string style = bold ? italic ? "BoldItalic" : "Bold" : italic ? "Italic" : "Regular";
-            using Stream input = typeof(PdfFallbackFont).Assembly.GetManifestResourceStream("Render.NET.Pdf.Fonts.Aileron-" + style + ".ttf")
+            using Stream input = typeof(PdfFallbackFont).Assembly.GetManifestResourceStream("Render.NET.Pdf.Fonts." + family + "-" + style + ".ttf")
                 ?? throw new InvalidOperationException("Bundled font resource is missing.");
             using var output = new MemoryStream();
             input.CopyTo(output);

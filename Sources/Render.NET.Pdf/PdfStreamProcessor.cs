@@ -27,6 +27,7 @@ namespace Render.NET.Pdf
         private FillRule? _pendingClip;
         private int _operations;
         private int _pathCommands;
+        private TransformationMatrix _patternMatrix;
 
         internal List<IPdfDrawCommand> Commands { get; } = new List<IPdfDrawCommand>();
         internal List<string> Unsupported { get; } = new List<string>();
@@ -49,19 +50,28 @@ namespace Render.NET.Pdf
 
         protected override void ProcessOperations(IReadOnlyList<IGraphicsStateOperation> operations)
         {
-            foreach (IGraphicsStateOperation operation in operations)
+            TransformationMatrix savedPatternMatrix = _patternMatrix;
+            _patternMatrix = CurrentTransformationMatrix;
+            try
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                if (++_operations > _limits.MaximumOperations)
+                foreach (IGraphicsStateOperation operation in operations)
                 {
-                    throw new InvalidDataException("PDF page exceeds MaximumOperations.");
-                }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    if (++_operations > _limits.MaximumOperations)
+                    {
+                        throw new InvalidDataException("PDF page exceeds MaximumOperations.");
+                    }
 
-                operation.Run(this);
-                if (_path.CommandCount > _limits.MaximumPathCommands)
-                {
-                    throw new InvalidDataException("PDF path exceeds MaximumPathCommands.");
+                    operation.Run(this);
+                    if (_path.CommandCount > _limits.MaximumPathCommands)
+                    {
+                        throw new InvalidDataException("PDF path exceeds MaximumPathCommands.");
+                    }
                 }
+            }
+            finally
+            {
+                _patternMatrix = savedPatternMatrix;
             }
         }
 
@@ -177,12 +187,18 @@ namespace Render.NET.Pdf
             ColorBlendMode blend = Blend(state.BlendMode);
             if (fill)
             {
-                Commands.Add(new FillCommand(path, Color(state.CurrentNonStrokingColor, state.AlphaConstantNonStroking), rule, blend));
+                AddFill(path, rule, state);
             }
 
             if (stroke)
             {
-                Commands.Add(new StrokeCommand(path, Color(state.CurrentStrokingColor, state.AlphaConstantStroking), Stroke(state), Matrix(state.CurrentTransformationMatrix), blend));
+                if (state.CurrentStrokingColor?.ColorSpace == ColorSpace.Pattern)
+                {
+                    Warn("Pattern strokes");
+                    return;
+                }
+
+                AddPaint(new StrokeCommand(path, Color(state.CurrentStrokingColor, state.AlphaConstantStroking), Stroke(state), Matrix(state.CurrentTransformationMatrix), blend), state);
             }
         }
 
@@ -218,7 +234,7 @@ namespace Render.NET.Pdf
             => new Matrix3x2((float)matrix.A, (float)matrix.B, (float)matrix.C, (float)matrix.D, (float)matrix.E, (float)matrix.F);
 
         private static FillRule Rule(FillingRule rule) => rule == FillingRule.EvenOdd ? FillRule.EvenOdd : FillRule.NonZero;
-        private static ColorBlendMode Blend(BlendMode mode) => (int)mode <= 11 ? (ColorBlendMode)mode : ColorBlendMode.Normal;
+        private static ColorBlendMode Blend(BlendMode mode) => (int)mode <= 15 ? (ColorBlendMode)mode : ColorBlendMode.Normal;
 
         internal static Rgba32 Color(IColor? color, double opacity = 1)
         {

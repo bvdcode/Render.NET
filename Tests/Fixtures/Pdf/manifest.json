@@ -2,6 +2,31 @@
   "origin": "Authored in this repository; no third-party document content.",
   "files": [
     {
+      "file": "Scans/globals.jbig2",
+      "bytes": 231,
+      "sha256": "6b9497fdc04fee1354aeafef84e50dcdb5a43ff52d8d31d952e0fa03b47877d7"
+    },
+    {
+      "file": "Scans/page.jbig2",
+      "bytes": 131,
+      "sha256": "4c8412bbc146d886aa665843e79dc79053385a7535dc8597152746661a71d29f"
+    },
+    {
+      "file": "Scans/regenerate.py",
+      "bytes": 1021,
+      "sha256": "58349fe1e223aa5a54fa69ee3624f594580c5d86db64fa84eb1c3c8afea64da6"
+    },
+    {
+      "file": "Scans/source.png",
+      "bytes": 479,
+      "sha256": "14ec898ce4dc3ceb8e455d07b3649a3e4abd9877f27fcbfd87f46b8f222cef43"
+    },
+    {
+      "file": "compatibility.pdf",
+      "bytes": 3837,
+      "sha256": "c60d7dff445811108ec0b09ebfcd7c380abea39b847bcbc03c836ecabf795124"
+    },
+    {
       "file": "encrypted.pdf",
       "bytes": 1777,
       "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
@@ -22,14 +47,24 @@
       "sha256": "551aaf680b849845aa5cf58b53192e82de1ad635eb2c0a3071f8ad0bbd165fba"
     },
     {
+      "file": "scan-codecs.pdf",
+      "bytes": 1704,
+      "sha256": "527a4d989b6ac71fd21257bdb1704f3387f43f6d4450d72d44be147706a9357d"
+    },
+    {
+      "file": "scan-globals.pdf",
+      "bytes": 1378,
+      "sha256": "92bf92ce3646cc6e80acddb7a6f379a87db72168f7ba4c19a61bb86051378e4d"
+    },
+    {
       "file": "text.pdf",
       "bytes": 34080,
       "sha256": "36697de945bca62617f186fac3b59a90de0840e0e8326045bc09764083a967b9"
     },
     {
       "file": "unsupported.pdf",
-      "bytes": 1618,
-      "sha256": "e5eb038cb8f4dbc77b419a0f863630eddb2760aaaaa219974dadb9d4af58206c"
+      "bytes": 1338,
+      "sha256": "0dc37cd594394ddc50cb576df94a58b202297fadac8e48e1df6a276885b7c823"
     }
   ]
 }

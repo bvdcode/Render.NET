@@ -12,71 +12,57 @@ endobj
 endobj
 3 0 obj
 <<
-/ColorSpace /DeviceRGB /Coords [ 0 0 200 200 ] /Extend [true true] /Function 7 0 R /ShadingType 2
->>
-endobj
-4 0 obj
-<<
-/Contents 9 0 R /MediaBox [ 0 0 200 200 ] /Parent 8 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ] /Shading <<
-/Sh0 3 0 R
->>
+/Contents 7 0 R /MediaBox [ 0 0 200 200 ] /Parent 6 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
 >> /Rotate 0 /Trans <<
 
 >> 
   /Type /Page
 >>
 endobj
-5 0 obj
+4 0 obj
 <<
-/PageMode /UseNone /Pages 8 0 R /Type /Catalog
+/PageMode /UseNone /Pages 6 0 R /Type /Catalog
 >>
 endobj
-6 0 obj
+5 0 obj
 <<
 /Author (anonymous) /CreationDate (D:20000101000000+00'00') /Creator (anonymous) /Keywords () /ModDate (D:20000101000000+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (unspecified) /Title (untitled) /Trapped /False
 >>
 endobj
+6 0 obj
+<<
+/Count 1 /Kids [ 3 0 R ] /Type /Pages
+>>
+endobj
 7 0 obj
 <<
-/C0 [ .639216 .901961 .207843 ] /C1 [ .219608 .741176 .972549 ] /Domain [ 0 1 ] /FunctionType 2 /N 1
->>
-endobj
-8 0 obj
-<<
-/Count 1 /Kids [ 4 0 R ] /Type /Pages
->>
-endobj
-9 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 69
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 99
 >>
 stream
-GapQh0E=F,0U\H3T\pNYT^QKk?tc>IP,;W#U1^23ihPEM_PJ?E@A$Ge_54pN!<+AR?N~>endstream
+GapQh0E=F,0U\H3T\pNYT^QKk?tc>IP,;W#U1^23ihPEM_PQ_iXJ#$ER?E`%Vr6Xq%+S4>%]2q9W$kXh9u5B3R7i)=!#l+TPl~>endstream
 endobj
 xref
-0 10
+0 8
 0000000000 65535 f 
 0000000061 00000 n 
 0000000092 00000 n 
 0000000199 00000 n 
-0000000318 00000 n 
-0000000537 00000 n 
-0000000605 00000 n 
-0000000866 00000 n 
-0000000988 00000 n 
-0000001047 00000 n 
+0000000392 00000 n 
+0000000460 00000 n 
+0000000721 00000 n 
+0000000780 00000 n 
 trailer
 <<
 /ID 
 [<1c178198fbdfa51b25995d89d4102043><1c178198fbdfa51b25995d89d4102043>]
 % ReportLab generated PDF document -- digest (opensource)
 
-/Info 6 0 R
-/Root 5 0 R
-/Size 10
+/Info 5 0 R
+/Root 4 0 R
+/Size 8
 >>
 startxref
-1205
+968
 %%EOF

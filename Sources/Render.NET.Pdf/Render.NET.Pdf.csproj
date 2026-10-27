@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Introduces managed PDF page rendering with vector paths, font outlines, raster images, clipping, transparency, configurable DPI and antialiasing. Includes a command-line example, offline regression fixtures, and explicit unsupported-feature reporting.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds managed JPEG 2000 and JBIG2 scan decoding with global symbol dictionaries, public-domain Cyrillic and Greek fallback fonts, axial/radial gradients and shading-pattern fills, transparency groups and graphics soft masks, and annotation/form appearance rendering. Includes offline compatibility and exact scan round-trip regression fixtures.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
@@ -35,6 +35,8 @@
         <None Update="Fonts/provenance.json" Pack="true" PackagePath="/fonts/" />
         <PackageReference Include="PdfPig" Version="0.1.16" />
         <PackageReference Include="StbImageSharp" Version="2.30.16" />
+        <PackageReference Include="CoreJ2K" Version="2.4.1.108" />
+        <PackageReference Include="PdfPig.Filters.Jbig2.PdfboxJbig2" Version="0.1.16.2" />
         <ProjectReference Include="../Render.NET/Render.NET.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
         <None Include="../../LICENSE" Pack="true" PackagePath="/" />

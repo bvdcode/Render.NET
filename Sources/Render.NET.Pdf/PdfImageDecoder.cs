@@ -10,7 +10,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfImageDecoder
+    internal sealed partial class PdfImageDecoder
     {
         private readonly PdfReaderOptions _limits;
         private readonly ILookupFilterProvider _filters;
@@ -40,6 +40,19 @@ namespace Render.NET.Pdf
                 {
                     jpeg = true;
                     break;
+                }
+
+                if (filter is JpxDecodeFilter)
+                {
+                    PixelBuffer decoded = DecodeJpeg2000(image, bytes);
+                    ApplyMask(decoded, image.MaskImage);
+                    return decoded;
+                }
+
+                if (filter is Jbig2DecodeFilter)
+                {
+                    bytes = DecodeJbig2(image, bytes, i);
+                    continue;
                 }
 
                 if (!filter.IsSupported)

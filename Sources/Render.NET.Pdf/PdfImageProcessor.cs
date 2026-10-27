@@ -24,7 +24,7 @@ namespace Render.NET.Pdf
             {
                 PixelBuffer decoded = _images.Decode(image, Color(state.CurrentNonStrokingColor));
                 Matrix3x2 pixelsToUnit = new Matrix3x2(1f / decoded.Width, 0, 0, -1f / decoded.Height, 0, 1);
-                Commands.Add(new ImageCommand(decoded, pixelsToUnit * placement, (float)state.AlphaConstantNonStroking, Blend(state.BlendMode)));
+                AddPaint(new ImageCommand(decoded, pixelsToUnit * placement, (float)state.AlphaConstantNonStroking, Blend(state.BlendMode)), state);
             }
             catch (NotSupportedException error)
             {

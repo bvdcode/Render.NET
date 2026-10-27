@@ -28,5 +28,33 @@
       "sha256": "012cb94f7c3b66c701e4efeb7022622dfa2d82810cb88b99262206bb1080bcce",
       "bytes": 40620
     }
-  ]
+  ],
+  "unicodeFallback": {
+    "author": "Raymond Larabie",
+    "publicDomainDeclaration": "https://typodermicfonts.com/canada1500/",
+    "dedication": "CC0-1.0",
+    "source": "https://typodermicfonts.com/assets/downloads/canada1500.zip",
+    "files": [
+      {
+        "file": "Canada1500-Regular.ttf",
+        "sha256": "79c6d72486d83bc8cb584cdc4c9c0c7d31fb6306e288d61f044b55b9e0cda670",
+        "bytes": 311932
+      },
+      {
+        "file": "Canada1500-Bold.ttf",
+        "sha256": "920a7253614b8a8cdd870cae26b259c3d073ee5251d5dfb1bc185e5feccde489",
+        "bytes": 319136
+      },
+      {
+        "file": "Canada1500-Italic.ttf",
+        "sha256": "0eeb8cee71a7b8d3dc85f52596c56cd81a668fcd947d2f67d2cee4df9ba2afc6",
+        "bytes": 248304
+      },
+      {
+        "file": "Canada1500-BoldItalic.ttf",
+        "sha256": "b19b6d93a5376505cbc18daa69529d49e9d287b6737c1f1216901467e3788a78",
+        "bytes": 251888
+      }
+    ]
+  }
 }

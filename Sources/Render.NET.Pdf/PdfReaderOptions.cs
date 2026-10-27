@@ -8,7 +8,7 @@ namespace Render.NET.Pdf
         /// <summary>Gets the document password, if required.</summary>
         public string Password { get; init; } = string.Empty;
         /// <summary>Gets an optional TrueType fallback provider, called with a PDF font name when no embedded outline is available.
-        /// Return empty memory to use the bundled public-domain Aileron substitute.</summary>
+        /// Return empty memory to use the bundled public-domain substitutes, including Canada 1500 for Cyrillic and Greek.</summary>
         public Func<string, ReadOnlyMemory<byte>>? FontResolver { get; init; }
         /// <summary>Gets the maximum encoded input length; defaults to 128 MiB.</summary>
         public int MaximumInputBytes { get; init; } = 128 * 1024 * 1024;
