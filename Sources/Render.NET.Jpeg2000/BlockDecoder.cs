@@ -1,3 +1,4 @@
+using Render.NET.Entropy;
 using System;
 using System.IO;
 

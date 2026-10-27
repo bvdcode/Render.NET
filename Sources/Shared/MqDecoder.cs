@@ -1,8 +1,8 @@
 using System;
 
-namespace Render.NET.Jpeg2000
+namespace Render.NET.Entropy
 {
-    // Numerical probability states specified by ITU-T T.800 (11/2015), Table C.2.
+    // Numerical probability states specified by ITU-T T.800 Table C.2 and ITU-T T.88 Table E.1.
     internal sealed class MqDecoder
     {
         private static readonly (ushort Probability, byte NextMps, byte NextLps)[] ProbabilityStates =
@@ -89,10 +89,12 @@ namespace Render.NET.Jpeg2000
             }
         }
 
-        internal int Read(int context)
+        internal int Read(int context) => Read(_states, context);
+
+        internal int Read(byte[] states, int context)
         {
-            int state = _states[context] >> 1;
-            int mps = _states[context] & 1;
+            int state = states[context] >> 1;
+            int mps = states[context] & 1;
             uint probability = ProbabilityStates[state].Probability;
             _range -= probability;
             int result;
@@ -100,7 +102,7 @@ namespace Render.NET.Jpeg2000
             {
                 bool exchange = _range < probability;
                 result = exchange ? mps : 1 - mps;
-                _states[context] = Updated(state, mps, !exchange);
+                states[context] = Updated(state, mps, !exchange);
                 _range = probability;
             }
             else
@@ -113,7 +115,7 @@ namespace Render.NET.Jpeg2000
 
                 bool exchange = _range < probability;
                 result = exchange ? 1 - mps : mps;
-                _states[context] = Updated(state, mps, exchange);
+                states[context] = Updated(state, mps, exchange);
             }
 
             Renormalize();

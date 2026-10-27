@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
+using Render.NET.Jbig2;
+using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig.Filters;
-using UglyToad.PdfPig.Filters.Jbig2.PdfboxJbig2;
 using UglyToad.PdfPig.Parser.Parts;
 using UglyToad.PdfPig.Tokens;
 
@@ -12,42 +12,33 @@ namespace Render.NET.Pdf
     {
         private Memory<byte> DecodeJbig2(IPdfImage image, Memory<byte> bytes, int index)
         {
-            Jbig2Dimensions.Validate(bytes.Span, image.WidthInSamples, image.HeightInSamples, _limits.MaximumImagePixels);
-            DictionaryToken dictionary = image.ImageDictionary;
-            IToken? parameters = null;
-            if (dictionary.TryGet(NameToken.DecodeParms, out IToken entry))
+            ReadOnlyMemory<byte> globals = default;
+            if (image.ImageDictionary.TryGet(NameToken.DecodeParms, out IToken entry))
             {
                 if (DirectObjectFinder.TryGet<ArrayToken>(entry, _scanner, out var array) && index < array.Length)
                 {
-                    parameters = array.Data[index];
+                    entry = array.Data[index];
                 }
-                else
+
+                if (DirectObjectFinder.TryGet<DictionaryToken>(entry, _scanner, out var parameters) && parameters.TryGet(NameToken.Jbig2Globals, out IToken globalEntry) && DirectObjectFinder.TryGet<StreamToken>(globalEntry, _scanner, out var stream))
                 {
-                    parameters = entry;
+                    globals = stream.Decode(_filters, _scanner);
                 }
             }
 
-            var values = new Dictionary<NameToken, IToken>();
-            if (parameters != null && DirectObjectFinder.TryGet<DictionaryToken>(parameters, _scanner, out var resolved))
+            var document = Jbig2Decoder.Decode(bytes, globals, new Jbig2DecodeOptions { MaximumPixels = _limits.MaximumImagePixels, MaximumWorkingBytes = _limits.MaximumImageBytes, MaximumPages = 1, ExpectedWidth = image.WidthInSamples, ExpectedHeight = image.HeightInSamples }, _cancellationToken);
+            if (document.Pages.Count != 1)
             {
-                foreach (var pair in resolved.Data)
-                {
-                    values[NameToken.Create(pair.Key)] = pair.Value;
-                }
-
-                if (resolved.TryGet(NameToken.Jbig2Globals, out IToken globals)
-                    && DirectObjectFinder.TryGet<StreamToken>(globals, _scanner, out var stream))
-                {
-                    values[NameToken.Jbig2Globals] = stream;
-                }
+                throw new InvalidDataException("PDF JBIG2 image must contain one page.");
             }
 
-            var filterDictionary = new DictionaryToken(new Dictionary<NameToken, IToken>
+            byte[] samples = document.Pages[0].Data.ToArray();
+            for (int i = 0; i < samples.Length; i++)
             {
-                [NameToken.Filter] = NameToken.Jbig2Decode,
-                [NameToken.DecodeParms] = new DictionaryToken(values)
-            });
-            return new PdfboxJbig2DecodeFilter().Decode(bytes, filterDictionary, _filters, 0);
+                samples[i] ^= 255;
+            }
+
+            return samples;
         }
     }
 }

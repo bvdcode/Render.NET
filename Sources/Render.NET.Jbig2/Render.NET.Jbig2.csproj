@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Render.NET.Jbig2</RootNamespace>
+    <Version>0.3.9</Version>
+    <Authors>Vadim Belov</Authors>
+    <Company>bvdcode</Company>
+    <Product>Render.NET.Jbig2</Product>
+    <Title>Render.NET.Jbig2</Title>
+    <Summary>Managed JBIG2 decoding into packed monochrome pages.</Summary>
+    <Copyright>Copyright © Vadim Belov 2026</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>Managed JBIG2 decoding for standalone files and embedded PDF image streams, including shared symbol dictionaries, without native or third-party runtime dependencies.</Description>
+    <PackageId>Render.NET.Jbig2</PackageId>
+    <PackageTags>jbig2;pdf;scan;monochrome;decoder;managed;dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>packageIcon.png</PackageIcon>
+    <PackageReleaseNotes>Introduces original managed JBIG2 decoding: arithmetic and MMR bitmaps, Huffman and arithmetic symbol dictionaries, global symbols, text, refinement and halftones. No native or third-party runtime dependencies. Includes 98 authored pixel fixtures independently checked with PDFBox, resource limits and malformed-input regressions.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tables/*.csv" />
+    <Compile Include="../Shared/MqDecoder.cs" Link="MqDecoder.cs" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Pdf.Sample", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Jpeg2000", "Render.NET.Jpeg2000\Render.NET.Jpeg2000.csproj", "{ED11BD46-D7C9-4F3A-8CD4-4C3591CEB814}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Render.NET.Jbig2", "Render.NET.Jbig2\Render.NET.Jbig2.csproj", "{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{ED11BD46-D7C9-4F3A-8CD4-4C3591CEB814}.Release|x64.Build.0 = Release|Any CPU
 		{ED11BD46-D7C9-4F3A-8CD4-4C3591CEB814}.Release|x86.ActiveCfg = Release|Any CPU
 		{ED11BD46-D7C9-4F3A-8CD4-4C3591CEB814}.Release|x86.Build.0 = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|x64.Build.0 = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{D61CE42A-D6BC-4633-A5C6-5C5BDF8AF0F7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

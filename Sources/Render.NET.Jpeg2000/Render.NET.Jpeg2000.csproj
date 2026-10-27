@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Consolidates each MQ arithmetic-coder probability and its transitions into one state table, removing duplicate sequences and keeping all 47 states unchanged. The independent pixel regression suite verifies identical decoding.</PackageReleaseNotes>
+    <PackageReleaseNotes>Shares the original internal MQ probability decoder with the new JBIG2 package without introducing a runtime dependency. Existing JPEG 2000 pixel regression checks remain unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -29,6 +29,7 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Shared/MqDecoder.cs" Link="MqDecoder.cs" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />
     <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />

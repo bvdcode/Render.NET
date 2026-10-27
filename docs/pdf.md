@@ -1,10 +1,12 @@
 # Render.NET.Pdf
 
-`Render.NET.Pdf` interprets PDF pages with PdfPig and draws them with Render.NET's managed CPU rasterizer. JPEG 2000 uses our dependency-free `Render.NET.Jpeg2000` decoder, JPEG decoding uses StbImageSharp, and JBIG2 uses PdfPig.Filters.Jbig2.PdfboxJbig2. These codec dependencies contain managed .NET assemblies. No PDFium, Poppler, Skia, System.Drawing, native graphics libraries, external processes, system font installation, or display server is needed by the package. Poppler is used only for development comparisons.
+`Render.NET.Pdf` interprets PDF pages with PdfPig and draws them with Render.NET's managed CPU rasterizer. JPEG 2000 uses our dependency-free `Render.NET.Jpeg2000` decoder, JPEG decoding uses StbImageSharp, and JBIG2 uses our dependency-free `Render.NET.Jbig2` decoder. All runtime dependencies contain managed .NET assemblies. No PDFium, Poppler, Skia, System.Drawing, native graphics libraries, external processes, system font installation, or display server is needed by the package. Poppler is used only for development comparisons.
+
+Version 0.3.9 replaces the external JBIG2 codec with our original managed decoder, including PDF globals and chained filters. See the [JBIG2 API and limits](jbig2.md).
 
 Version 0.3.7 restores JP2 and raw JPEG 2000 decoding through our original managed decoder. See the [implemented subset and limits](jpeg2000.md). CoreJ2K was removed in 0.3.6 because its source retains JJ2000 conditions beyond its advertised BSD license; version 0.3.5 still has that dependency.
 
-The remaining PDF runtime dependencies are PdfPig 0.1.16 (Apache-2.0 with additional component notices), StbImageSharp 2.30.16 (Unlicense OR MIT), and PdfPig.Filters.Jbig2.PdfboxJbig2 0.1.16.2 (Apache-2.0). Their license texts and upstream notices are included in the PDF package as `ThirdPartyNotices.txt`. The bundled fonts are public domain/CC0; their provenance is recorded separately below. Preserve the applicable licenses and notices when redistributing dependency binaries. Render.NET's own code remains MIT.
+The remaining PDF runtime dependencies are PdfPig 0.1.16 (Apache-2.0 with additional component notices) and StbImageSharp 2.30.16 (Unlicense OR MIT). Their license texts and upstream notices are included in the PDF package as `ThirdPartyNotices.txt`. The bundled fonts are public domain/CC0; their provenance is recorded separately below. Preserve the applicable licenses and notices when redistributing dependency binaries. Render.NET's own code remains MIT.
 
 This is an initial PDF renderer, not a complete implementation of every PDF imaging feature. It reports known unsupported constructs rather than silently claiming a faithful preview.
 

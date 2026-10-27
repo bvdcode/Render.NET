@@ -9,7 +9,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/bvdcode/Render.NET/badge)](https://www.codefactor.io/repository/github/bvdcode/Render.NET)
 [![License](https://img.shields.io/github/license/bvdcode/Render.NET)](https://github.com/bvdcode/Render.NET/blob/main/LICENSE)
 
-Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the CPU using .NET 10, without a native graphics dependency, GPU, display server, or external renderer process. Core, Mesh and Jpeg2000 use the base class library; Pdf uses our JPEG 2000 decoder, the managed PdfPig reader, StbImageSharp JPEG decoder and PdfPig JBIG2 codec.
+Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the CPU using .NET 10, without a native graphics dependency, GPU, display server, or external renderer process. Core, Mesh, Jpeg2000 and Jbig2 use the base class library; Pdf uses our JPEG 2000 and JBIG2 decoders, the managed PdfPig reader and StbImageSharp JPEG decoder.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/stl-preview.png" alt="A torus knot loaded from STL and rendered with Render.NET.Mesh" width="512" />
@@ -23,6 +23,7 @@ Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the C
 | [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF geometry, explicit assembly selection, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
 | [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Includes Cyrillic fallback fonts, gradients, transparency groups, soft masks, annotation/form appearances and JBIG2 scans. JPEG 2000 scans use our own managed decoder. |
 | [Render.NET.Jpeg2000](https://www.nuget.org/packages/Render.NET.Jpeg2000/) | Original managed JPEG 2000 Part 1 decoder: JP2/J2K, lossless/lossy wavelets, 1–16-bit component samples, tiles and subsampling. No runtime dependencies. [Supported subset and API](docs/jpeg2000.md). |
+| [Render.NET.Jbig2](https://www.nuget.org/packages/Render.NET.Jbig2/) | Original managed monochrome JBIG2 decoder: MMR, arithmetic/Huffman symbols, globals, refinement, and halftones. No runtime dependencies. [Supported subset and API](docs/jbig2.md). |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
