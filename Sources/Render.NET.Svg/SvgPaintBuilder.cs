@@ -112,7 +112,7 @@ namespace Render.NET.Svg
                     throw new InvalidDataException("Cyclic/deep SVG gradient reference.");
                 }
 
-                foreach (XAttribute a in current.Attributes())
+                foreach (XAttribute a in current.Attributes().Where(a => a.Name.NamespaceName.Length == 0))
                 {
                     attrs.TryAdd(a.Name.LocalName, a.Value);
                 }

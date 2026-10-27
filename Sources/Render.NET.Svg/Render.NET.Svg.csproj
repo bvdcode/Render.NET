@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Svg</RootNamespace>
-        <Version>0.3.17</Version>
+        <Version>0.3.18</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Svg</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds managed TrueType text with CC0 Latin/Cyrillic fallback, tspan/textPath layout, alpha/luminance masks, filter graphs, color effects, blur/shadow, morphology, convolution, displacement, turbulence, lighting and embedded PNG/Adam7 decoding. Includes caller-controlled font/image resolvers and effect memory limits.</PackageReleaseNotes>
+        <PackageReleaseNotes>Fixes strict rendering of Inkscape/Sodipodi SVGs by ignoring foreign editor metadata and legacy namedview elements. Namespaced attributes, namespace declarations, metadata IDs and metadata styles no longer affect drawing. Preserves SVG feature validation and input budgets.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

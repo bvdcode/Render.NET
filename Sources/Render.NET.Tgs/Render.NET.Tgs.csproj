@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Tgs</RootNamespace>
-        <Version>0.3.17</Version>
+        <Version>0.3.18</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Tgs</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds multiple/soft/inverse masks, alpha/luma track mattes, all 18 blend modes, repeat/merge/round/offset/pucker/zigzag modifiers, rounded stars and automatic orientation. Adds Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur and Transform effects. Original regression fixtures and no third-party runtime dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Compatibility release with the SVG editor-metadata fix. Existing format support is unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

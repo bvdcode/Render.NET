@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET</RootNamespace>
-        <Version>0.3.17</Version>
+        <Version>0.3.18</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds original managed vector boolean operations, contour offsetting and corner rounding for SVG/Lottie geometry. Adds Add and HardMix blend modes. No native dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Compatibility release with the SVG editor-metadata fix. Existing format support is unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

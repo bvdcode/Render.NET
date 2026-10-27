@@ -39,7 +39,7 @@ namespace Render.NET.Svg
 
         private void Presentation(XElement e, Dictionary<string, string> parent, Dictionary<string, string> result)
         {
-            foreach (XAttribute a in e.Attributes())
+            foreach (XAttribute a in e.Attributes().Where(a => a.Name.NamespaceName.Length == 0))
             {
                 if (Supported.Contains(a.Name.LocalName))
                 {

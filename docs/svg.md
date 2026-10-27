@@ -37,6 +37,8 @@ Patterns, markers, SVG animation, nested SVG viewports, complex CSS selectors, C
 
 The bundled Aileron and Canada1500 faces are the same CC0 assets used by Render.NET.Pdf; file hashes and original public-domain declarations are shipped in `fonts/provenance.json`. No font engine or SVG/filter implementation was imported. A caller can supply font bytes with `new SvgReaderOptions { FontResolver = request => fonts.GetValueOrDefault(request.Family) }`, or supply decoded images with `ImageResolver`. Resolver results are copied during reading; no implicit file/network access occurs.
 
+Editor metadata does not require partial rendering. Elements in foreign namespaces (including Inkscape, Sodipodi and RDF), SVG `title`/`desc`/`metadata` and legacy `namedview` subtrees are ignored without indexing their IDs or applying their styles. Namespaced editor attributes and namespace declarations do not become SVG presentation properties; `xml:space` and `xlink:href` retain their defined behavior. Input element/depth limits still include ignored subtrees. Unsupported SVG drawing elements and properties continue to reject strict rendering. The original `Tests/Fixtures/Svg/editor-metadata.svg` and namespace regression tests cover this behavior; six existing Cotton/Cotton Mobile icon and splash SVGs, including two Inkscape documents, were also rendered in strict mode.
+
 Clip paths union independently filled child geometry, preserving each child's clip rule. Nested clipping inside clipPath is diagnosed rather than claimed as supported. Gradient bounds are numerical, using 0.01 user-unit flattening. Curves are flattened again at device resolution during rasterization; antialiasing uses premultiplied-alpha downsampling.
 
 ## Limits and cancellation

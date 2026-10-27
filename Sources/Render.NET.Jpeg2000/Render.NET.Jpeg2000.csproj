@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Render.NET.Jpeg2000</RootNamespace>
-    <Version>0.3.17</Version>
+    <Version>0.3.18</Version>
     <Authors>Vadim Belov</Authors>
     <Company>bvdcode</Company>
     <Product>Render.NET.Jpeg2000</Product>
@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Compatibility release with the expanded managed SVG/Lottie renderer and vector geometry APIs. This package retains its existing format support.</PackageReleaseNotes>
+    <PackageReleaseNotes>Compatibility release with the SVG editor-metadata fix. Existing format support is unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

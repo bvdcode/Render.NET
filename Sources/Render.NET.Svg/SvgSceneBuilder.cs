@@ -24,7 +24,7 @@ namespace Render.NET.Svg
         private int _commands;
         private static readonly HashSet<string> Definitions = new("defs symbol clipPath mask filter pattern marker linearGradient radialGradient style title desc metadata".Split(' '));
         private static readonly HashSet<string> Containers = new("g svg a symbol clipPath mask".Split(' '));
-        private static readonly HashSet<string> Metadata = new("title desc metadata".Split(' '));
+        private static readonly HashSet<string> Metadata = new("title desc metadata namedview".Split(' '));
         private static readonly HashSet<string> Inherited = new("fill stroke color fill-opacity stroke-opacity fill-rule clip-rule stroke-width stroke-linecap stroke-linejoin stroke-miterlimit stroke-dasharray stroke-dashoffset visibility font-family font-size font-weight font-style font-variant font-kerning font-feature-settings text-anchor letter-spacing word-spacing dominant-baseline alignment-baseline baseline-shift text-decoration direction unicode-bidi writing-mode white-space color-interpolation color-interpolation-filters".Split(' '));
         private static readonly HashSet<string> Supported = new(Inherited.Concat("opacity display clip-path stop-color stop-opacity mask mask-type filter color-interpolation color-interpolation-filters mix-blend-mode isolation flood-color flood-opacity lighting-color".Split(' ')));
         internal SvgSceneBuilder(XElement root, SvgReaderOptions limits, CancellationToken token)
@@ -36,7 +36,7 @@ namespace Render.NET.Svg
 
         internal SvgDocument Build()
         {
-            if (_root.Name.LocalName != "svg" || (_root.Name.NamespaceName.Length != 0 && _root.Name.NamespaceName != "http://www.w3.org/2000/svg"))
+            if (_root.Name.LocalName != "svg" || !IsSvgElement(_root))
             {
                 throw new InvalidDataException("Expected an SVG root element.");
             }
@@ -68,22 +68,33 @@ namespace Render.NET.Svg
             return new SvgDocument(node, intrinsicWidth, intrinsicHeight, viewBox, (string?)_root.Attribute("preserveAspectRatio") ?? "xMidYMid meet", _warnings.Order().ToArray());
         }
 
-        private void Index(XElement element, int depth)
+        private static bool IsSvgElement(XElement element) => element.Name.NamespaceName.Length == 0 || element.Name.NamespaceName == "http://www.w3.org/2000/svg";
+
+        private void Index(XElement element, int depth, bool svgContent = true)
         {
             Count(depth);
-            if (element.Attribute("id") is { } id && !_ids.TryAdd(id.Value, element))
+            svgContent = svgContent && IsSvgElement(element) && !Metadata.Contains(element.Name.LocalName);
+            if (svgContent)
             {
-                throw new InvalidDataException("Duplicate SVG id: " + id.Value);
+                if (element.Attribute("id") is { } id && !_ids.TryAdd(id.Value, element))
+                {
+                    throw new InvalidDataException("Duplicate SVG id: " + id.Value);
+                }
+
+                if (element.Name.LocalName == "style")
+                {
+                    StyleSheet(element.Value);
+                }
             }
 
-            if (element.Name.LocalName == "style")
+            foreach (XElement child in element.Elements().ToArray())
             {
-                StyleSheet(element.Value);
+                Index(child, depth + 1, svgContent);
             }
 
-            foreach (XElement child in element.Elements())
+            if (!svgContent)
             {
-                Index(child, depth + 1);
+                element.Remove();
             }
         }
 
@@ -116,9 +127,8 @@ namespace Render.NET.Svg
 
         private SvgNode BuildNode(XElement e, Dictionary<string, string> inherited, int depth, bool definition)
         {
-            if (e.Name.NamespaceName.Length != 0 && e.Name.NamespaceName != "http://www.w3.org/2000/svg")
+            if (!IsSvgElement(e))
             {
-                Warn("Foreign SVG namespace");
                 return Empty;
             }
 
