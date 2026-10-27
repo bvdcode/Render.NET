@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>First managed SVG renderer: paths including elliptical arcs, shapes, styles and simple CSS, linear/radial gradients, local use/symbol references, clip-path unions, atomic opacity and configurable PNG output. Includes original fixtures, reference comparisons and explicit diagnostics. Depends only on Render.NET.</PackageReleaseNotes>
+        <PackageReleaseNotes>Simplifies SVG scene dispatch and CSS selector handling to resolve CodeFactor complexity findings. Raster output and supported formats are unchanged; all 510 tests pass.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

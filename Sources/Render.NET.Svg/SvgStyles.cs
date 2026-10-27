@@ -84,18 +84,13 @@ namespace Render.NET.Svg
 
         private void StyleSheet(string text)
         {
-            while (text.Contains("/*", StringComparison.Ordinal))
+            string? stripped = StripComments(text);
+            if (stripped == null)
             {
-                int start = text.IndexOf("/*", StringComparison.Ordinal), end = text.IndexOf("*/", start + 2, StringComparison.Ordinal);
-                if (end < 0)
-                {
-                    Warn("Invalid SVG stylesheet comment");
-                    return;
-                }
-
-                text = text.Remove(start, (end + 2) - start);
+                return;
             }
 
+            text = stripped;
             int pos = 0;
             while (pos < text.Length)
             {
@@ -113,7 +108,7 @@ namespace Render.NET.Svg
                 foreach (string raw in text[pos..start].Split(','))
                 {
                     string selector = raw.Trim();
-                    if (selector.Length == 0 || selector.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not '.' and not '#' and not '-' and not '_' and not '*'))
+                    if (!ValidSelector(selector))
                     {
                         Warn("SVG CSS selector: " + selector);
                         continue;
@@ -127,6 +122,24 @@ namespace Render.NET.Svg
             }
         }
 
+        private string? StripComments(string text)
+        {
+            while (text.Contains("/*", StringComparison.Ordinal))
+            {
+                int start = text.IndexOf("/*", StringComparison.Ordinal), end = text.IndexOf("*/", start + 2, StringComparison.Ordinal);
+                if (end < 0)
+                {
+                    Warn("Invalid SVG stylesheet comment");
+                    return null;
+                }
+
+                text = text.Remove(start, (end + 2) - start);
+            }
+
+            return text;
+        }
+
+        private static bool ValidSelector(string selector) => selector.Length != 0 && selector.All(c => char.IsAsciiLetterOrDigit(c) || ".#-_*".Contains(c));
         private static bool Matches(XElement e, string selector)
         {
             int position = 0;
@@ -140,13 +153,7 @@ namespace Render.NET.Svg
                 }
 
                 string name = selector[start..position];
-                bool match = prefix switch
-                {
-                    '.' => ((string?)e.Attribute("class") ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
-                    '#' => (string?)e.Attribute("id") == name,
-                    _ => name == "*" || e.Name.LocalName == name
-                };
-                if (!match)
+                if (!SelectorPartMatches(e, prefix, name))
                 {
                     return false;
                 }
@@ -155,6 +162,12 @@ namespace Render.NET.Svg
             return true;
         }
 
+        private static bool SelectorPartMatches(XElement e, char prefix, string name) => prefix switch
+        {
+            '.' => ((string?)e.Attribute("class") ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
+            '#' => (string?)e.Attribute("id") == name,
+            _ => name == "*" || e.Name.LocalName == name
+        };
         private StrokeStyle Pen(Dictionary<string, string> style)
         {
             float[] dash = Value(style, "stroke-dasharray", "none") is string d && d != "none" ? SvgNumbers.List(d) : Array.Empty<float>();

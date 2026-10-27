@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>First managed selected-frame TGS/Lottie renderer: bounded gzip/JSON, scalar/vector/spatial keyframes, easing, matching-topology morphs, layers/parents/precompositions, fills/strokes/gradients and trim paths. Includes original animated fixtures and lottie-web comparison results. Depends only on our SVG/core packages.</PackageReleaseNotes>
+        <PackageReleaseNotes>Simplifies Lottie feature classification to resolve CodeFactor complexity findings. Selected-frame rendering and supported formats are unchanged; all 510 tests pass.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

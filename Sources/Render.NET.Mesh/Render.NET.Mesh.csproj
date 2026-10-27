@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Compatibility release alongside the new managed SVG and selected-frame TGS/Lottie packages. No changes to mesh or image-codec behavior.</PackageReleaseNotes>
+        <PackageReleaseNotes>Compatibility release with SVG and TGS code-quality improvements. Rendering behavior is unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

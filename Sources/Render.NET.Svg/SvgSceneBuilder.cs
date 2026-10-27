@@ -22,6 +22,9 @@ namespace Render.NET.Svg
         private float _height;
         private int _elements;
         private int _commands;
+        private static readonly HashSet<string> Definitions = new("defs symbol clipPath linearGradient radialGradient style title desc metadata".Split(' '));
+        private static readonly HashSet<string> Containers = new("g svg a symbol clipPath".Split(' '));
+        private static readonly HashSet<string> Metadata = new("title desc metadata".Split(' '));
         private static readonly HashSet<string> Inherited = new("fill stroke color fill-opacity stroke-opacity fill-rule clip-rule stroke-width stroke-linecap stroke-linejoin stroke-miterlimit stroke-dasharray stroke-dashoffset visibility".Split(' '));
         private static readonly HashSet<string> Supported = new(Inherited.Concat("opacity display clip-path stop-color stop-opacity".Split(' ')));
         internal SvgSceneBuilder(XElement root, SvgReaderOptions limits, CancellationToken token)
@@ -131,7 +134,7 @@ namespace Render.NET.Svg
                 Warn("Nested SVG viewport");
             }
 
-            if (!definition && name is "defs" or "symbol" or "clipPath" or "linearGradient" or "radialGradient" or "style" or "title" or "desc" or "metadata")
+            if (!definition && Definitions.Contains(name))
             {
                 return Empty;
             }
@@ -143,14 +146,14 @@ namespace Render.NET.Svg
             {
                 Use(e, style, children, depth);
             }
-            else if (name is "g" or "svg" or "a" or "symbol" or "clipPath")
+            else if (Containers.Contains(name))
             {
                 foreach (XElement child in e.Elements())
                 {
                     children.Add(Node(child, style, depth + 1));
                 }
             }
-            else if (path == null && name is not "title" and not "desc" and not "metadata")
+            else if (path == null && !Metadata.Contains(name))
             {
                 Warn("SVG element: " + name);
             }

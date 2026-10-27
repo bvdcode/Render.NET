@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Compatibility release alongside the new managed SVG and selected-frame TGS/Lottie packages. No changes to mesh or image-codec behavior.</PackageReleaseNotes>
+    <PackageReleaseNotes>Compatibility release with SVG and TGS code-quality improvements. Rendering behavior is unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

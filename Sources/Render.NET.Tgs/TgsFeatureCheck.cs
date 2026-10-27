@@ -9,6 +9,7 @@ namespace Render.NET.Tgs
 {
     internal sealed class TgsFeatureCheck
     {
+        private static readonly HashSet<string> ShapeTypes = new("gr tr sh rc el sr fl st gf gs tm".Split(' '), StringComparer.Ordinal);
         private readonly TgsReaderOptions _limits;
         private readonly CancellationToken _token;
         private readonly HashSet<string> _warnings = new();
@@ -109,6 +110,11 @@ namespace Render.NET.Tgs
                 _warnings.Add("Lottie automatic orientation");
             }
 
+            PropertyFeatures(e);
+        }
+
+        private void PropertyFeatures(JsonElement e)
+        {
             if (TgsJson.Get(e, "ef").ValueKind == JsonValueKind.Array && TgsJson.Get(e, "ef").GetArrayLength() > 0)
             {
                 _warnings.Add("Lottie effects");
@@ -132,7 +138,7 @@ namespace Render.NET.Tgs
 
         private void ShapeFeatures(JsonElement e, string type)
         {
-            if (type is not "gr" and not "tr" and not "sh" and not "rc" and not "el" and not "sr" and not "fl" and not "st" and not "gf" and not "gs" and not "tm")
+            if (!ShapeTypes.Contains(type))
             {
                 _warnings.Add("Lottie shape/modifier: " + type);
             }
