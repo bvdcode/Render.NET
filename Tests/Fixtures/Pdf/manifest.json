@@ -32,6 +32,11 @@
       "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
     },
     {
+      "file": "generate_knockout.py",
+      "bytes": 1370,
+      "sha256": "406da2b0464d52930a65dd5d5581b50848d17bf47b541be6b05fa426945176bd"
+    },
+    {
       "file": "generate_patterns.py",
       "bytes": 4920,
       "sha256": "dd9d165d37603903af2f9a5af071e2502ad31672215fc084d7c7ded51b88b8ed"
@@ -55,6 +60,11 @@
       "file": "images.pdf",
       "bytes": 3503,
       "sha256": "63047323f24ae3e68a6329907a3ca2f9b1871244579eb9e5f1b527754a5b47f5"
+    },
+    {
+      "file": "knockout.pdf",
+      "bytes": 1465,
+      "sha256": "d9587ab6dd3501f17cafabe8c2d322e5f5b881deec6bfcf71a2d5c23ba5e2ec9"
     },
     {
       "file": "patterns.pdf",

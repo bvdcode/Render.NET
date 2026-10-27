@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Companion release for managed PDF function and mesh shadings. Existing APIs and runtime dependencies remain compatible.</PackageReleaseNotes>
+    <PackageReleaseNotes>Compatibility release with the updated managed raster canvas and PDF knockout renderer.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

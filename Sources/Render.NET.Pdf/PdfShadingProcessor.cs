@@ -23,8 +23,8 @@ namespace Render.NET.Pdf
 
         private IPdfDrawCommand? CreateShading(Shading shading, Matrix3x2 placement, double opacity, ColorBlendMode blend, bool paintBackground = false)
         {
-            Rgba32 background = paintBackground && shading.Background != null
-                ? Color(shading.ColorSpace.GetColor(shading.Background), opacity) : default;
+            Rgba32? background = paintBackground && shading.Background != null
+                ? Color(shading.ColorSpace.GetColor(shading.Background), opacity) : null;
             if (shading is FunctionBasedShading function)
             {
                 return new FunctionShadingCommand(function, placement, opacity, blend, background);
@@ -103,7 +103,7 @@ namespace Render.NET.Pdf
         }
     }
 
-    internal sealed record ShadingCommand(Shading Shading, Rgba32[] Colors, Matrix3x2 Placement, ColorBlendMode Blend, Rgba32 Background = default) : IPdfDrawCommand
+    internal sealed record ShadingCommand(Shading Shading, Rgba32[] Colors, Matrix3x2 Placement, ColorBlendMode Blend, Rgba32? Background = null) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken cancellationToken)
         {
@@ -116,7 +116,7 @@ namespace Render.NET.Pdf
                         Placement * device, cancellationToken: cancellationToken);
                 }
 
-                canvas.DrawShader(Sample, Placement * device, Blend, cancellationToken);
+                canvas.DrawShader(Sample, Contains, Placement * device, Blend, cancellationToken);
             }
             finally
             {
@@ -125,8 +125,13 @@ namespace Render.NET.Pdf
         }
 
         private Rgba32 Sample(Vector2 point)
+            => TryParameter(point, out double t) ? Colors[(int)Math.Round(Math.Clamp(t, 0, 1) * (Colors.Length - 1))] : Background ?? default;
+
+        private bool Contains(Vector2 point) => Background.HasValue || TryParameter(point, out _);
+
+        private bool TryParameter(Vector2 point, out double t)
         {
-            double t;
+            t = double.NaN;
             bool[] extend;
             if (Shading is AxialShading axial)
             {
@@ -135,7 +140,7 @@ namespace Render.NET.Pdf
                 double length = (dx * dx) + (dy * dy);
                 if (length == 0)
                 {
-                    return Background;
+                    return false;
                 }
 
                 t = (((point.X - axial.Coords[0]) * dx) + ((point.Y - axial.Coords[1]) * dy)) / length;
@@ -148,7 +153,7 @@ namespace Render.NET.Pdf
                 extend = radial.Extend;
             }
 
-            return Valid(t, extend) ? Colors[(int)Math.Round(Math.Clamp(t, 0, 1) * (Colors.Length - 1))] : Background;
+            return Valid(t, extend);
         }
 
         private static bool Valid(double t, bool[] extend)

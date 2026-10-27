@@ -7,7 +7,7 @@ using UglyToad.PdfPig.Graphics.Colors;
 
 namespace Render.NET.Pdf
 {
-    internal sealed record FunctionShadingCommand(FunctionBasedShading Shading, Matrix3x2 Placement, double Opacity, ColorBlendMode Blend, Rgba32 Background) : IPdfDrawCommand
+    internal sealed record FunctionShadingCommand(FunctionBasedShading Shading, Matrix3x2 Placement, double Opacity, ColorBlendMode Blend, Rgba32? Background) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
         {
@@ -22,7 +22,9 @@ namespace Render.NET.Pdf
             {
                 ShadingBounds.Clip(canvas, Shading, Placement * device, token);
                 var functionMatrix = PdfStreamProcessor.Matrix(Shading.Matrix) * Placement * device;
-                canvas.DrawShader(Sample, functionMatrix, Blend, token);
+                canvas.DrawShader(Sample,
+                    point => Background.HasValue || (point.X >= d[0] && point.X <= d[1] && point.Y >= d[2] && point.Y <= d[3]),
+                    functionMatrix, Blend, token);
             }
             finally
             {
@@ -35,7 +37,7 @@ namespace Render.NET.Pdf
             double[] domain = Shading.Domain;
             if (point.X < domain[0] || point.X > domain[1] || point.Y < domain[2] || point.Y > domain[3])
             {
-                return Background;
+                return Background ?? default;
             }
 
             lock (Shading)
@@ -48,7 +50,7 @@ namespace Render.NET.Pdf
         }
     }
 
-    internal sealed record MeshShadingCommand(PdfShadingMesh Mesh, Matrix3x2 Placement, double Opacity, ColorBlendMode Blend, Rgba32 Background) : IPdfDrawCommand
+    internal sealed record MeshShadingCommand(PdfShadingMesh Mesh, Matrix3x2 Placement, double Opacity, ColorBlendMode Blend, Rgba32? Background) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
         {
@@ -70,7 +72,8 @@ namespace Render.NET.Pdf
             try
             {
                 ShadingBounds.Clip(canvas, Mesh.Shading, Placement * device, token);
-                canvas.DrawShader(point => Sample(index, point), Placement * device, Blend, token);
+                canvas.DrawShader(point => Sample(index, point), point => Background.HasValue || index.Find(point, out _) != null,
+                    Placement * device, Blend, token);
             }
             finally
             {
@@ -83,7 +86,7 @@ namespace Render.NET.Pdf
             MeshTriangle? t = index.Find(point, out Vector3 weights);
             if (t == null)
             {
-                return Background;
+                return Background ?? default;
             }
 
             Span<double> values = stackalloc double[t.A.Components.Length];

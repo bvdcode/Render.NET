@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Companion release for managed PDF function and mesh shadings. Existing APIs and runtime dependencies remain compatible.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds reusable knockout compositing and explicit shader coverage to the managed raster canvas; used by PDF transparency groups. Existing drawing overloads remain compatible.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

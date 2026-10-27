@@ -7,12 +7,20 @@ namespace Render.NET
 {
     /// <summary>Scanline vector drawing, clipping, affine images, and alpha compositing into a pixel buffer.
     /// Coordinates address pixel edges. Render at a larger resolution and downsample for antialiasing.</summary>
-    public sealed class RasterCanvas
+    public sealed partial class RasterCanvas
     {
         private readonly PixelBuffer _target;
         private readonly Stack<byte[]?> _clips = new Stack<byte[]?>();
         private byte[]? _clip;
         private byte[]? _coverage;
+        private byte[]? _shape;
+        private PixelBuffer? _knockoutBackdrop;
+        private bool _knockout;
+        private RasterCanvas? _element;
+        private int _paintLeft = int.MaxValue;
+        private int _paintTop = int.MaxValue;
+        private int _paintRight;
+        private int _paintBottom;
         private int _layerDepth;
 
         /// <summary>Creates a canvas over an existing image.</summary>
@@ -28,6 +36,12 @@ namespace Render.NET
         /// <summary>Composites a group once, with its own opacity, blend mode, isolation, and optional alpha mask.
         /// Non-isolated layers retain the backdrop for internal blend modes. At most eight nested layers are supported.</summary>
         public void DrawLayer(Action<RasterCanvas> draw, float opacity = 1, ColorBlendMode blendMode = ColorBlendMode.Normal,
+            bool isolated = true, PixelBuffer? alphaMask = null, CancellationToken cancellationToken = default)
+            => DrawLayer(draw, false, opacity, blendMode, isolated, alphaMask, cancellationToken);
+
+        /// <summary>Composites a group with optional knockout semantics. Use DrawObject for each
+        /// elementary object in a knockout group; opacity remains independent of its shape.</summary>
+        public void DrawLayer(Action<RasterCanvas> draw, bool knockout, float opacity = 1, ColorBlendMode blendMode = ColorBlendMode.Normal,
             bool isolated = true, PixelBuffer? alphaMask = null, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(draw);
@@ -51,24 +65,34 @@ namespace Render.NET
             {
                 _clip = _clip,
                 _coverage = new byte[_target.Width * _target.Height],
+                _shape = new byte[_target.Width * _target.Height],
+                _knockoutBackdrop = !isolated ? _target : null,
+                _knockout = knockout,
                 _layerDepth = _layerDepth + 1
             };
             draw(layer);
+            CompositeLayer(layer, opacity, blendMode, isolated, alphaMask, cancellationToken);
+        }
+
+        private void CompositeLayer(RasterCanvas layer, float opacity, ColorBlendMode blendMode, bool isolated, PixelBuffer? alphaMask, CancellationToken cancellationToken)
+        {
+            PixelBuffer buffer = layer._target;
             for (int y = 0; y < buffer.Height; y++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 for (int x = 0; x < buffer.Width; x++)
                 {
                     int index = (y * buffer.Width) + x;
-                    byte coverage = layer._coverage[index];
-                    if (coverage == 0)
+                    byte coverage = layer._coverage![index];
+                    byte shape = layer._shape![index];
+                    if (shape == 0)
                     {
                         continue;
                     }
 
-                    Rgba32 color = isolated ? buffer[x, y] : RemoveBackdrop(buffer[x, y], _target[x, y], coverage);
+                    Rgba32 color = coverage == 0 ? default : isolated ? buffer[x, y] : RemoveBackdrop(buffer[x, y], _target[x, y], coverage);
                     float mask = alphaMask == null ? 1 : alphaMask[x, y].A / 255f;
-                    Paint(x, y, color with { A = (byte)MathF.Round(coverage * opacity * mask) }, blendMode);
+                    Paint(x, y, color with { A = (byte)MathF.Round(coverage * opacity * mask) }, blendMode, shape);
                 }
             }
         }
@@ -85,6 +109,12 @@ namespace Render.NET
         /// <summary>Paints the clipping region with colors sampled in the supplied coordinate system.</summary>
         public void DrawShader(Func<Vector2, Rgba32> sample, Matrix3x2 transform,
             ColorBlendMode blendMode = ColorBlendMode.Normal, CancellationToken cancellationToken = default)
+            => DrawShader(sample, null, transform, blendMode, cancellationToken);
+
+        /// <summary>Paints a shader with an explicit shape predicate, allowing a transparent
+        /// object to knock out earlier group members without marking points outside its shape.</summary>
+        public void DrawShader(Func<Vector2, Rgba32> sample, Func<Vector2, bool>? contains, Matrix3x2 transform,
+            ColorBlendMode blendMode = ColorBlendMode.Normal, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(sample);
             if (!Matrix3x2.Invert(transform, out Matrix3x2 inverse))
@@ -99,7 +129,12 @@ namespace Render.NET
                 {
                     if (_clip == null || _clip[(y * _target.Width) + x] != 0)
                     {
-                        Paint(x, y, sample(Vector2.Transform(new Vector2(x + 0.5f, y + 0.5f), inverse)), blendMode);
+                        Vector2 point = Vector2.Transform(new Vector2(x + 0.5f, y + 0.5f), inverse);
+                        Rgba32 color = sample(point);
+                        if (contains?.Invoke(point) ?? color.A != 0)
+                        {
+                            Paint(x, y, color, blendMode);
+                        }
                     }
                 }
             }
@@ -222,12 +257,12 @@ namespace Render.NET
                     int sourceX = Math.Clamp((int)MathF.Floor(point.X), 0, image.Width - 1);
                     int sourceY = Math.Clamp((int)MathF.Floor(point.Y), 0, image.Height - 1);
                     Rgba32 color = image[sourceX, sourceY];
-                    Paint(x, y, color with { A = (byte)MathF.Round(color.A * opacity) }, blendMode);
+                    Paint(x, y, color with { A = (byte)MathF.Round(color.A * opacity) }, blendMode, color.A);
                 }
             }, cancellationToken);
         }
 
-        private void Paint(int x, int y, Rgba32 color, ColorBlendMode mode)
+        private void Paint(int x, int y, Rgba32 color, ColorBlendMode mode, byte shape = 255)
         {
             int index = (y * _target.Width) + x;
             if (_clip != null && _clip[index] == 0)
@@ -239,6 +274,19 @@ namespace Render.NET
             if (_coverage != null)
             {
                 _coverage[index] = (byte)(color.A + (((_coverage[index] * (255 - color.A)) + 127) / 255));
+            }
+
+            if (_shape != null)
+            {
+                if (shape != 0)
+                {
+                    _paintLeft = Math.Min(_paintLeft, x);
+                    _paintTop = Math.Min(_paintTop, y);
+                    _paintRight = Math.Max(_paintRight, x + 1);
+                    _paintBottom = Math.Max(_paintBottom, y + 1);
+                }
+
+                _shape[index] = (byte)(shape + (((_shape[index] * (255 - shape)) + 127) / 255));
             }
         }
     }

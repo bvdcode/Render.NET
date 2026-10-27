@@ -128,15 +128,18 @@ namespace Render.NET.Pdf
                 base.ProcessFormXObject(formStream, name);
                 if (grouped)
                 {
-                    bool isolated = Resolve(group, NameToken.I, out BooleanToken isolation) && isolation.Data;
-                    if (Resolve(group, NameToken.K, out BooleanToken knockout) && knockout.Data)
+                    if (group.TryGet(NameToken.Cs, out IToken colorSpace)
+                        && colorSpace is not NameToken { Data: "DeviceRGB" or "DeviceGray" })
                     {
-                        Warn("Knockout transparency groups");
+                        Warn("Transparency group color-space override");
                     }
+
+                    bool isolated = Resolve(group, NameToken.I, out BooleanToken isolation) && isolation.Data;
+                    bool knocksOut = Resolve(group, NameToken.K, out BooleanToken knockout) && knockout.Data;
 
                     var commands = Commands.GetRange(start, Commands.Count - start).ToArray();
                     Commands.RemoveRange(start, Commands.Count - start);
-                    AddPaint(new GroupCommand(commands, (float)state.AlphaConstantNonStroking, Blend(state.BlendMode), isolated), state);
+                    AddPaint(new GroupCommand(commands, (float)state.AlphaConstantNonStroking, Blend(state.BlendMode), isolated, knocksOut), state);
                 }
             }
             finally
@@ -153,17 +156,24 @@ namespace Render.NET.Pdf
         }
     }
 
-    internal sealed record GroupCommand(IPdfDrawCommand[] Commands, float Opacity, ColorBlendMode Blend, bool Isolated) : IPdfDrawCommand
+    internal sealed record GroupCommand(IPdfDrawCommand[] Commands, float Opacity, ColorBlendMode Blend, bool Isolated, bool Knockout = false) : IPdfDrawCommand
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken cancellationToken)
-            => canvas.DrawLayer(layer => DrawCommands(Commands, layer, device, cancellationToken), Opacity, Blend, Isolated, cancellationToken: cancellationToken);
+            => canvas.DrawLayer(layer => DrawCommands(Commands, layer, device, cancellationToken), Knockout, Opacity, Blend, Isolated, cancellationToken: cancellationToken);
 
         internal static void DrawCommands(IPdfDrawCommand[] commands, RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
         {
             foreach (IPdfDrawCommand command in commands)
             {
                 token.ThrowIfCancellationRequested();
-                command.Draw(canvas, device, token);
+                if (command is StateCommand or ClipCommand)
+                {
+                    command.Draw(canvas, device, token);
+                }
+                else
+                {
+                    canvas.DrawObject(element => command.Draw(element, device, token), token);
+                }
             }
         }
     }

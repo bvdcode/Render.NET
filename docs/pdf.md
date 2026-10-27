@@ -65,10 +65,10 @@ Supersampling is 1–4, default 2. Rendering occurs at the enlarged resolution a
 | Patterns | Colored and uncolored (stencil) tiling patterns, RGB/gray/CMYK and other parser-supported base color spaces, positive/negative spacing, cell BBox clipping, pattern matrices, local fonts/images/forms and nested patterns. Fill, stroke, text and image-mask painting; shading-pattern strokes. |
 | Annotations and widgets | Normal appearance streams, selected appearance states, local fonts/resources, transformed bounding boxes mapped into annotation rectangles, hidden/invisible/NoView flags. Existing filled-field appearances are rendered. |
 | Clipping | Intersections, empty clips, text clipping at ET, graphics state restoration. |
-| Transparency | Constant fill/stroke alpha, all 16 PDF blend modes, isolated and non-isolated transparency groups with opacity applied once, alpha/luminosity graphics-state soft masks with backdrop and transfer functions. |
+| Transparency | Constant fill/stroke alpha, all 16 PDF blend modes, isolated and non-isolated transparency groups including knockout with opacity applied once, alpha/luminosity graphics-state soft masks with backdrop and transfer functions. |
 | Color conversion | PdfPig's conversion to RGB; no color-managed ICC/proofing or CMYK print fidelity guarantee. |
 
-Known unsupported rendering features include JPEG 2000 extensions listed in the codec documentation, shading-pattern graphics-state overrides, optional-content visibility, knockout transparency groups, overprint, annotation NoZoom/NoRotate flags, and JPEG Decode arrays/color-key masks. Form values without a normal appearance stream are reported, including inherited values; the renderer does not generate missing appearances. JBIG2 segments with unknown lengths and striped pages with unknown height are reported as unsupported. Missing outlines are reported; absent Type 3 CharProcs intentionally paint nothing, as required by the format. Documents can contain additional producer-specific features not recognized by this implementation; a clean feature list is not a general PDF conformance guarantee.
+Known unsupported rendering features include JPEG 2000 extensions listed in the codec documentation, shading-pattern graphics-state overrides, optional-content visibility, overprint, annotation NoZoom/NoRotate flags, and JPEG Decode arrays/color-key masks. Form values without a normal appearance stream are reported, including inherited values; the renderer does not generate missing appearances. JBIG2 segments with unknown lengths and striped pages with unknown height are reported as unsupported. Missing outlines are reported; absent Type 3 CharProcs intentionally paint nothing, as required by the format. Documents can contain additional producer-specific features not recognized by this implementation; a clean feature list is not a general PDF conformance guarantee.
 
 Hyperlink actions, scripts, attachments, and interactive forms are not executed. Existing annotation and form appearances are painted after page content. Actions and field calculations are not run. Ordinary links without appearance streams do not add a generated border or highlight.
 
@@ -82,6 +82,10 @@ PixelBuffer partial = PdfRenderer.Render(page,
 ```
 
 The default throws `NotSupportedException` when `UnsupportedFeatures` is nonempty. Partial rendering skips unsupported image codecs and shadings and approximates other reported operations; it does not make them supported. Malformed documents and exhausted limits still fail.
+
+## Knockout transparency
+
+Knockout form groups (`/K true`) composite each elementary object against the group's initial backdrop. Shape is tracked separately from opacity, including fully transparent paths, shader domains, nested groups and fractional image alpha. Object buffers are reused and only their painted bounds are reset/composited. The original `knockout.pdf` covers isolated, non-isolated Multiply and zero-opacity overlap. Group color-space overrides, CMYK overprint and text-knockout overrides remain outside this RGB preview implementation.
 
 ## Mesh and function shadings
 

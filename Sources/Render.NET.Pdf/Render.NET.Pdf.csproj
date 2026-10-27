@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds all remaining PDF shading types: function-based, free-form and lattice triangles, Coons and tensor-product patches. Supports arbitrary bit widths, continuation edges, nonlinear color functions, affine placement, clipping, transparency and shading-pattern backgrounds. Adds bounded mesh storage and adaptive tessellation with a spatial triangle index, 36 regression tests and an authored comparison PDF. No new runtime dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds isolated and non-isolated PDF knockout groups with independent object shape and opacity, backdrop-aware blending, transparent shader coverage, reused object buffers and eight regression cases. Includes an original knockout fixture. No new runtime dependencies.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
