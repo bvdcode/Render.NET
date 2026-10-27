@@ -62,29 +62,98 @@ namespace Render.NET.Tgs
             }
 
             var group = new XElement("g");
+            var matteLayers = new HashSet<int>();
+            for (int i = 0; i < layers.Length; i++)
+            {
+                if (TgsJson.Number(layers[i], "tt") is >= 1 and <= 4)
+                {
+                    matteLayers.Add(MatteIndex(layers, i));
+                }
+            }
+
             for (int i = layers.Length - 1; i >= 0; i--)
             {
                 JsonElement layer = layers[i];
                 Count(depth);
-                if (TgsJson.Flag(layer, "hd") || frame < TgsJson.Number(layer, "ip", _document.InPoint) || frame >= TgsJson.Number(layer, "op", _document.OutPoint))
+                if (matteLayers.Contains(i) || TgsJson.Flag(layer, "hd") || frame < TgsJson.Number(layer, "ip", _document.InPoint) || frame >= TgsJson.Number(layer, "op", _document.OutPoint))
                 {
                     continue;
                 }
 
-                Matrix3x2 matrix = LayerTransform(layer, frame, byIndex, new HashSet<double>());
-                XElement content = new XElement("g", LayerContent(layer, frame, depth + 1));
-                content.SetAttributeValue("transform", Matrix(matrix));
-                content.SetAttributeValue("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(TgsJson.Get(layer, "ks"), "o"), frame, 100) / 100, 0, 1)));
-                Mask(layer, content, frame);
-                group.Add(content);
+                group.Add(PaintLayer(layers, i, byIndex, frame, depth, new HashSet<int>()));
             }
 
             return group;
         }
 
+        private XElement PaintLayer(JsonElement[] layers, int index, Dictionary<double, JsonElement> byIndex, double frame, int depth, HashSet<int> active)
+        {
+            Count(depth);
+            if (!active.Add(index))
+            {
+                throw new InvalidDataException("Cyclic Lottie track matte.");
+            }
+
+            try
+            {
+                JsonElement layer = layers[index];
+                if (TgsJson.Flag(layer, "hd") || frame < TgsJson.Number(layer, "ip", _document.InPoint) || frame >= TgsJson.Number(layer, "op", _document.OutPoint))
+                {
+                    return new XElement("g");
+                }
+
+                Matrix3x2 matrix = LayerTransform(layer, frame, byIndex, new HashSet<double>());
+                XElement content = new XElement("g", LayerContent(layer, frame, depth + 1));
+                Mask(layer, content, frame);
+                content = new XElement("g", content);
+                Effects(layer, content, frame);
+                content.SetAttributeValue("transform", Matrix(matrix));
+                content.SetAttributeValue("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(TgsJson.Get(layer, "ks"), "o"), frame, 100) / 100, 0, 1)));
+                XElement result = new("g", content);
+                int matte = (int)TgsJson.Number(layer, "tt");
+                if (matte is >= 1 and <= 4)
+                {
+                    XElement drawing = PaintLayer(layers, MatteIndex(layers, index), byIndex, frame, depth + 1, active);
+                    string mask = Matte(drawing, matte);
+                    result.SetAttributeValue("mask", "url(#" + mask + ")");
+                }
+
+                string? blend = BlendMode((int)TgsJson.Number(layer, "bm"));
+                if (blend != null)
+                {
+                    result.SetAttributeValue("mix-blend-mode", blend);
+                }
+
+                return result;
+            }
+            finally
+            {
+                active.Remove(index);
+            }
+        }
+
+        private static int MatteIndex(JsonElement[] layers, int index)
+        {
+            JsonElement target = TgsJson.Get(layers[index], "tp");
+            if (target.ValueKind == JsonValueKind.Number)
+            {
+                double id = TgsJson.Number(target);
+                int found = Array.FindIndex(layers, layer => TgsJson.Number(layer, "ind", double.NaN) == id);
+                if (found >= 0)
+                {
+                    return found;
+                }
+
+                throw new InvalidDataException("Missing Lottie track matte layer.");
+            }
+
+            return index > 0 ? index - 1 : throw new InvalidDataException("Missing preceding Lottie track matte.");
+        }
+
         private Matrix3x2 LayerTransform(JsonElement layer, double frame, Dictionary<double, JsonElement> siblings, HashSet<double> active)
         {
-            Matrix3x2 matrix = Transform(TgsJson.Get(layer, "ks"), frame);
+            JsonElement values = TgsJson.Get(layer, "ks");
+            Matrix3x2 matrix = Transform(values, frame, TgsJson.Flag(layer, "ao") ? AutoOrientation(TgsJson.Get(values, "p"), frame) : 0);
             JsonElement parent = TgsJson.Get(layer, "parent");
             if (parent.ValueKind == JsonValueKind.Number)
             {
@@ -162,26 +231,24 @@ namespace Render.NET.Tgs
             }
         }
 
-        private void Mask(JsonElement layer, XElement content, double frame)
+        private static double AutoOrientation(JsonElement position, double frame)
         {
-            JsonElement[] masks = TgsJson.Array(TgsJson.Get(layer, "masksProperties"));
-            if (masks.Length != 1 || TgsJson.Text(masks[0], "mode", "a") != "a" || TgsJson.Flag(masks[0], "inv"))
+            IEnumerable<double> Times(JsonElement property) => TgsJson.Array(TgsJson.Get(property, "k")).Where(k => TgsJson.Get(k, "t").ValueKind == JsonValueKind.Number).Select(k => TgsJson.Number(k, "t"));
+            double[] times = (TgsJson.Flag(position, "s") ? Times(TgsJson.Get(position, "x")).Concat(Times(TgsJson.Get(position, "y"))) : Times(position)).ToArray();
+            if (times.Length > 0)
             {
-                return;
+                frame = Math.Clamp(frame, times.Min(), times.Max());
             }
 
-            VectorPath path = Bezier(TgsJson.Get(masks[0], "pt"), frame);
-            Geometry(path);
-            string id = Id();
-            _defs.Add(new XElement("clipPath", new XAttribute("id", id), PathElement(path)));
-            content.SetAttributeValue("clip-path", "url(#" + id + ")");
+            Vector2 delta = TgsValues.Point(position, frame + .01) - TgsValues.Point(position, frame - .01);
+            return delta.LengthSquared() < 1e-12 ? 0 : (Math.Atan2(delta.Y, delta.X) * 180) / Math.PI;
         }
 
-        private static Matrix3x2 Transform(JsonElement value, double frame)
+        private static Matrix3x2 Transform(JsonElement value, double frame, double orientation = 0)
         {
             Vector2 anchor = TgsValues.Point(TgsJson.Get(value, "a"), frame), position = TgsValues.Point(TgsJson.Get(value, "p"), frame);
             Vector2 scale = TgsValues.Point(TgsJson.Get(value, "s"), frame, 100, 100) / 100;
-            double rotation = TgsValues.Scalar(TgsJson.Get(value, "r"), frame);
+            double rotation = TgsValues.Scalar(TgsJson.Get(value, "r"), frame) + orientation;
             float skew = (float)((TgsValues.Scalar(TgsJson.Get(value, "sk"), frame) * Math.PI) / 180);
             float axis = (float)((TgsValues.Scalar(TgsJson.Get(value, "sa"), frame) * Math.PI) / 180);
             return Matrix3x2.CreateTranslation(-anchor) * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateRotation(-axis) * new Matrix3x2(1, 0, -MathF.Tan(skew), 1, 0, 0) * Matrix3x2.CreateRotation(axis) * Matrix3x2.CreateRotation((float)((rotation * Math.PI) / 180)) * Matrix3x2.CreateTranslation(position);

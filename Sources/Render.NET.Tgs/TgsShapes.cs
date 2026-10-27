@@ -15,6 +15,12 @@ namespace Render.NET.Tgs
         {
             Count(depth);
             JsonElement[] items = TgsJson.Array(array);
+            int repeater = Array.FindLastIndex(items, item => TgsJson.Text(item, "ty") == "rp" && !TgsJson.Flag(item, "hd"));
+            if (repeater >= 0)
+            {
+                return RepeatShapes(items, repeater, frame, depth);
+            }
+
             CheckTrimScopes(items);
             var group = new XElement("g");
             JsonElement transform = items.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
@@ -124,9 +130,9 @@ namespace Render.NET.Tgs
 
             for (int i = 0; i < items.Length; i++)
             {
-                if (TgsJson.Text(items[i], "ty") == "tm" && !TgsJson.Flag(items[i], "hd"))
+                if (!TgsJson.Flag(items[i], "hd"))
                 {
-                    Trim(paths, items[i], i, frame);
+                    Modify(paths, items[i], i, frame);
                 }
             }
 
@@ -314,39 +320,64 @@ namespace Render.NET.Tgs
                 throw new InvalidDataException("Invalid Lottie polystar point count.");
             }
 
-            if (points != Math.Floor(points))
-            {
-                _warnings.Add("Lottie fractional polystars");
-            }
-
-            if (TgsValues.Scalar(TgsJson.Get(item, "os"), frame) != 0 || TgsValues.Scalar(TgsJson.Get(item, "is"), frame) != 0)
-            {
-                _warnings.Add("Lottie rounded polystars");
-            }
-
             Vector2 p = TgsValues.Point(TgsJson.Get(item, "p"), frame);
             bool star = TgsJson.Number(item, "sy", 1) == 1;
-            int count = (int)points * (star ? 2 : 1);
-            double rotation = ((TgsValues.Scalar(TgsJson.Get(item, "r"), frame) - 90) * Math.PI) / 180;
-            double outer = TgsValues.Scalar(TgsJson.Get(item, "or"), frame), inner = TgsValues.Scalar(TgsJson.Get(item, "ir"), frame);
+            var vertices = StarVertices(item, frame, p, points, star);
             var path = new VectorPath();
-            for (int i = 0; i < count; i++)
+            path.MoveTo(vertices[0].Point.X, vertices[0].Point.Y);
+            for (int i = 0; i < vertices.Count; i++)
             {
-                _token.ThrowIfCancellationRequested();
-                double angle = rotation + (((TgsJson.Number(item, "d", 1) == 3 ? -1 : 1) * 2 * Math.PI * i) / count);
-                double radius = star && i % 2 == 1 ? inner : outer;
-                float x = p.X + (float)(Math.Cos(angle) * radius), y = p.Y + (float)(Math.Sin(angle) * radius);
-                if (i == 0)
+                var a = vertices[i];
+                var b = vertices[(i + 1) % vertices.Count];
+                if (a.Tangent == Vector2.Zero && b.Tangent == Vector2.Zero)
                 {
-                    path.MoveTo(x, y);
+                    path.LineTo(b.Point.X, b.Point.Y);
                 }
                 else
                 {
-                    path.LineTo(x, y);
+                    Vector2 c = a.Point + a.Tangent, d = b.Point - b.Tangent;
+                    path.CubicTo(c.X, c.Y, d.X, d.Y, b.Point.X, b.Point.Y);
                 }
             }
 
             return path.Close();
         }
+
+        private List<(Vector2 Point, Vector2 Tangent)> StarVertices(JsonElement item, double frame, Vector2 p, double points, bool star)
+        {
+            int count = (star ? (int)Math.Ceiling(points) : (int)Math.Floor(points)) * (star ? 2 : 1);
+            double rotation = ((TgsValues.Scalar(TgsJson.Get(item, "r"), frame) - 90) * Math.PI) / 180;
+            double outer = TgsValues.Scalar(TgsJson.Get(item, "or"), frame), inner = TgsValues.Scalar(TgsJson.Get(item, "ir"), frame);
+            var vertices = new List<(Vector2 Point, Vector2 Tangent)>();
+            double fraction = points - Math.Floor(points);
+            fraction = fraction == 0 ? 1 : fraction;
+            double direction = TgsJson.Number(item, "d", 1) == 3 ? -1 : 1;
+            double step = Math.PI / points;
+            double angle = rotation + (star ? direction * (1 - fraction) * step : 0);
+            for (int i = 0; i < count; i++)
+            {
+                _token.ThrowIfCancellationRequested();
+                double radius = star && i % 2 == 1 ? inner : outer;
+                if (star && i == 0)
+                {
+                    radius = inner + ((outer - inner) * fraction);
+                }
+
+                float x = p.X + (float)(Math.Cos(angle) * radius), y = p.Y + (float)(Math.Sin(angle) * radius);
+                double roundness = StarRoundness(item, frame, star, i);
+                double tangent = ((2 * Math.PI * radius) / (4 * points)) * roundness;
+                if (star && i == 0)
+                {
+                    tangent *= fraction;
+                }
+
+                vertices.Add((new Vector2(x, y), new Vector2((float)(-Math.Sin(angle) * tangent * direction), (float)(Math.Cos(angle) * tangent * direction))));
+                angle += direction * (star ? i == 0 ? step * fraction : step : (2 * Math.PI) / count);
+            }
+
+            return vertices;
+        }
+
+        private static double StarRoundness(JsonElement item, double frame, bool star, int index) => TgsValues.Scalar(TgsJson.Get(item, star && index % 2 == 1 ? "is" : "os"), frame) / 100;
     }
 }

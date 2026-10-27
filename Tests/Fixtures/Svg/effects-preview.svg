@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+  <defs>
+    <linearGradient id="lime" x2="1" y2="1"><stop stop-color="#deff81"/><stop offset="1" stop-color="#79c51c"/></linearGradient>
+    <linearGradient id="fade"><stop stop-color="white"/><stop offset="1" stop-color="black"/></linearGradient>
+    <mask id="luma" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask>
+    <mask id="soft" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="480" mask-type="alpha">
+      <circle cx="400" cy="340" r="68" fill="white" filter="url(#blur)"/>
+    </mask>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="5" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity=".65"/>
+    </filter>
+    <filter id="ring" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="6" result="wide"/>
+      <feComposite in="wide" in2="SourceAlpha" operator="out" result="outline"/>
+      <feFlood flood-color="#b6ef3d"/><feComposite in2="outline" operator="in"/>
+    </filter>
+    <path id="curve" d="M50 216 Q165 126 280 216"/>
+  </defs>
+  <rect width="800" height="480" rx="24" fill="#0e2130"/>
+  <text x="40" y="55" font-family="Aileron" font-size="29" font-weight="bold" fill="#dfff8b">Render.NET / SVG</text>
+  <text x="760" y="53" text-anchor="end" font-family="Canada1500" font-size="22" fill="#55ceba">Привет, мир!</text>
+  <g fill="url(#lime)" filter="url(#shadow)"><rect x="50" y="100" width="210" height="80" rx="22"/></g>
+  <text font-family="Aileron" font-size="23" fill="#deff8c"><textPath href="#curve" startOffset="11%">Text along a curve</textPath></text>
+  <g transform="translate(300 100)">
+    <rect width="210" height="110" rx="20" fill="#52cbb6"/>
+    <g opacity=".65"><circle cx="80" cy="55" r="40" fill="#deff8c"/><circle cx="130" cy="55" r="40" fill="#deff8c"/></g>
+  </g>
+  <circle cx="650" cy="155" r="48" fill="#52cbb6" filter="url(#ring)"/>
+  <g mask="url(#luma)"><rect x="50" y="280" width="210" height="120" rx="20" fill="url(#lime)"/></g>
+  <g mask="url(#soft)"><rect x="300" y="280" width="210" height="120" rx="20" fill="#52cbb6"/></g>
+  <g filter="hue-rotate(65deg) saturate(70%)"><circle cx="650" cy="340" r="60" fill="#b5ee36"/></g>
+  <g font-family="Aileron" font-size="16" fill="#8caab5" text-anchor="middle">
+    <text x="155" y="445">LUMINANCE MASK</text><text x="405" y="445">ALPHA + GAUSSIAN</text><text x="650" y="445">CSS COLOR FILTERS</text>
+  </g>
+</svg>

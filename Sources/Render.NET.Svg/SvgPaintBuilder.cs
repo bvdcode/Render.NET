@@ -93,12 +93,10 @@ namespace Render.NET.Svg
                 }
             }
 
-            if (Value(attrs, "color-interpolation", "sRGB") != "sRGB")
+            return new SvgGradient(radial, box, SvgNumbers.Transform(Value(attrs, "gradientTransform", "")), Value(attrs, "spreadMethod", "pad"), start, end, radius, focalRadius, stops)
             {
-                Warn("SVG linearRGB gradient interpolation");
-            }
-
-            return new SvgGradient(radial, box, SvgNumbers.Transform(Value(attrs, "gradientTransform", "")), Value(attrs, "spreadMethod", "pad"), start, end, radius, focalRadius, stops);
+                Linear = Value(attrs, "color-interpolation", "sRGB") == "linearRGB"
+            };
         }
 
         private XElement? GradientAttributes(XElement element, Dictionary<string, string> attrs)
@@ -137,7 +135,11 @@ namespace Render.NET.Svg
             if (stopsElement != null)
             {
                 var inherited = new Dictionary<string, string>();
-                foreach (XElement ancestor in stopsElement.AncestorsAndSelf().Reverse()) { inherited = Style(ancestor, inherited); }
+                foreach (XElement ancestor in stopsElement.AncestorsAndSelf().Reverse())
+                {
+                    inherited = Style(ancestor, inherited);
+                }
+
                 foreach (XElement stop in stopsElement.Elements().Where(x => x.Name.LocalName == "stop"))
                 {
                     Dictionary<string, string> style = Style(stop, inherited);

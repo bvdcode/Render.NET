@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Render.NET.Svg
@@ -37,6 +38,12 @@ namespace Render.NET.Svg
         public int MaximumPathCommands { get; init; } = 1_000_000;
         /// <summary>Gets the maximum XML/reference nesting depth, up to 64.</summary>
         public int MaximumDepth { get; init; } = 64;
+        /// <summary>Gets the decoded pixel budget per embedded or resolved image.</summary>
+        public int MaximumImagePixels { get; init; } = 16_777_216;
+        /// <summary>Gets an optional caller-controlled font resolver. Return TrueType/OpenType glyf font bytes, or empty to use the bundled CC0 fonts.</summary>
+        public Func<SvgFontRequest, ReadOnlyMemory<byte>>? FontResolver { get; init; }
+        /// <summary>Gets an optional caller-controlled image resolver. No network or file access is performed implicitly.</summary>
+        public Func<string, PixelBuffer?>? ImageResolver { get; init; }
     }
 
     /// <summary>Raster output settings for an SVG viewport.</summary>
@@ -54,5 +61,10 @@ namespace Render.NET.Svg
         public bool AllowPartialRendering { get; init; }
         /// <summary>Gets the output sample budget, including supersampling.</summary>
         public int MaximumSamples { get; init; } = 16_777_216;
+        /// <summary>Gets the live temporary buffer budget for nested masks and filters, default 256 MiB.</summary>
+        public long MaximumEffectBytes { get; init; } = 256L * 1024 * 1024;
     }
+
+    /// <summary>A requested CSS font face.</summary>
+    public sealed record SvgFontRequest(string Family, int Weight = 400, bool Italic = false);
 }

@@ -4,13 +4,13 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Svg</RootNamespace>
-        <Version>0.3.15</Version>
+        <Version>0.3.17</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Svg</Product>
         <Title>Render.NET.Svg</Title>
-        <Description>Managed SVG vector rendering to RGBA and PNG using the Render.NET raster canvas. Paths, shapes, styles, affine transforms, gradients, clipping and local references without native graphics dependencies.</Description>
-        <Summary>Managed SVG vector rendering to RGBA and PNG using the Render.NET raster canvas. Paths, shapes, styles, affine transforms, gradients, clipping and local references without native graphics dependencies.</Summary>
+        <Description>Managed SVG rendering to PNG with TrueType text, Cyrillic fallback, masks, filters, embedded PNG images, paths, styles, gradients and clipping. No native graphics or third-party runtime dependencies.</Description>
+        <Summary>Managed SVG rendering to PNG with TrueType text, Cyrillic fallback, masks, filters, embedded PNG images, paths, styles, gradients and clipping. No native graphics or third-party runtime dependencies.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageId>Render.NET.Svg</PackageId>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Simplifies SVG scene dispatch and CSS selector handling to resolve CodeFactor complexity findings. Raster output and supported formats are unchanged; all 510 tests pass.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds managed TrueType text with CC0 Latin/Cyrillic fallback, tspan/textPath layout, alpha/luminance masks, filter graphs, color effects, blur/shadow, morphology, convolution, displacement, turbulence, lighting and embedded PNG/Adam7 decoding. Includes caller-controlled font/image resolvers and effect memory limits.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
@@ -31,6 +31,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="../Render.NET.Pdf/Fonts/*.ttf" LogicalName="Render.NET.Svg.Fonts.%(Filename)%(Extension)" />
+        <None Include="../Render.NET.Pdf/Fonts/provenance.json" Pack="true" PackagePath="/fonts/" />
         <ProjectReference Include="../Render.NET/Render.NET.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
         <None Include="../../LICENSE" Pack="true" PackagePath="/" />

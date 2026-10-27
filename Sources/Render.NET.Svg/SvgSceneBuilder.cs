@@ -22,11 +22,11 @@ namespace Render.NET.Svg
         private float _height;
         private int _elements;
         private int _commands;
-        private static readonly HashSet<string> Definitions = new("defs symbol clipPath linearGradient radialGradient style title desc metadata".Split(' '));
-        private static readonly HashSet<string> Containers = new("g svg a symbol clipPath".Split(' '));
+        private static readonly HashSet<string> Definitions = new("defs symbol clipPath mask filter pattern marker linearGradient radialGradient style title desc metadata".Split(' '));
+        private static readonly HashSet<string> Containers = new("g svg a symbol clipPath mask".Split(' '));
         private static readonly HashSet<string> Metadata = new("title desc metadata".Split(' '));
-        private static readonly HashSet<string> Inherited = new("fill stroke color fill-opacity stroke-opacity fill-rule clip-rule stroke-width stroke-linecap stroke-linejoin stroke-miterlimit stroke-dasharray stroke-dashoffset visibility".Split(' '));
-        private static readonly HashSet<string> Supported = new(Inherited.Concat("opacity display clip-path stop-color stop-opacity".Split(' ')));
+        private static readonly HashSet<string> Inherited = new("fill stroke color fill-opacity stroke-opacity fill-rule clip-rule stroke-width stroke-linecap stroke-linejoin stroke-miterlimit stroke-dasharray stroke-dashoffset visibility font-family font-size font-weight font-style font-variant font-kerning font-feature-settings text-anchor letter-spacing word-spacing dominant-baseline alignment-baseline baseline-shift text-decoration direction unicode-bidi writing-mode white-space color-interpolation color-interpolation-filters".Split(' '));
+        private static readonly HashSet<string> Supported = new(Inherited.Concat("opacity display clip-path stop-color stop-opacity mask mask-type filter color-interpolation color-interpolation-filters mix-blend-mode isolation flood-color flood-opacity lighting-color".Split(' ')));
         internal SvgSceneBuilder(XElement root, SvgReaderOptions limits, CancellationToken token)
         {
             _root = root;
@@ -142,9 +142,34 @@ namespace Render.NET.Svg
             Matrix3x2 transform = SvgNumbers.Transform((string?)e.Attribute("transform"));
             var children = new List<SvgNode>();
             VectorPath? path = Shape(e);
+            PixelBuffer? image = name == "image" ? Image(Href(e)) : null;
+            Populate(e, name, style, path, children, depth);
+            if (path != null)
+            {
+                path = ValidatePath(path, style);
+            }
+
+            SvgClip? clip = Clip(Value(style, "clip-path", "none"), depth);
+            return new SvgNode(path, Paint(Value(style, "fill", "black"), style), Paint(Value(style, "stroke", "none"), style), Pen(style), Rule(Value(style, "fill-rule", "nonzero")), Rule(Value(style, "clip-rule", "nonzero")), transform, Opacity(style, "opacity"), Opacity(style, "fill-opacity"), Opacity(style, "stroke-opacity"), clip, children.ToArray())
+            {
+                Mask = Mask(Value(style, "mask", "none"), depth),
+                Filter = Filter(Value(style, "filter", "none"), style, depth),
+                BlendMode = Blend(Value(style, "mix-blend-mode", "normal")),
+                Image = image,
+                ImageTransform = image == null ? Matrix3x2.Identity : ImagePlacement(e, image),
+                ImageViewport = image == null ? null : new VectorPath().Rectangle(Length(e, "x", 0, _width), Length(e, "y", 0, _height), Length(e, "width", image.Width, _width), Length(e, "height", image.Height, _height))
+            };
+        }
+
+        private void Populate(XElement e, string name, Dictionary<string, string> style, VectorPath? path, List<SvgNode> children, int depth)
+        {
             if (name == "use")
             {
                 Use(e, style, children, depth);
+            }
+            else if (name == "text")
+            {
+                children.AddRange(TextNodes(e, style, depth));
             }
             else if (Containers.Contains(name))
             {
@@ -153,18 +178,10 @@ namespace Render.NET.Svg
                     children.Add(Node(child, style, depth + 1));
                 }
             }
-            else if (path == null && !Metadata.Contains(name))
+            else if (path == null && name != "image" && !Metadata.Contains(name))
             {
                 Warn("SVG element: " + name);
             }
-
-            if (path != null)
-            {
-                path = ValidatePath(path, style);
-            }
-
-            SvgClip? clip = Clip(Value(style, "clip-path", "none"), depth);
-            return new SvgNode(path, Paint(Value(style, "fill", "black"), style), Paint(Value(style, "stroke", "none"), style), Pen(style), Rule(Value(style, "fill-rule", "nonzero")), Rule(Value(style, "clip-rule", "nonzero")), transform, Opacity(style, "opacity"), Opacity(style, "fill-opacity"), Opacity(style, "stroke-opacity"), clip, children.ToArray());
         }
 
         private VectorPath? ValidatePath(VectorPath path, Dictionary<string, string> style)

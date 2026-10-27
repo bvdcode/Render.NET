@@ -23,13 +23,13 @@ namespace Render.NET.Svg
             var image = new PixelBuffer(width * factor, height * factor);
             image.Clear(options.Background);
             Matrix3x2 matrix = Viewport(document.ViewBox, width, height, document.AspectRatio) * Matrix3x2.CreateScale(factor);
-            document.Root.Draw(new RasterCanvas(image), matrix, cancellationToken);
+            document.Root.Draw(new RasterCanvas(image), matrix, new SvgRenderContext(options, cancellationToken));
             return factor == 1 ? image : image.Downsample(factor, cancellationToken);
         }
 
         private static (int Width, int Height) Dimensions(SvgDocument doc, SvgRenderOptions options)
         {
-            if (options.Width <= 0 || options.Height <= 0 || options.Supersampling < 1 || options.Supersampling > 4 || options.MaximumSamples <= 0)
+            if (options.Width <= 0 || options.Height <= 0 || options.Supersampling < 1 || options.Supersampling > 4 || options.MaximumSamples <= 0 || options.MaximumEffectBytes <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(options));
             }

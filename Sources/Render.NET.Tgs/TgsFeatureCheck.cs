@@ -9,7 +9,7 @@ namespace Render.NET.Tgs
 {
     internal sealed class TgsFeatureCheck
     {
-        private static readonly HashSet<string> ShapeTypes = new("gr tr sh rc el sr fl st gf gs tm".Split(' '), StringComparer.Ordinal);
+        private static readonly HashSet<string> ShapeTypes = new("gr tr sh rc el sr fl st gf gs tm rp mm rd op pb zz no".Split(' '), StringComparer.Ordinal);
         private readonly TgsReaderOptions _limits;
         private readonly CancellationToken _token;
         private readonly HashSet<string> _warnings = new();
@@ -26,7 +26,7 @@ namespace Render.NET.Tgs
             return _warnings.Order().ToArray();
         }
 
-        private void Visit(JsonElement e)
+        private void Visit(JsonElement e, bool layer = false)
         {
             _token.ThrowIfCancellationRequested();
             if (++_items > _limits.MaximumItems)
@@ -37,10 +37,10 @@ namespace Render.NET.Tgs
             switch (e.ValueKind)
             {
                 case JsonValueKind.Object:
-                    Features(e);
+                    Features(e, layer);
                     foreach (JsonProperty property in e.EnumerateObject())
                     {
-                        Visit(property.Value);
+                        Visit(property.Value, property.Name == "layers");
                     }
 
                     break;
@@ -48,7 +48,7 @@ namespace Render.NET.Tgs
                     ValidateKeys(e);
                     foreach (JsonElement child in e.EnumerateArray())
                     {
-                        Visit(child);
+                        Visit(child, layer);
                     }
 
                     break;
@@ -78,16 +78,16 @@ namespace Render.NET.Tgs
             }
         }
 
-        private void Features(JsonElement e)
+        private void Features(JsonElement e, bool layer)
         {
             JsonElement type = TgsJson.Get(e, "ty");
             if (type.ValueKind == JsonValueKind.String)
             {
                 ShapeFeatures(e, type.GetString()!);
             }
-            else if (type.ValueKind == JsonValueKind.Number && TgsJson.Number(type) is not 0 and not 1 and not 3 and not 4)
+            else if (layer)
             {
-                _warnings.Add("Lottie layer type " + type.GetRawText());
+                LayerType(type);
             }
 
             if (TgsJson.Flag(e, "ddd"))
@@ -95,29 +95,32 @@ namespace Render.NET.Tgs
                 _warnings.Add("Lottie 3D layers");
             }
 
-            if (TgsJson.Number(e, "bm") != 0)
+            if (TgsJson.Number(e, "bm") is < 0 or > 17)
             {
                 _warnings.Add("Lottie blend modes");
             }
 
-            if (TgsJson.Number(e, "tt") != 0)
+            if (TgsJson.Number(e, "tt") is < 0 or > 4)
             {
                 _warnings.Add("Lottie track mattes");
             }
 
-            if (TgsJson.Flag(e, "ao"))
-            {
-                _warnings.Add("Lottie automatic orientation");
-            }
-
-            PropertyFeatures(e);
+            PropertyFeatures(e, layer);
         }
 
-        private void PropertyFeatures(JsonElement e)
+        private void LayerType(JsonElement type)
         {
-            if (TgsJson.Get(e, "ef").ValueKind == JsonValueKind.Array && TgsJson.Get(e, "ef").GetArrayLength() > 0)
+            if (type.ValueKind == JsonValueKind.Number && TgsJson.Number(type) is not 0 and not 1 and not 3 and not 4)
             {
-                _warnings.Add("Lottie effects");
+                _warnings.Add("Lottie layer type " + type.GetRawText());
+            }
+        }
+
+        private void PropertyFeatures(JsonElement e, bool layer)
+        {
+            if (layer)
+            {
+                CheckEffects(TgsJson.Get(e, "ef"));
             }
 
             if (TgsJson.Get(e, "x").ValueKind == JsonValueKind.String)
@@ -136,42 +139,61 @@ namespace Render.NET.Tgs
             }
         }
 
+        private void CheckEffects(JsonElement array)
+        {
+            foreach (JsonElement effect in TgsJson.Array(array))
+            {
+                if (TgsJson.Number(effect, "en", 1) == 0)
+                {
+                    continue;
+                }
+
+                int type = (int)TgsJson.Number(effect, "ty", -1);
+                if (type == 5)
+                {
+                    CheckEffects(TgsJson.Get(effect, "ef"));
+                }
+                else if (!new[]
+                {
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    29,
+                    35
+                }.Contains(type))
+                {
+                    _warnings.Add("Lottie effect type " + type);
+                }
+            }
+        }
+
         private void ShapeFeatures(JsonElement e, string type)
         {
             if (!ShapeTypes.Contains(type))
             {
                 _warnings.Add("Lottie shape/modifier: " + type);
             }
-
-            if (type == "sr" && (TgsValues.Scalar(TgsJson.Get(e, "os"), 0) != 0 || TgsValues.Scalar(TgsJson.Get(e, "is"), 0) != 0))
-            {
-                _warnings.Add("Lottie rounded polystars");
-            }
         }
 
         private void MaskFeatures(JsonElement masks)
         {
-            if (masks.GetArrayLength() > 1)
-            {
-                _warnings.Add("Multiple Lottie masks");
-            }
-
             foreach (JsonElement mask in masks.EnumerateArray())
             {
-                if (TgsJson.Text(mask, "mode", "a") is not "a" and not "n" || TgsJson.Flag(mask, "inv"))
+                if (!new[]
+                {
+                    "a",
+                    "s",
+                    "i",
+                    "n",
+                    "f",
+                    "l",
+                    "d"
+                }.Contains(TgsJson.Text(mask, "mode", "a")))
                 {
                     _warnings.Add("Lottie mask boolean operations");
-                }
-
-                JsonElement opacity = TgsJson.Get(mask, "o");
-                if (TgsJson.Flag(opacity, "a") || TgsValues.Scalar(opacity, 0, 100) != 100)
-                {
-                    _warnings.Add("Lottie mask opacity");
-                }
-
-                if (TgsValues.Scalar(TgsJson.Get(mask, "x"), 0) != 0)
-                {
-                    _warnings.Add("Lottie mask expansion");
                 }
             }
         }

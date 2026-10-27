@@ -11,18 +11,7 @@ namespace Render.NET.Svg
         private Dictionary<string, string> Style(XElement e, Dictionary<string, string> parent)
         {
             var result = parent.Where(p => Inherited.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value);
-            foreach (XAttribute a in e.Attributes())
-            {
-                if (Supported.Contains(a.Name.LocalName))
-                {
-                    Set(result, parent, a.Name.LocalName, a.Value);
-                }
-                else if (a.Name.LocalName is "filter" or "mask" or "marker-start" or "marker-mid" or "marker-end" or "vector-effect" or "paint-order")
-                {
-                    Warn("SVG property: " + a.Name.LocalName);
-                }
-            }
-
+            Presentation(e, parent, result);
             foreach (var rule in _rules.OrderBy(r => r.Specificity))
             {
                 if (Matches(e, rule.Selector))
@@ -39,11 +28,38 @@ namespace Render.NET.Svg
                 Set(result, parent, p.Key, p.Value);
             }
 
+            if (result.TryGetValue("font-size", out string? size))
+            {
+                float parentSize = TextLength(Value(parent, "font-size", "16"), 16);
+                result["font-size"] = TextLength(size, parentSize).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+
             return result;
+        }
+
+        private void Presentation(XElement e, Dictionary<string, string> parent, Dictionary<string, string> result)
+        {
+            foreach (XAttribute a in e.Attributes())
+            {
+                if (Supported.Contains(a.Name.LocalName))
+                {
+                    Set(result, parent, a.Name.LocalName, a.Value);
+                }
+                else if (a.Name.LocalName is "filter" or "mask" or "marker-start" or "marker-mid" or "marker-end" or "vector-effect" or "paint-order")
+                {
+                    Warn("SVG property: " + a.Name.LocalName);
+                }
+            }
         }
 
         private void Set(Dictionary<string, string> target, Dictionary<string, string> parent, string key, string value)
         {
+            if (key == "font")
+            {
+                SetFont(target, value);
+                return;
+            }
+
             if (!Supported.Contains(key))
             {
                 Warn("SVG property: " + key);
@@ -64,6 +80,36 @@ namespace Render.NET.Svg
             else
             {
                 target[key] = value;
+            }
+        }
+
+        private void SetFont(Dictionary<string, string> target, string value)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(value, @"^\s*(?<prefix>.*?)(?<size>(?:\d*\.)?\d+(?:px|pt|pc|mm|cm|in|em|ex|rem|%))(?:\s*/\s*[^\s]+)?\s+(?<family>.+)$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+            if (!match.Success)
+            {
+                Warn("SVG font shorthand: " + value);
+                return;
+            }
+
+            target["font-size"] = match.Groups["size"].Value;
+            target["font-family"] = match.Groups["family"].Value;
+            target["font-style"] = "normal";
+            target["font-weight"] = "400";
+            foreach (string part in match.Groups["prefix"].Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (part is "italic" or "oblique")
+                {
+                    target["font-style"] = part;
+                }
+                else if (part is "bold" or "bolder" or "lighter" || int.TryParse(part, out _))
+                {
+                    target["font-weight"] = part;
+                }
+                else if (part != "normal")
+                {
+                    Warn("SVG font variant: " + part);
+                }
             }
         }
 
@@ -164,7 +210,7 @@ namespace Render.NET.Svg
 
         private static bool SelectorPartMatches(XElement e, char prefix, string name) => prefix switch
         {
-            '.' => ((string?)e.Attribute("class") ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
+            '.' => ((string?)e.Attribute("class") ?? "").Split((char[]? )null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
             '#' => (string?)e.Attribute("id") == name,
             _ => name == "*" || e.Name.LocalName == name
         };

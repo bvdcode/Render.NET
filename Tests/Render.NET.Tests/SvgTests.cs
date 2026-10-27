@@ -148,7 +148,7 @@ namespace Render.NET.Tests
         [Test]
         public void UnsupportedFeaturesRejectByDefault()
         {
-            SvgDocument doc = SvgReader.Read(Wrap("<text>hello</text><image href='https://example.com/a.png'/><path d='M0 0H50V50Z' filter='url(#f)'/>"));
+            SvgDocument doc = SvgReader.Read(Wrap("<foreignObject>hello</foreignObject><image href='https://example.com/a.png'/><path d='M0 0H50V50Z' filter='url(#f)'/>"));
             Assert.That(doc.UnsupportedFeatures.Count, Is.GreaterThanOrEqualTo(3));
             Assert.Throws<NotSupportedException>(() => SvgRenderer.Render(doc));
             Assert.DoesNotThrow(() => SvgRenderer.Render(doc, new SvgRenderOptions { AllowPartialRendering = true }));

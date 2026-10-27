@@ -149,7 +149,7 @@ namespace Render.NET.Tests
         [Test]
         public void UnsupportedFeaturesAreExplicitAndPartialIsOptIn()
         {
-            TgsDocument doc = Read(Wrap("{\"ty\":5,\"ddd\":1,\"tt\":1,\"ef\":[{}]}"));
+            TgsDocument doc = Read(Wrap("{\"ty\":5,\"ddd\":1,\"tt\":99,\"ef\":[{}]}"));
             Assert.That(doc.UnsupportedFeatures.Count, Is.GreaterThanOrEqualTo(4));
             Assert.Throws<NotSupportedException>(() => TgsRenderer.RenderFrame(doc, 0));
             Assert.DoesNotThrow(() => TgsRenderer.RenderFrame(doc, 0, new SvgRenderOptions { AllowPartialRendering = true }));

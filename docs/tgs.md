@@ -26,12 +26,14 @@ The document owns an immutable copy of its JSON and can be rendered concurrently
 | Area | Support |
 | --- | --- |
 | Animation | Static/animated scalar, vector and color properties; hold/linear/cubic temporal easing including per-component handles; split positions; cubic spatial motion sampled by arc length; matching-topology Bezier path morphs. |
-| Layers | Shape, solid, null and precomposition layers; reverse paint order; in/out points, parent transforms, anchor/position/scale/rotation/skew, atomic opacity; precomp start/stretch and time remapping; precomp viewport clipping. |
-| Shapes | Bezier paths with relative tangents, ellipses, rounded rectangles, integer polygon/star geometry, nested groups and inherited outer styles. |
+| Layers | Shape, solid, null and precomposition layers; reverse paint order; in/out points, parent transforms, anchor/position/scale/rotation/skew, atomic opacity and automatic path orientation; precomp start/stretch and time remapping; precomp viewport clipping. |
+| Shapes | Bezier paths with relative tangents, ellipses, rounded rectangles, rounded polygon/star geometry and fractional star point counts, nested groups and inherited outer styles. |
 | Paint | Solid fills/strokes, nonzero/evenodd, line width/caps/joins/miter limits, animated dashes, linear/radial gradients with color/opacity stops and radial highlight. |
-| Modifiers/masks | Parallel/sequential trim paths with wrapping offset; one non-inverted fully opaque additive path mask. |
+| Modifiers | Parallel/sequential trim paths with wrapping offset; repeaters with transforms and opacity; merge/add/subtract/intersect/exclude paths; round corners, offset paths, Pucker & Bloat and sharp/smooth Zig Zag. |
+| Masks/mattes | Multiple additive/subtractive/intersection/difference/lighten/darken masks; inverse masks, animated opacity/expansion/feather; alpha/luma track mattes and inverse mattes, including explicit matte layer selection. |
+| Effects/compositing | All 18 Lottie layer blend modes; grouped Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur and Transform effects with animated parameters. |
 
-Expressions, slots, text/image layers and external assets, 3D, effects, layer blend modes, track mattes, repeaters, merge/rounded/offset modifiers, rounded/fractional polystars, multiple/boolean/soft masks and automatic orientation are **not implemented**. Outer styles spanning translucent subgroups are rejected. Morphs with different vertex counts are rejected. Sequential trims split across interleaved style scopes and trim modifiers spanning separately styled subgroups are diagnosed. This is a useful vector preview subset, not full After Effects/Lottie or all Telegram sticker compatibility.
+Expressions, slots, text/image layers and external assets, 3D, effect IDs outside the documented list (including legacy matte effect 28), and Twist remain outside this implementation. Outer styles spanning translucent subgroups are rejected. Morphs with different vertex counts are rejected. Sequential trims split across interleaved style scopes and trim modifiers spanning separately styled subgroups are diagnosed. Fractional stars and flattened path offsets may differ numerically between players. This is a managed vector preview implementation, not full After Effects/Lottie conformance.
 
 `animation.UnsupportedFeatures` reports features detectable while reading. Frame-dependent unsupported combinations can also throw while evaluating the selected scene. Rendering rejects known unsupported features by default; `AllowPartialRendering = true` opts into a potentially incomplete preview. Expressions/scripts are never executed and external assets are never fetched.
 
@@ -39,7 +41,7 @@ Motion paths use a 64-segment arc-length lookup. Trim paths flatten curves at 0.
 
 ## Limits and verification
 
-Reader defaults: 16 MiB encoded input, 32 MiB decoded JSON, 500,000 JSON values/expanded scene items, depth 64 and 1,000,000 generated path commands. Gzip output is checked incrementally; parent/precomp cycles fail. Geometry expansion, painting and reads check cancellation. JSON parsing is synchronous and bounded by decoded size; it cannot be interrupted midway. SVG canvas/output limits also apply. These bounds do not replace an isolated worker's process memory/time limits for hostile input.
+Reader defaults: 16 MiB encoded input, 32 MiB decoded JSON, 500,000 JSON values/expanded scene items, depth 64 and 1,000,000 generated path commands. Gzip output is checked incrementally; parent/precomp cycles fail. Geometry expansion, painting and reads check cancellation. JSON parsing is synchronous and bounded by decoded size; it cannot be interrupted midway. SVG canvas/output limits also apply. Repeaters allow up to 4,096 copies, Zig Zag up to 4,096 ridges per source segment; boolean geometry allows 16,384 flattened edges and two million candidate intersections. Effect buffers use `SvgRenderOptions.MaximumEffectBytes`. These bounds do not replace an isolated worker's process memory/time limits for hostile input.
 
 `Tests/Fixtures/Tgs` contains an original two-second orbit scene as JSON and deterministic gzip TGS, its standard-library generator and a SHA-256 manifest. It uses no imported stickers, fonts or artwork and is covered by the repository MIT license.
 
@@ -54,3 +56,11 @@ dotnet run --project Samples/Render.NET.Vector.Sample -c Release -- \
 ```
 
 Implementation follows the [Lottie community format specification](https://lottie.github.io/lottie-spec/latest/), including its property interpolation and shape rendering model. No animation-player implementation or third-party sticker content was copied into this library.
+
+## Effects and modifier regression scenes
+
+`effects.json`/`.tgs` add repeaters, rounded corners, Pucker & Bloat, multiple masks, an inverse alpha matte and drop shadow. `geometry.json`/`.tgs` cover rounded stars/polygons and sharp/smooth Zig Zag on a cubic curve. The original scenes and deterministic standard-library generator `generate_effects.py` are committed with SHA-256 manifests. Reference comparison uses lottie-web 5.13.0 SVG in Chrome with an expanded filter region; no player code or third-party artwork is shipped. Mask feather has separate pixel tests because the reference SVG player does not implement it.
+
+![TGS effects and modifiers](images/tgs-effects.png)
+
+Merge/offset operations use our own managed planar edge arrangement in `VectorPath.Combine`, `Offset` and `RoundCorners`; they do not depend on a third-party geometry library. Rounded corners/offsets flatten curves at 0.05 user-unit tolerance; boolean operations default to 0.1. Geometry budgets and cancellation also apply to these operations.

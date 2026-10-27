@@ -4,12 +4,12 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Tgs</RootNamespace>
-        <Version>0.3.15</Version>
+        <Version>0.3.17</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Tgs</Product>
         <Title>Render.NET.Tgs</Title>
-        <Description>Managed selected-frame rendering of Telegram TGS and Lottie animations to PNG using Render.NET. Animated vector shapes, keyframes and transforms without native graphics dependencies.</Description>
+        <Description>Managed selected-frame PNG rendering from Telegram TGS and Lottie JSON: animated shapes, masks, mattes, blend modes, effects, repeaters and geometric modifiers. No native graphics or animation dependencies.</Description>
         <Summary>Managed selected-frame rendering of Telegram TGS and Lottie animations to PNG using Render.NET. Animated vector shapes, keyframes and transforms without native graphics dependencies.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Simplifies Lottie feature classification to resolve CodeFactor complexity findings. Selected-frame rendering and supported formats are unchanged; all 510 tests pass.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds multiple/soft/inverse masks, alpha/luma track mattes, all 18 blend modes, repeat/merge/round/offset/pucker/zigzag modifiers, rounded stars and automatic orientation. Adds Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur and Transform effects. Original regression fixtures and no third-party runtime dependencies.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

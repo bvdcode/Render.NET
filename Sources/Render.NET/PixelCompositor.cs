@@ -37,7 +37,11 @@ namespace Render.NET
         /// <summary>Source hue and saturation with backdrop luminosity.</summary>
         Color,
         /// <summary>Source luminosity with backdrop hue and saturation.</summary>
-        Luminosity
+        Luminosity,
+        /// <summary>Add premultiplied source and backdrop, clamping color and coverage.</summary>
+        Add,
+        /// <summary>Threshold vivid-light color mixing.</summary>
+        HardMix
     }
 
     internal static class PixelCompositor
@@ -46,6 +50,16 @@ namespace Render.NET
         {
             if (source.A == 0)
             {
+                return;
+            }
+
+            if (mode == ColorBlendMode.Add)
+            {
+                float sa = source.A / 255f, ba = pixels[offset + 3] / 255f, total = Math.Min(1, sa + ba);
+                pixels[offset] = Byte(Math.Min(1, ((source.R / 255f) * sa) + ((pixels[offset] / 255f) * ba)) / total);
+                pixels[offset + 1] = Byte(Math.Min(1, ((source.G / 255f) * sa) + ((pixels[offset + 1] / 255f) * ba)) / total);
+                pixels[offset + 2] = Byte(Math.Min(1, ((source.B / 255f) * sa) + ((pixels[offset + 2] / 255f) * ba)) / total);
+                pixels[offset + 3] = Byte(total);
                 return;
             }
 
@@ -124,6 +138,7 @@ namespace Render.NET
                 ColorBlendMode.SoftLight => SoftLight(source, backdrop),
                 ColorBlendMode.Difference => Math.Abs(backdrop - source),
                 ColorBlendMode.Exclusion => (backdrop + source) - (2 * backdrop * source),
+                ColorBlendMode.HardMix => (source <= .5f ? Burn(2 * source, backdrop) : Dodge((2 * source) - 1, backdrop)) < .5f ? 0 : 1,
                 _ => source
             };
         }

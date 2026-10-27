@@ -19,13 +19,13 @@ Render STL, OBJ, 3MF, PDF, SVG, and TGS/Lottie files to PNG previews in managed 
 
 | Package | Available now |
 | --- | --- |
-| [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixels, vector paths, fills and strokes, clipping, affine images, alpha compositing, and metadata-free PNG encoding. |
+| [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixels, vector paths and boolean operations, fills and strokes, clipping, affine images, alpha compositing, and metadata-free PNG encoding. |
 | [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF geometry, explicit assembly selection, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
 | [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines and Type 3 glyph programs, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Includes Cyrillic fallback fonts, gradients, colored/stencil tiling patterns, transparency groups, soft masks and annotation/form appearances. JPEG 2000 and JBIG2 scans use our own managed decoders. |
 | [Render.NET.Jpeg2000](https://www.nuget.org/packages/Render.NET.Jpeg2000/) | Original managed JPEG 2000 Part 1 decoder: JP2/J2K, lossless/lossy wavelets, 1–16-bit component samples, tiles and subsampling. No runtime dependencies. [Supported subset and API](docs/jpeg2000.md). |
 | [Render.NET.Jbig2](https://www.nuget.org/packages/Render.NET.Jbig2/) | Original managed monochrome JBIG2 decoder: MMR, arithmetic/Huffman symbols, globals, refinement, and halftones. No runtime dependencies. [Supported subset and API](docs/jbig2.md). |
-| [Render.NET.Svg](https://www.nuget.org/packages/Render.NET.Svg/) | Managed SVG paths/shapes, CSS colors/styles, gradients, local references, clipping and PNG previews. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md). |
-| [Render.NET.Tgs](https://www.nuget.org/packages/Render.NET.Tgs/) | Selected-frame PNG previews from Telegram TGS or Lottie JSON, animated shapes/keyframes, gradients, trim paths and precompositions. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md). |
+| [Render.NET.Svg](https://www.nuget.org/packages/Render.NET.Svg/) | Managed SVG text with Cyrillic fallback, masks, filters, embedded PNG images, paths/shapes, styles, gradients, references and clipping. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md). |
+| [Render.NET.Tgs](https://www.nuget.org/packages/Render.NET.Tgs/) | Selected-frame PNG previews from Telegram TGS or Lottie JSON, animated shapes/keyframes, masks/mattes, blend modes, effects, repeat/merge/round/offset modifiers, gradients and precompositions. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md). |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
@@ -49,9 +49,9 @@ await using var output = File.Create("frame.png");
 await PngEncoder.WriteAsync(frame, output);
 ```
 
-![SVG vector preview](https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/svg-preview.png)
+![SVG vector preview](https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/svg-effects.png)
 
-Both packages use our managed vector canvas and add no third-party runtime dependencies. SVG and Lottie are large formats: these first versions implement the documented vector subset and reject detected unsupported features by default. See the [SVG guide](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md) and [TGS guide](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md) for features, resource limits, reference comparisons and CLI examples. PNG output contains no metadata.
+Both packages use our managed vector canvas and add no third-party runtime dependencies. SVG supports text, masks, filters and embedded PNG images. TGS adds multiple masks, track mattes, layer blend modes, common effects and geometric modifiers. Both reject detected unsupported features by default; the guides list the remaining limits. See the [SVG guide](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md) and [TGS guide](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md) for features, resource limits, reference comparisons and CLI examples. PNG output contains no metadata.
 
 ## PDF to PNG
 
