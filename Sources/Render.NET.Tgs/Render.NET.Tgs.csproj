@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Render.NET.Tgs</RootNamespace>
+        <Version>0.3.15</Version>
+        <Authors>Vadim Belov</Authors>
+        <Company>bvdcode</Company>
+        <Product>Render.NET.Tgs</Product>
+        <Title>Render.NET.Tgs</Title>
+        <Description>Managed selected-frame rendering of Telegram TGS and Lottie animations to PNG using Render.NET. Animated vector shapes, keyframes and transforms without native graphics dependencies.</Description>
+        <Summary>Managed selected-frame rendering of Telegram TGS and Lottie animations to PNG using Render.NET. Animated vector shapes, keyframes and transforms without native graphics dependencies.</Summary>
+        <Copyright>Copyright © Vadim Belov 2026</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageId>Render.NET.Tgs</PackageId>
+        <PackageTags>tgs;lottie;telegram;animation;png;managed</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>packageIcon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>First managed selected-frame TGS/Lottie renderer: bounded gzip/JSON, scalar/vector/spatial keyframes, easing, matching-topology morphs, layers/parents/precompositions, fills/strokes/gradients and trim paths. Includes original animated fixtures and lottie-web comparison results. Depends only on our SVG/core packages.</PackageReleaseNotes>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Render.NET.Svg/Render.NET.Svg.csproj" />
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+        <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+    </ItemGroup>
+
+</Project>

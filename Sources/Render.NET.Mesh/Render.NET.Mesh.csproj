@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Compatibility release with the updated managed raster canvas and PDF knockout renderer.</PackageReleaseNotes>
+        <PackageReleaseNotes>Compatibility release alongside the new managed SVG and selected-frame TGS/Lottie packages. No changes to mesh or image-codec behavior.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

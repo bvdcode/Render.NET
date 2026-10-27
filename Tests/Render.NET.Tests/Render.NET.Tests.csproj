@@ -18,4 +18,8 @@
   <ItemGroup>
     <None Include="../Fixtures/**/*" Link="Fixtures/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sources\Render.NET.Svg\Render.NET.Svg.csproj" />
+    <ProjectReference Include="..\..\Sources\Render.NET.Tgs\Render.NET.Tgs.csproj" />
+  </ItemGroup>
 </Project>

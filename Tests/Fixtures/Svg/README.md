@@ -1,0 +1,1 @@
+`vector-preview.svg` is an original synthetic scene authored for Render.NET. It contains no imported artwork, fonts or external resources. It exercises local symbols, elliptical and Bezier geometry, gradient transparency, clipping, group opacity, CSS classes and dashed strokes. It is covered by the repository's MIT license.

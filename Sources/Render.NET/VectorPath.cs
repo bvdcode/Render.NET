@@ -14,7 +14,7 @@ namespace Render.NET
     }
 
     /// <summary>A mutable vector path. Coordinates may use any consistent unit.</summary>
-    public sealed class VectorPath
+    public sealed partial class VectorPath
     {
         internal List<PathElement> Elements { get; } = new List<PathElement>();
 

@@ -3,7 +3,7 @@ using System;
 namespace Render.NET
 {
     /// <summary>A row-major RGBA8 pixel buffer using sRGB color and straight alpha.</summary>
-    public class PixelBuffer
+    public partial class PixelBuffer
     {
         private readonly byte[] _pixels;
 

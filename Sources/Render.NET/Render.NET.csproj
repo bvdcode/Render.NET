@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds reusable knockout compositing and explicit shader coverage to the managed raster canvas; used by PDF transparency groups. Existing drawing overloads remain compatible.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds path bounds and length trimming, SVG geometry serialization support, clip unions preserving independent fill rules, and reusable premultiplied-alpha downsampling for the new SVG and TGS renderers.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

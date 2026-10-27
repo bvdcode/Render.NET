@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+  <title>Original Render.NET vector regression scene</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102840"/><stop offset="1" stop-color="#17394d"/></linearGradient>
+    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d4ff5c"/><stop offset="1" stop-color="#60ba24"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#c4f64c" stop-opacity=".5"/><stop offset="1" stop-color="#c4f64c" stop-opacity="0"/></radialGradient>
+    <clipPath id="round"><rect width="220" height="260" rx="22"/></clipPath>
+    <symbol id="diamond" viewBox="0 0 100 100"><path d="M50 4 96 50 50 96 4 50Z" fill="url(#lime)"/><path d="M50 4V96M4 50H96" stroke="#153d37" stroke-opacity=".35" fill="none" stroke-width="2"/></symbol>
+  </defs>
+  <style>.card {fill:#244558;stroke:#456371;stroke-width:1} .line {fill:none;stroke:#c4f64c;stroke-width:5;stroke-linecap:round}</style>
+  <rect width="800" height="480" rx="24" fill="url(#sky)"/>
+  <ellipse cx="625" cy="160" rx="270" ry="220" fill="url(#glow)"/>
+  <path d="M40 80H260M40 98H180" stroke="#c4f64c" stroke-width="7" stroke-linecap="round"/>
+  <g transform="translate(40 155)"><rect class="card" width="220" height="260" rx="22"/><g clip-path="url(#round)"><use href="#diamond" x="20" y="30" width="180" height="180" transform="rotate(-12 110 120)"/></g><path d="M30 225H190" stroke="#91b1ba" stroke-width="3" stroke-dasharray="4 8"/></g>
+  <g transform="translate(290 155)"><rect class="card" width="220" height="260" rx="22"/><path class="line" d="M25 140C45 20 80 20 110 130S175 235 195 100"/><path d="M25 140Q70 180 110 130T195 100" fill="none" stroke="#e0f0f3" stroke-opacity=".55" stroke-width="2" stroke-dasharray="8 6"/><circle cx="110" cy="130" r="7" fill="#fff"/></g>
+  <g transform="translate(540 155)"><rect class="card" width="220" height="260" rx="22"/><g opacity=".8"><circle cx="88" cy="120" r="60" fill="#b6ec47"/><circle cx="135" cy="120" r="60" fill="#32c7b5"/></g><path d="M30 225H190" stroke="#91b1ba" stroke-width="3" stroke-dasharray="4 8"/></g>
+</svg>

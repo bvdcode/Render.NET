@@ -9,7 +9,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/bvdcode/Render.NET/badge)](https://www.codefactor.io/repository/github/bvdcode/Render.NET)
 [![License](https://img.shields.io/github/license/bvdcode/Render.NET)](https://github.com/bvdcode/Render.NET/blob/main/LICENSE)
 
-Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the CPU using .NET 10, without a native graphics dependency, GPU, display server, or external renderer process. Core, Mesh, Jpeg2000 and Jbig2 use the base class library; Pdf uses our JPEG 2000 and JBIG2 decoders, the managed PdfPig reader and StbImageSharp JPEG decoder.
+Render STL, OBJ, 3MF, PDF, SVG, and TGS/Lottie files to PNG previews in managed C#. Runs on the CPU using .NET 10, without a native graphics dependency, GPU, display server, or external renderer process. Core, Mesh, Jpeg2000, Jbig2, Svg and Tgs use the base class library; Pdf uses our JPEG 2000 and JBIG2 decoders, the managed PdfPig reader and StbImageSharp JPEG decoder.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/stl-preview.png" alt="A torus knot loaded from STL and rendered with Render.NET.Mesh" width="512" />
@@ -24,11 +24,34 @@ Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the C
 | [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines and Type 3 glyph programs, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Includes Cyrillic fallback fonts, gradients, colored/stencil tiling patterns, transparency groups, soft masks and annotation/form appearances. JPEG 2000 and JBIG2 scans use our own managed decoders. |
 | [Render.NET.Jpeg2000](https://www.nuget.org/packages/Render.NET.Jpeg2000/) | Original managed JPEG 2000 Part 1 decoder: JP2/J2K, lossless/lossy wavelets, 1–16-bit component samples, tiles and subsampling. No runtime dependencies. [Supported subset and API](docs/jpeg2000.md). |
 | [Render.NET.Jbig2](https://www.nuget.org/packages/Render.NET.Jbig2/) | Original managed monochrome JBIG2 decoder: MMR, arithmetic/Huffman symbols, globals, refinement, and halftones. No runtime dependencies. [Supported subset and API](docs/jbig2.md). |
+| [Render.NET.Svg](https://www.nuget.org/packages/Render.NET.Svg/) | Managed SVG paths/shapes, CSS colors/styles, gradients, local references, clipping and PNG previews. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md). |
+| [Render.NET.Tgs](https://www.nuget.org/packages/Render.NET.Tgs/) | Selected-frame PNG previews from Telegram TGS or Lottie JSON, animated shapes/keyframes, gradients, trim paths and precompositions. [Supported subset and API](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md). |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/benchy-lime.png" alt="3DBenchy rendered from STL with a caller-supplied lime color" width="320" />
 </p>
+
+## SVG and TGS/Lottie to PNG
+
+```csharp
+using Render.NET;
+using Render.NET.Svg;
+using Render.NET.Tgs;
+
+SvgDocument drawing = await SvgReader.ReadFileAsync("drawing.svg");
+PixelBuffer svg = SvgRenderer.Render(drawing, new SvgRenderOptions { Width = 800 });
+
+TgsDocument animation = await TgsReader.ReadFileAsync("sticker.tgs");
+PixelBuffer frame = TgsRenderer.RenderFrame(animation, 30,
+    new SvgRenderOptions { Width = 512, Supersampling = 2 });
+await using var output = File.Create("frame.png");
+await PngEncoder.WriteAsync(frame, output);
+```
+
+![SVG vector preview](https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/svg-preview.png)
+
+Both packages use our managed vector canvas and add no third-party runtime dependencies. SVG and Lottie are large formats: these first versions implement the documented vector subset and reject detected unsupported features by default. See the [SVG guide](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md) and [TGS guide](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md) for features, resource limits, reference comparisons and CLI examples. PNG output contains no metadata.
 
 ## PDF to PNG
 
@@ -57,7 +80,7 @@ await PngEncoder.WriteAsync(image, destination);
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/pdf-preview.png" alt="A PDF page with embedded fonts, rounded vector shapes, a chart, and text rendered by Render.NET.Pdf" width="420" />
 </p>
 
-The PDF renderer also supports Type 3 glyph programs (colored and stencil glyphs, nested text/forms and images), all seven PDF shading types, colored and stencil tiling patterns for paths and text, all 16 blend modes, transparency groups, soft masks and existing annotation/form appearances. PDF remains a large format: known unsupported features include shading-pattern graphics-state overrides, optional-content visibility. They are listed on `page.UnsupportedFeatures`, and **rendering rejects them by default**. See [the PDF guide](https://github.com/bvdcode/Render.NET/blob/main/docs/pdf.md) for the support matrix, fonts, limits, and CLI example.
+The PDF renderer also supports Type 3 glyph programs (colored and stencil glyphs, nested text/forms and images), all seven PDF shading types, colored and stencil tiling patterns for paths and text, all 16 blend modes, transparency groups, soft masks and existing annotation/form appearances. PDF remains a large format: known unsupported features include shading-pattern graphics-state overrides and optional-content visibility. They are listed on `page.UnsupportedFeatures`, and **rendering rejects them by default**. See [the PDF guide](https://github.com/bvdcode/Render.NET/blob/main/docs/pdf.md) for the support matrix, fonts, limits, and CLI example.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/pdf-patterns.png" alt="Colored and lime stencil patterns, rotation, patterned strokes, transparency, nested forms and images rendered by Render.NET.Pdf" width="600" />

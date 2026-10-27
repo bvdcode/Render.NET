@@ -33,8 +33,8 @@
     },
     {
       "file": "generate_knockout.py",
-      "bytes": 1370,
-      "sha256": "406da2b0464d52930a65dd5d5581b50848d17bf47b541be6b05fa426945176bd"
+      "bytes": 1398,
+      "sha256": "23e8fa89d5b86ef9463a0363bb783d984827042572267ab63e5d072d6496c7e8"
     },
     {
       "file": "generate_patterns.py",

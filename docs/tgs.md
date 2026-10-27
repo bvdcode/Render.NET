@@ -1,0 +1,56 @@
+# TGS / Lottie → selected-frame PNG
+
+`Render.NET.Tgs` reads gzip-compressed Telegram `.tgs` and uncompressed Lottie JSON, evaluates one selected frame and renders its vector scene through `Render.NET.Svg` and the managed raster canvas. No native animation engine, browser or external renderer is used at runtime. The new packages add no third-party runtime dependencies.
+
+```csharp
+using Render.NET;
+using Render.NET.Svg;
+using Render.NET.Tgs;
+
+TgsDocument animation = await TgsReader.ReadFileAsync("sticker.tgs", cancellationToken: token);
+var options = new SvgRenderOptions { Width = 512, Supersampling = 2 };
+PixelBuffer frame = TgsRenderer.RenderFrame(animation, frame: 30, options, token);
+// Or elapsed seconds from the composition's first frame:
+// PixelBuffer frame = TgsRenderer.RenderAtTime(animation, seconds: 0.5, options, token);
+
+await using Stream output = File.Create("frame.png");
+await PngEncoder.WriteAsync(frame, output, token);
+```
+
+Frame numbers are absolute, allow fractional values and must be in `[InPoint, OutPoint)`. Elapsed time starts at the composition's in-point. `Width`, `Height`, `FrameRate`, `InPoint`, `OutPoint` and `Duration` expose composition metadata. Output size, transparent/background color, antialiasing and sample limits use `SvgRenderOptions`. There is no full-animation export API in this stage.
+
+The document owns an immutable copy of its JSON and can be rendered concurrently after the source stream is disposed. `Read`, `ReadAsync(Stream)` and `ReadFileAsync` accept both formats; gzip is detected from its signature. Streams remain caller-owned.
+
+## Supported subset
+
+| Area | Support |
+| --- | --- |
+| Animation | Static/animated scalar, vector and color properties; hold/linear/cubic temporal easing including per-component handles; split positions; cubic spatial motion sampled by arc length; matching-topology Bezier path morphs. |
+| Layers | Shape, solid, null and precomposition layers; reverse paint order; in/out points, parent transforms, anchor/position/scale/rotation/skew, atomic opacity; precomp start/stretch and time remapping; precomp viewport clipping. |
+| Shapes | Bezier paths with relative tangents, ellipses, rounded rectangles, integer polygon/star geometry, nested groups and inherited outer styles. |
+| Paint | Solid fills/strokes, nonzero/evenodd, line width/caps/joins/miter limits, animated dashes, linear/radial gradients with color/opacity stops and radial highlight. |
+| Modifiers/masks | Parallel/sequential trim paths with wrapping offset; one non-inverted fully opaque additive path mask. |
+
+Expressions, slots, text/image layers and external assets, 3D, effects, layer blend modes, track mattes, repeaters, merge/rounded/offset modifiers, rounded/fractional polystars, multiple/boolean/soft masks and automatic orientation are **not implemented**. Outer styles spanning translucent subgroups are rejected. Morphs with different vertex counts are rejected. Sequential trims split across interleaved style scopes and trim modifiers spanning separately styled subgroups are diagnosed. This is a useful vector preview subset, not full After Effects/Lottie or all Telegram sticker compatibility.
+
+`animation.UnsupportedFeatures` reports features detectable while reading. Frame-dependent unsupported combinations can also throw while evaluating the selected scene. Rendering rejects known unsupported features by default; `AllowPartialRendering = true` opts into a potentially incomplete preview. Expressions/scripts are never executed and external assets are never fetched.
+
+Motion paths use a 64-segment arc-length lookup. Trim paths flatten curves at 0.1 user-unit tolerance. SVG/raster curve and gradient approximations also apply. Numerical differences from another animation player are expected around curved edges and trimmed endpoints.
+
+## Limits and verification
+
+Reader defaults: 16 MiB encoded input, 32 MiB decoded JSON, 500,000 JSON values/expanded scene items, depth 64 and 1,000,000 generated path commands. Gzip output is checked incrementally; parent/precomp cycles fail. Geometry expansion, painting and reads check cancellation. JSON parsing is synchronous and bounded by decoded size; it cannot be interrupted midway. SVG canvas/output limits also apply. These bounds do not replace an isolated worker's process memory/time limits for hostile input.
+
+`Tests/Fixtures/Tgs` contains an original two-second orbit scene as JSON and deterministic gzip TGS, its standard-library generator and a SHA-256 manifest. It uses no imported stickers, fonts or artwork and is covered by the repository MIT license.
+
+At 512 × 512 with 2× supersampling, frames 0/30/60/90 were compared with **lottie-web 5.13.0's SVG renderer in headless Chrome**. Mean absolute premultiplied RGB error is 0.1440–0.1889/255; 99.246–99.448% of pixels differ by at most 8 in every color channel. The same JSON was used by both renderers. The reference player/browser are development tools only; they are not dependencies or shipped code. This one synthetic animation is regression evidence, not broad format conformance.
+
+![Selected frame 30 of the original TGS scene](images/tgs-frame-30.png)
+
+```bash
+dotnet run --project Samples/Render.NET.Vector.Sample -c Release -- \
+  sticker.tgs frame.png --frame 30 --width 512
+# Or --time 0.5. Optional: --opaque, --allow-partial.
+```
+
+Implementation follows the [Lottie community format specification](https://lottie.github.io/lottie-spec/latest/), including its property interpolation and shape rendering model. No animation-player implementation or third-party sticker content was copied into this library.

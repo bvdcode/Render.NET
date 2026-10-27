@@ -30,7 +30,7 @@ namespace Render.NET.Pdf
                 command.Draw(canvas, transform, cancellationToken);
             }
 
-            return samples == 1 ? image : Downsample(image, samples, cancellationToken);
+            return samples == 1 ? image : image.Downsample(samples, cancellationToken);
         }
 
         private static (int Width, int Height) Dimensions(PdfPage page, PdfRenderOptions options)
@@ -64,42 +64,6 @@ namespace Render.NET.Pdf
             }
 
             return ((int)width, (int)height);
-        }
-
-        private static PixelBuffer Downsample(PixelBuffer input, int factor, CancellationToken cancellationToken)
-        {
-            var output = new PixelBuffer(input.Width / factor, input.Height / factor);
-            for (int y = 0; y < output.Height; y++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                for (int x = 0; x < output.Width; x++)
-                {
-                    output[x, y] = Average(input, x * factor, y * factor, factor);
-                }
-            }
-
-            return output;
-        }
-
-        private static Rgba32 Average(PixelBuffer input, int x, int y, int factor)
-        {
-            int r = 0;
-            int g = 0;
-            int b = 0;
-            int alpha = 0;
-            for (int dy = 0; dy < factor; dy++)
-            {
-                for (int dx = 0; dx < factor; dx++)
-                {
-                    Rgba32 color = input[x + dx, y + dy];
-                    alpha += color.A;
-                    r += color.R * color.A;
-                    g += color.G * color.A;
-                    b += color.B * color.A;
-                }
-            }
-
-            return alpha == 0 ? default : new Rgba32((byte)(r / alpha), (byte)(g / alpha), (byte)(b / alpha), (byte)(alpha / (factor * factor)));
         }
     }
 }

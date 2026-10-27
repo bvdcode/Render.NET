@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Render.NET.Svg</RootNamespace>
+        <Version>0.3.15</Version>
+        <Authors>Vadim Belov</Authors>
+        <Company>bvdcode</Company>
+        <Product>Render.NET.Svg</Product>
+        <Title>Render.NET.Svg</Title>
+        <Description>Managed SVG vector rendering to RGBA and PNG using the Render.NET raster canvas. Paths, shapes, styles, affine transforms, gradients, clipping and local references without native graphics dependencies.</Description>
+        <Summary>Managed SVG vector rendering to RGBA and PNG using the Render.NET raster canvas. Paths, shapes, styles, affine transforms, gradients, clipping and local references without native graphics dependencies.</Summary>
+        <Copyright>Copyright © Vadim Belov 2026</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageId>Render.NET.Svg</PackageId>
+        <PackageTags>svg;vector;rendering;png;managed</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>packageIcon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>First managed SVG renderer: paths including elliptical arcs, shapes, styles and simple CSS, linear/radial gradients, local use/symbol references, clip-path unions, atomic opacity and configurable PNG output. Includes original fixtures, reference comparisons and explicit diagnostics. Depends only on Render.NET.</PackageReleaseNotes>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Render.NET/Render.NET.csproj" />
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+        <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+    </ItemGroup>
+
+</Project>

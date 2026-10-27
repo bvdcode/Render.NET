@@ -1,0 +1,17 @@
+{
+  "provenance": "Original synthetic animation authored for Render.NET; repository MIT license; no imported assets.",
+  "files": [
+    {
+      "file": "orbit.json",
+      "sha256": "87812238f80b9a7e031aa4e8e81d0232d0ca8d72af1e79f6272034f7a332751a"
+    },
+    {
+      "file": "orbit.tgs",
+      "sha256": "129ec7b2c751141cecf8a723afe62437c43dd9da6d96fa01e6fd064178dc1ed0"
+    },
+    {
+      "file": "generate_preview.py",
+      "sha256": "1a8830605becb550ee291d41e21d0ad409a30bcf6bde810516cc2b63c5c2a8e8"
+    }
+  ]
+}

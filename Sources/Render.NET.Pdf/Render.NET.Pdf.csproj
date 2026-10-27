@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds isolated and non-isolated PDF knockout groups with independent object shape and opacity, backdrop-aware blending, transparent shader coverage, reused object buffers and eight regression cases. Includes an original knockout fixture. No new runtime dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>Shares the core premultiplied-alpha resampler with the new SVG and TGS renderers. Retains the PDF shading and knockout support from the preceding releases; no new PDF runtime dependency.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

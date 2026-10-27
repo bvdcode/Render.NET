@@ -158,17 +158,7 @@ namespace Render.NET
         public void ClipPath(VectorPath path, Matrix3x2 transform, FillRule rule = FillRule.NonZero, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(path);
-            byte[]? previous = _clip;
-            var next = new byte[_target.Width * _target.Height];
-            ScanlineRasterizer.Paint(path, transform, rule, _target.Width, _target.Height, (y, left, right) =>
-            {
-                for (int x = left; x < right; x++)
-                {
-                    int index = (y * _target.Width) + x;
-                    next[index] = previous == null ? (byte)255 : previous[index];
-                }
-            }, cancellationToken);
-            _clip = next;
+            ClipUnion(new[] { (path, transform, rule) }, cancellationToken);
         }
 
         /// <summary>Intersects the clipping region with a stroke, including its affine pen and dash pattern.</summary>
