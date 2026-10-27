@@ -50,6 +50,11 @@ namespace Render.NET.Svg
             }
 
             Vector2 direction = axis / sigma;
+            if (axis.X == 0 || axis.Y == 0)
+            {
+                return GaussianAligned(input, kernel, axis.Y == 0, axis.X + axis.Y < 0, linear, edge, context);
+            }
+
             using IDisposable cacheBudget = context.Reserve(input.Width, input.Height, 4);
             var samples = new Vector4[checked(input.Width * input.Height)];
             for (int y = 0; y < input.Height; y++)
@@ -130,6 +135,11 @@ namespace Render.NET.Svg
             }
 
             int radius = (int)MathF.Floor(length);
+            if (axis.X == 0 || axis.Y == 0)
+            {
+                return MorphAligned(input, radius, axis.Y == 0, axis.X + axis.Y < 0, dilate, linear, context);
+            }
+
             Vector2 direction = length == 0 ? Vector2.Zero : axis / length;
             return SvgPixels.Map(input, (x, y) =>
             {

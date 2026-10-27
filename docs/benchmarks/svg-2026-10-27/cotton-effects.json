@@ -1,0 +1,71 @@
+{
+  "scene": "Tests/Fixtures/Svg/effects-preview.svg",
+  "width": 2560,
+  "height": 1536,
+  "supersampling": 1,
+  "processors": 4,
+  "sharedHost": true,
+  "runtime": ".NET 10.0.13",
+  "rgbaSha256": "5f36a95df3e378952eea5e8c0a5b061aa27d9f81586c9a80b777057752d4d30b",
+  "note": "Separate default-JIT Release processes, five calls each; baseline deadline 60s, optimized deadline 20s. Host load varies.",
+  "0.3.18": {
+    "calls": [
+      {
+        "iteration": 0,
+        "parseMs": 62.95,
+        "renderMs": 16540.18
+      },
+      {
+        "iteration": 1,
+        "parseMs": 3.1,
+        "renderMs": 15195.8
+      },
+      {
+        "iteration": 2,
+        "parseMs": 2.56,
+        "renderMs": 15165.67
+      },
+      {
+        "iteration": 3,
+        "parseMs": 1.23,
+        "renderMs": 15258.59
+      },
+      {
+        "iteration": 4,
+        "parseMs": 4.15,
+        "renderMs": 15294.59
+      }
+    ],
+    "medianRenderMs": 15258.59
+  },
+  "0.3.19": {
+    "calls": [
+      {
+        "iteration": 0,
+        "parseMs": 63.58,
+        "renderMs": 4204.76
+      },
+      {
+        "iteration": 1,
+        "parseMs": 9.29,
+        "renderMs": 2732.03
+      },
+      {
+        "iteration": 2,
+        "parseMs": 4.24,
+        "renderMs": 2624.64
+      },
+      {
+        "iteration": 3,
+        "parseMs": 3.49,
+        "renderMs": 2800.76
+      },
+      {
+        "iteration": 4,
+        "parseMs": 4.18,
+        "renderMs": 2779.52
+      }
+    ],
+    "medianRenderMs": 2779.52
+  }
+}

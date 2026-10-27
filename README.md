@@ -53,6 +53,8 @@ await PngEncoder.WriteAsync(frame, output);
 
 Both packages use our managed vector canvas and add no third-party runtime dependencies. SVG supports text, masks, filters and embedded PNG images. TGS adds multiple masks, track mattes, layer blend modes, common effects and geometric modifiers. Both reject detected unsupported features by default; the guides list the remaining limits. See the [SVG guide](https://github.com/bvdcode/Render.NET/blob/main/docs/svg.md) and [TGS guide](https://github.com/bvdcode/Render.NET/blob/main/docs/tgs.md) for features, resource limits, reference comparisons and CLI examples. PNG output contains no metadata.
 
+Version 0.3.19 addresses Cotton's SVG effects timeout: the original 2560 × 1536 scene fell from 19.25 s to 4.20 s on the measured CPU, with identical pixels. [SVG benchmarks against Svg.Skia/SkiaSharp](https://github.com/bvdcode/Render.NET/blob/main/docs/svg-benchmarks.md) include raw samples, reproduction commands and the remaining performance gaps.
+
 ## PDF to PNG
 
 ```bash

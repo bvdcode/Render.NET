@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Svg</RootNamespace>
-        <Version>0.3.18</Version>
+        <Version>0.3.19</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Svg</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Fixes strict rendering of Inkscape/Sodipodi SVGs by ignoring foreign editor metadata and legacy namedview elements. Namespaced attributes, namespace declarations, metadata IDs and metadata styles no longer affect drawing. Preserves SVG feature validation and input budgets.</PackageReleaseNotes>
+        <PackageReleaseNotes>Fixes SVG effect preview timeouts with exact scanline Gaussian blur and linear-time morphology for axis-aligned filters. Bounds worker scratch memory, skips transparent blur windows, and avoids redundant integer-coordinate sampling. Preserves 0.3.18 pixels across 352 regression cases and the Cotton 2560x1536 effects scene. No native or runtime package dependencies added.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

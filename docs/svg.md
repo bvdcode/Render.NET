@@ -2,6 +2,8 @@
 
 `Render.NET.Svg` interprets static SVG vector scenes and renders them through the managed Render.NET canvas. Targets .NET 10; its only package dependency is `Render.NET`. It does not need a browser, display server, GPU, native graphics library or external process at runtime.
 
+[CPU benchmarks against Svg.Skia/SkiaSharp](svg-benchmarks.md) include fresh-document timings and the 0.3.19 fix for Cotton's 20-second effects-preview timeout. Axis-aligned blur uses exact scanline convolution; morphology uses linear-time extrema windows. Arbitrarily rotated/skewed filters retain the general sampling path. Both paths preserve the existing color-space, alpha and edge behavior.
+
 ```csharp
 using Render.NET;
 using Render.NET.Svg;

@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Render.NET.Jbig2</RootNamespace>
-    <Version>0.3.18</Version>
+    <Version>0.3.19</Version>
     <Authors>Vadim Belov</Authors>
     <Company>bvdcode</Company>
     <Product>Render.NET.Jbig2</Product>
@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Compatibility release with the SVG editor-metadata fix. Existing format support is unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Compatibility release with the SVG filter performance fix. Existing format support is unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

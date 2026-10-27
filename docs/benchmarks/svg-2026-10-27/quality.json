@@ -1,0 +1,47 @@
+[
+  {
+    "name": "01-vector",
+    "premultipliedRgbaMAE": 0.08185278574625651,
+    "pixelsWithin8": 0.997344970703125
+  },
+  {
+    "name": "02-gaussian-2",
+    "premultipliedRgbaMAE": 0.12849811105167167,
+    "pixelsWithin8": 0.9982376098632812
+  },
+  {
+    "name": "03-gaussian-8",
+    "premultipliedRgbaMAE": 0.21730243458467377,
+    "pixelsWithin8": 1.0
+  },
+  {
+    "name": "04-shadow-8",
+    "premultipliedRgbaMAE": 0.3054084964826995,
+    "pixelsWithin8": 0.9713783264160156
+  },
+  {
+    "name": "05-morphology-4",
+    "premultipliedRgbaMAE": 0.0813625971476237,
+    "pixelsWithin8": 0.9958877563476562
+  },
+  {
+    "name": "06-color-matrix",
+    "premultipliedRgbaMAE": 0.06860061720305799,
+    "pixelsWithin8": 0.9976272583007812
+  },
+  {
+    "name": "07-filter-chain",
+    "premultipliedRgbaMAE": 0.18311568241493376,
+    "pixelsWithin8": 0.9974594116210938
+  },
+  {
+    "name": "08-turbulence-4",
+    "premultipliedRgbaMAE": 1.6472059623867858,
+    "pixelsWithin8": 0.999114990234375
+  },
+  {
+    "name": "10-gaussian-8-linear",
+    "premultipliedRgbaMAE": 0.35693160412358305,
+    "pixelsWithin8": 0.9981040954589844
+  }
+]

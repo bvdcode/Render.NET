@@ -54,6 +54,11 @@ namespace Render.NET.Svg
         {
             int ix = (int)MathF.Floor(x), iy = (int)MathF.Floor(y);
             float fx = x - ix, fy = y - iy;
+            if (fx == 0 && fy == 0)
+            {
+                return At(image, ix, iy, linear, edge);
+            }
+
             return Vector4.Lerp(Vector4.Lerp(At(image, ix, iy, linear, edge), At(image, ix + 1, iy, linear, edge), fx), Vector4.Lerp(At(image, ix, iy + 1, linear, edge), At(image, ix + 1, iy + 1, linear, edge), fx), fy);
         }
 
