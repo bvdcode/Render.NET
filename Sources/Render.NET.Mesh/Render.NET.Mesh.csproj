@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Simplifies OBJ and 3MF parsing, polygon triangulation, mesh validation, and normal preparation. Makes arithmetic precedence explicit throughout the renderer. Verified identical geometry for all eight fixture models and identical pixels and PNG bytes across 24 render configurations.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses the expanded Render.NET core alongside the new PDF renderer. Existing STL, OBJ, and 3MF loading and mesh rendering behavior is retained.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

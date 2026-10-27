@@ -9,7 +9,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/bvdcode/Render.NET/badge)](https://www.codefactor.io/repository/github/bvdcode/Render.NET)
 [![License](https://img.shields.io/github/license/bvdcode/Render.NET)](https://github.com/bvdcode/Render.NET/blob/main/LICENSE)
 
-Render STL, OBJ, and 3MF models to transparent PNG previews in managed C#. Runs on the CPU using .NET 10 and the base class library, without a native graphics dependency, GPU, display server, or external renderer process.
+Render STL, OBJ, 3MF, and PDF files to PNG previews in managed C#. Runs on the CPU using .NET 10, without a native graphics dependency, GPU, display server, or external renderer process. Core and Mesh use the base class library; Pdf uses the managed PdfPig reader and StbImageSharp JPEG decoder.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/stl-preview.png" alt="A torus knot loaded from STL and rendered with Render.NET.Mesh" width="512" />
@@ -19,16 +19,45 @@ Render STL, OBJ, and 3MF models to transparent PNG previews in managed C#. Runs 
 
 | Package | Available now |
 | --- | --- |
-| [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixel buffers, sRGB colors with straight alpha, and metadata-free PNG encoding. |
+| [Render.NET](https://www.nuget.org/packages/Render.NET/) | RGBA8 pixels, vector paths, fills and strokes, clipping, affine images, alpha compositing, and metadata-free PNG encoding. |
 | [Render.NET.Mesh](https://www.nuget.org/packages/Render.NET.Mesh/) | STL, OBJ, and 3MF geometry, explicit assembly selection, indexed triangle meshes, and studio-lit orthographic previews. Depends on Render.NET. |
-| Render.NET.Pdf | Planned. |
+| [Render.NET.Pdf](https://www.nuget.org/packages/Render.NET.Pdf/) | PDF page interpretation and CPU rendering: font outlines, vector graphics, raster images, clipping, transparency, crop boxes, and rotation. Depends on Render.NET, PdfPig, and StbImageSharp. |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/mech-managed.png" alt="A 66-part 3MF robot rendered from geometry" width="320" />
   <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/benchy-lime.png" alt="3DBenchy rendered from STL with a caller-supplied lime color" width="320" />
 </p>
 
-## Performance
+## PDF to PNG
+
+```bash
+dotnet add package Render.NET.Pdf
+```
+
+```csharp
+using Render.NET;
+using Render.NET.Pdf;
+
+using PdfDocument document = await PdfReader.ReadFileAsync("document.pdf");
+PdfPage page = document.GetPage(1); // One-based, out of document.PageCount pages.
+PixelBuffer image = PdfRenderer.Render(page, new PdfRenderOptions
+{
+    Dpi = 144,
+    MaximumWidth = 1600,
+    Supersampling = 2
+});
+
+await using var destination = File.Create("page.png");
+await PngEncoder.WriteAsync(image, destination);
+```
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bvdcode/Render.NET/main/docs/images/pdf-preview.png" alt="A PDF page with embedded fonts, rounded vector shapes, a chart, and text rendered by Render.NET.Pdf" width="420" />
+</p>
+
+PDF is a large format: this first renderer supports paths, embedded font outlines, substituted fonts, images, forms, clipping, constant alpha, and separable blend modes. Unsupported features are listed on `page.UnsupportedFeatures` and **rendering rejects them by default**. Shadings, patterns, Type 3 glyphs, annotation appearances, and transparency groups are not yet rendered faithfully. See [the PDF guide](https://github.com/bvdcode/Render.NET/blob/main/docs/pdf.md) for the support matrix, fonts, limits, and CLI example.
+
+## Mesh performance
 
 **512 × 512 CPU previews in 186–537 ms inside a running .NET process**, including model loading and PNG/file writing, on the five models below. This is the repeated-call scenario used by a service such as a thumbnail worker.
 

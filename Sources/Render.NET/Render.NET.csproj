@@ -9,8 +9,8 @@
         <Company>bvdcode</Company>
         <Product>Render.NET</Product>
         <Title>Render.NET</Title>
-        <Description>Managed RGBA8 pixel buffers and metadata-free PNG encoding for .NET. Supports sRGB colors and straight alpha without native graphics dependencies.</Description>
-        <Summary>RGBA pixel buffers and managed PNG encoding.</Summary>
+        <Description>Managed RGBA8 pixel buffers, vector paths, fills and strokes, clipping, affine images, alpha compositing, and metadata-free PNG encoding for .NET. No native graphics dependencies.</Description>
+        <Summary>Managed vector drawing, RGBA pixels, and PNG encoding.</Summary>
         <Copyright>Copyright © Vadim Belov 2026</Copyright>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageId>Render.NET</PackageId>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Makes pixel-buffer offset arithmetic explicit as part of the rendering code quality cleanup. Pixel and PNG output remain unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Adds managed vector paths, scanline fills, affine strokes and images, clipping, straight-alpha compositing, and separable blend modes for PDF page rendering. PNG output remains metadata-free.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

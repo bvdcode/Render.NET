@@ -1,0 +1,32 @@
+{
+  "author": "Sora Sagano (dot colon)",
+  "publicDomainDeclaration": "https://dotcolon.net/font/aileron/",
+  "declarationMirror": "https://raw.githubusercontent.com/reinhart1010/aileron/0b12b2b472f8f580b4807b3f5d3ac7bdde331497/LICENSE",
+  "dedication": "CC0-1.0",
+  "files": [
+    {
+      "file": "Aileron-Regular.ttf",
+      "source": "https://raw.githubusercontent.com/reinhart1010/aileron/0b12b2b472f8f580b4807b3f5d3ac7bdde331497/fonts/Aileron-Regular.ttf",
+      "sha256": "030fa01d4126bcf8dac3a5831b8dcdddcd3de9c3f62737214bef6c02e958ec9a",
+      "bytes": 38168
+    },
+    {
+      "file": "Aileron-Italic.ttf",
+      "source": "https://raw.githubusercontent.com/reinhart1010/aileron/0b12b2b472f8f580b4807b3f5d3ac7bdde331497/fonts/Aileron-Italic.ttf",
+      "sha256": "f8d1ce7a892511f49e97ddf266eff44de9ebba0bebed4b472de884e4bfa9c7d2",
+      "bytes": 41032
+    },
+    {
+      "file": "Aileron-Bold.ttf",
+      "source": "https://raw.githubusercontent.com/reinhart1010/aileron/0b12b2b472f8f580b4807b3f5d3ac7bdde331497/fonts/Aileron-Bold.ttf",
+      "sha256": "a70be0bc837af8b904fe85abc477987d5709ca57ea176d479dfbd6a190b2a83d",
+      "bytes": 38304
+    },
+    {
+      "file": "Aileron-BoldItalic.ttf",
+      "source": "https://raw.githubusercontent.com/reinhart1010/aileron/0b12b2b472f8f580b4807b3f5d3ac7bdde331497/fonts/Aileron-BoldItalic.ttf",
+      "sha256": "012cb94f7c3b66c701e4efeb7022622dfa2d82810cb88b99262206bb1080bcce",
+      "bytes": 40620
+    }
+  ]
+}

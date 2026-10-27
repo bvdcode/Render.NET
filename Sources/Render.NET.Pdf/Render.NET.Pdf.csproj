@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Render.NET.Pdf</RootNamespace>
+        <Version>0.3.3</Version>
+        <Authors>Vadim Belov</Authors>
+        <Company>bvdcode</Company>
+        <Product>Render.NET.Pdf</Product>
+        <Title>Render.NET.Pdf</Title>
+        <Description>Managed PDF page rendering to RGBA and PNG for .NET. Vector paths, font outlines, images, clipping, transparency, page selection, and configurable resolution without native graphics libraries.</Description>
+        <Summary>Managed PDF to PNG rendering.</Summary>
+        <Copyright>Copyright © Vadim Belov 2026</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageId>Render.NET.Pdf</PackageId>
+        <PackageTags>pdf;rendering;graphics;png;thumbnails;managed;dotnet</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>packageIcon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>Introduces managed PDF page rendering with vector paths, font outlines, raster images, clipping, transparency, configurable DPI and antialiasing. Includes a command-line example, offline regression fixtures, and explicit unsupported-feature reporting.</PackageReleaseNotes>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Fonts/*.ttf" />
+        <None Update="Fonts/provenance.json" Pack="true" PackagePath="/fonts/" />
+        <PackageReference Include="PdfPig" Version="0.1.16" />
+        <PackageReference Include="StbImageSharp" Version="2.30.16" />
+        <ProjectReference Include="../Render.NET/Render.NET.csproj" />
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+        <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+    </ItemGroup>
+
+</Project>

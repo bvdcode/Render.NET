@@ -1,0 +1,35 @@
+{
+  "origin": "Authored in this repository; no third-party document content.",
+  "files": [
+    {
+      "file": "encrypted.pdf",
+      "bytes": 1777,
+      "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
+    },
+    {
+      "file": "graphics.pdf",
+      "bytes": 1900,
+      "sha256": "af4caa52dea88dfac6c75c36a7078742c36a740ab982dc733cb2452588fb3478"
+    },
+    {
+      "file": "images.pdf",
+      "bytes": 3503,
+      "sha256": "63047323f24ae3e68a6329907a3ca2f9b1871244579eb9e5f1b527754a5b47f5"
+    },
+    {
+      "file": "preview.pdf",
+      "bytes": 18506,
+      "sha256": "551aaf680b849845aa5cf58b53192e82de1ad635eb2c0a3071f8ad0bbd165fba"
+    },
+    {
+      "file": "text.pdf",
+      "bytes": 34080,
+      "sha256": "36697de945bca62617f186fac3b59a90de0840e0e8326045bc09764083a967b9"
+    },
+    {
+      "file": "unsupported.pdf",
+      "bytes": 1618,
+      "sha256": "e5eb038cb8f4dbc77b419a0f863630eddb2760aaaaa219974dadb9d4af58206c"
+    }
+  ]
+}
