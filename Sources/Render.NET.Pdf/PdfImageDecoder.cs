@@ -44,7 +44,9 @@ namespace Render.NET.Pdf
 
                 if (filter is JpxDecodeFilter)
                 {
-                    throw new NotSupportedException("JPEG 2000 (JPXDecode) images");
+                    PixelBuffer decoded = DecodeJpeg2000(image, bytes);
+                    ApplyMask(decoded, image.MaskImage);
+                    return decoded;
                 }
 
                 if (filter is Jbig2DecodeFilter)

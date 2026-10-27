@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Render.NET.Jpeg2000</RootNamespace>
+    <Version>0.3.7</Version>
+    <Authors>Vadim Belov</Authors>
+    <Company>bvdcode</Company>
+    <Product>Render.NET.Jpeg2000</Product>
+    <Title>Render.NET.Jpeg2000</Title>
+    <Summary>Managed JP2 and J2K decoding into integer component samples.</Summary>
+    <Copyright>Copyright © Vadim Belov 2026</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>Managed JPEG 2000 Part 1 decoding from JP2 containers and raw J2K codestreams without native or third-party runtime dependencies.</Description>
+    <PackageId>Render.NET.Jpeg2000</PackageId>
+    <PackageTags>jpeg2000;jp2;j2k;jpx;decoder;managed;dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/bvdcode/Render.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>packageIcon.png</PackageIcon>
+    <PackageReleaseNotes>Introduces an original managed JPEG 2000 Part 1 decoder for JP2 and raw J2K, reversible and irreversible wavelets, and component samples for PDF integration. No third-party codec dependency.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

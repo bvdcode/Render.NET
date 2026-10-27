@@ -9,9 +9,9 @@ Runtime dependencies for net10.0:
 - StbImageSharp 2.30.16: Unlicense OR MIT.
 - PdfPig.Filters.Jbig2.PdfboxJbig2 0.1.16.2: Apache-2.0.
 
-CoreJ2K is not a dependency from Render.NET.Pdf 0.3.6 onward. JPEG 2000 is
-unsupported. Version 0.3.5 included that dependency and is not covered by this
-inventory of the current package.
+CoreJ2K is not a dependency from Render.NET.Pdf 0.3.6 onward.
+Render.NET.Pdf 0.3.7 restores JPEG 2000 through the original MIT-licensed
+Render.NET.Jpeg2000 project in this repository, without third-party codec code.
 
 Bundled fonts:
 - Aileron by Sora Sagano: public domain / CC0-1.0.

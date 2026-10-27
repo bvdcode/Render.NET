@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Republished with corrected PDF support documentation and the matching core package. STL, OBJ and 3MF loading and rendering are unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Republished with matching core and JPEG 2000/PDF packages; STL, OBJ and 3MF loading and rendering are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

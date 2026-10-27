@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Removes CoreJ2K because its source retains additional JJ2000 licensing conditions beyond the advertised BSD license. JPEG 2000 images are now explicitly reported as unsupported and rejected by default. Preserves JPEG, JBIG2, fonts, gradients, transparency, and form appearances; includes third-party licenses and notices.</PackageReleaseNotes>
+        <PackageReleaseNotes>Restores JP2 and raw JPEG 2000 images with our original managed Render.NET.Jpeg2000 decoder. Supports gray, RGB, CMYK, 16-bit samples, embedded opacity and external masks without CoreJ2K or native codecs. Adds independent pixel regression cases and documents unsupported extensions.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
@@ -38,6 +38,7 @@
         <PackageReference Include="StbImageSharp" Version="2.30.16" />
         <PackageReference Include="PdfPig.Filters.Jbig2.PdfboxJbig2" Version="0.1.16.2" />
         <ProjectReference Include="../Render.NET/Render.NET.csproj" />
+        <ProjectReference Include="../Render.NET.Jpeg2000/Render.NET.Jpeg2000.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
         <None Include="../../LICENSE" Pack="true" PackagePath="/" />
         <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />

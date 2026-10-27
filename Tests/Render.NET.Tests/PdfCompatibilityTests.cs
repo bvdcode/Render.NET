@@ -8,17 +8,16 @@ namespace Render.NET.Tests
         private static readonly PdfRenderOptions Exact = new() { Dpi = 72, Supersampling = 1 };
 
         [Test]
-        public async Task ReportsJpeg2000AndRendersJbig2OnlyWithExplicitPartialRendering()
+        public async Task RendersJpeg2000AndJbig2ScansWithManagedCodecs()
         {
             string file = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "scan-codecs.pdf");
             using PdfDocument document = await PdfReader.ReadFileAsync(file);
             PdfPage page = document.GetPage(1);
-            Assert.That(page.UnsupportedFeatures, Does.Contain("JPEG 2000 (JPXDecode) images"));
-            Assert.Throws<NotSupportedException>(() => PdfRenderer.Render(page, Exact));
-            PixelBuffer image = PdfRenderer.Render(page, new PdfRenderOptions { Dpi = 72, Supersampling = 1, AllowPartialRendering = true });
-            Assert.That(image[20, 50], Is.EqualTo(new Rgba32(255, 255, 255)));
-            Assert.That(image[50, 50], Is.EqualTo(new Rgba32(255, 255, 255)));
-            Assert.That(image[100, 50], Is.EqualTo(new Rgba32(255, 255, 255)));
+            Assert.That(page.UnsupportedFeatures, Is.Empty);
+            PixelBuffer image = PdfRenderer.Render(page, Exact);
+            Assert.That(image[20, 50], Is.EqualTo(new Rgba32(255, 0, 0)));
+            Assert.That(image[50, 50], Is.EqualTo(new Rgba32(0, 0, 255)));
+            Assert.That(image[100, 50], Is.EqualTo(new Rgba32(64, 64, 64)));
             Assert.That(image[150, 50], Is.EqualTo(new Rgba32(0, 0, 0)));
             Assert.That(image[180, 50], Is.EqualTo(new Rgba32(255, 255, 255)));
         }
@@ -199,25 +198,14 @@ namespace Render.NET.Tests
             Assert.That(image[100, 50], Is.EqualTo(new Rgba32(255, 255, 255)));
         }
 
-        [TestCase(0)]
-        [TestCase(1)]
-        public async Task Jp2AndRawJpeg2000AreReportedAndRejectedByDefault(int imageIndex)
+        [TestCase(0, "JPXDecode")]
+        [TestCase(1, "JPXDecode")]
+        [TestCase(2, "JBIG2Decode")]
+        public async Task ScanDimensionsAreValidatedBeforeCompositing(int index, string filter)
         {
             using var source = UglyToad.PdfPig.PdfDocument.Open(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "scan-codecs.pdf"));
-            var image = source.GetPage(1).GetImages().ElementAt(imageIndex);
-            byte[] picture = PdfTestDocument.Stream(image.RawMemory.ToArray(), "/Type /XObject /Subtype /Image /Width 32 /Height 32 /BitsPerComponent 8 /ColorSpace /DeviceRGB /Filter /JPXDecode");
-            using PdfDocument document = await Read(PdfTestDocument.Create("/I Do", resources: "/XObject << /I 5 0 R >>", extraObjects: picture));
-            PdfPage page = document.GetPage(1);
-            Assert.That(page.UnsupportedFeatures, Does.Contain("JPEG 2000 (JPXDecode) images"));
-            Assert.Throws<NotSupportedException>(() => PdfRenderer.Render(page, Exact));
-        }
-
-        [Test]
-        public async Task Jbig2DimensionsAreValidatedBeforeCompositing()
-        {
-            using var source = UglyToad.PdfPig.PdfDocument.Open(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "scan-codecs.pdf"));
-            var image = source.GetPage(1).GetImages().Last();
-            byte[] picture = PdfTestDocument.Stream(image.RawMemory.ToArray(), "/Type /XObject /Subtype /Image /Width 1 /Height 1 /BitsPerComponent 1 /ColorSpace /DeviceGray /Filter /JBIG2Decode");
+            var image = source.GetPage(1).GetImages().ElementAt(index);
+            byte[] picture = PdfTestDocument.Stream(image.RawMemory.ToArray(), "/Type /XObject /Subtype /Image /Width 1 /Height 1 /BitsPerComponent 1 /ColorSpace /DeviceGray /Filter /" + filter);
             using PdfDocument document = await Read(PdfTestDocument.Create("/I Do", resources: "/XObject << /I 5 0 R >>", extraObjects: picture));
             Assert.Throws<InvalidDataException>(() => document.GetPage(1));
         }

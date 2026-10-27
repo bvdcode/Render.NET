@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageReference Include="NUnit" Version="5.0.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
+    <ProjectReference Include="../../Sources/Render.NET.Jpeg2000/Render.NET.Jpeg2000.csproj" />
     <ProjectReference Include="../../Sources/Render.NET.Mesh/Render.NET.Mesh.csproj" />
     <ProjectReference Include="../../Sources/Render.NET.Pdf/Render.NET.Pdf.csproj" />
   </ItemGroup>
