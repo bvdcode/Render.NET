@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Adds the standalone managed JBIG2 codec to the Render.NET package family. Core pixel rendering and PNG output remain unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Maintenance release: simplifies the JBIG2 fixture generator for clean code analysis. Core rendering and PNG output are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Replaces PdfPig.Filters.Jbig2.PdfboxJbig2 with our original dependency-free Render.NET.Jbig2 decoder. Preserves indirect and compressed JBIG2Globals, chained image filters, exact scan pixels and existing PDF render behavior.</PackageReleaseNotes>
+        <PackageReleaseNotes>Maintenance release using the matching original JBIG2 package after its fixture generator cleanup. PDF globals, chained filters and rendered scan pixels remain unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

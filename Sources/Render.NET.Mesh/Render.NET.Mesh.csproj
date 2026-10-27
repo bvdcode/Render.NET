@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Includes the new JBIG2 companion package in the Render.NET family. STL, OBJ and 3MF rendering behavior is unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Maintenance release alongside the managed JBIG2 companion. Mesh parsing, rendering and runtime dependencies are unchanged.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

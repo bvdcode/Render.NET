@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Introduces original managed JBIG2 decoding: arithmetic and MMR bitmaps, Huffman and arithmetic symbol dictionaries, global symbols, text, refinement and halftones. No native or third-party runtime dependencies. Includes 98 authored pixel fixtures independently checked with PDFBox, resource limits and malformed-input regressions.</PackageReleaseNotes>
+    <PackageReleaseNotes>Splits the authored symbol-fixture generator into smaller functions to remove the CodeFactor complexity issue. All 98 encoded fixtures and expected pixels remain byte-for-byte identical; decoder behavior and dependency-free packaging are unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

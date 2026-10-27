@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Shares the original internal MQ probability decoder with the new JBIG2 package without introducing a runtime dependency. Existing JPEG 2000 pixel regression checks remain unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Maintenance release after the JBIG2 fixture generator cleanup. JPEG 2000 decoding and shared MQ probability states are unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
