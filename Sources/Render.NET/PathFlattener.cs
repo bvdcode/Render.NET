@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace Render.NET
 {
-
     internal static class PathFlattener
     {
         internal static List<PathContour> Flatten(VectorPath path, Matrix3x2 transform, float tolerance = 0.2f, CancellationToken cancellationToken = default)

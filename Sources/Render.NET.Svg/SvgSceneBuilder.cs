@@ -160,14 +160,27 @@ namespace Render.NET.Svg
             }
 
             SvgClip? clip = Clip(Value(style, "clip-path", "none"), depth);
-            return new SvgNode(path, Paint(Value(style, "fill", "black"), style), Paint(Value(style, "stroke", "none"), style), Pen(style), Rule(Value(style, "fill-rule", "nonzero")), Rule(Value(style, "clip-rule", "nonzero")), transform, Opacity(style, "opacity"), Opacity(style, "fill-opacity"), Opacity(style, "stroke-opacity"), clip, children.ToArray())
+            SvgNode node = new SvgNode(path, Paint(Value(style, "fill", "black"), style), Paint(Value(style, "stroke", "none"), style), Pen(style), Rule(Value(style, "fill-rule", "nonzero")), Rule(Value(style, "clip-rule", "nonzero")), transform, Opacity(style, "opacity"), Opacity(style, "fill-opacity"), Opacity(style, "stroke-opacity"), clip, children.ToArray())
             {
                 Mask = Mask(Value(style, "mask", "none"), depth),
                 Filter = Filter(Value(style, "filter", "none"), style, depth),
-                BlendMode = Blend(Value(style, "mix-blend-mode", "normal")),
+                BlendMode = Blend(Value(style, "mix-blend-mode", "normal"))
+            };
+            return PlaceImage(node, e, image);
+        }
+
+        private SvgNode PlaceImage(SvgNode node, XElement element, PixelBuffer? image)
+        {
+            if (image is null)
+            {
+                return node;
+            }
+
+            return node with
+            {
                 Image = image,
-                ImageTransform = image is null ? Matrix3x2.Identity : ImagePlacement(e, image),
-                ImageViewport = image is null ? null : new VectorPath().Rectangle(Length(e, "x", 0, _width), Length(e, "y", 0, _height), Length(e, "width", image.Width, _width), Length(e, "height", image.Height, _height))
+                ImageTransform = ImagePlacement(element, image),
+                ImageViewport = new VectorPath().Rectangle(Length(element, "x", 0, _width), Length(element, "y", 0, _height), Length(element, "width", image.Width, _width), Length(element, "height", image.Height, _height))
             };
         }
 

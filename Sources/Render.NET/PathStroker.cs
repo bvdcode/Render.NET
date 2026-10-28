@@ -90,27 +90,7 @@ namespace Render.NET
 
         private static void Dashed(VectorPath output, PathContour contour, float radius, StrokeStyle style, CancellationToken cancellationToken)
         {
-            var pattern = new List<float>(style.Dashes);
-            if (pattern.Count % 2 != 0)
-            {
-                pattern.AddRange(style.Dashes);
-            }
-
-            float total = 0;
-            foreach (float value in pattern)
-            {
-                total += value;
-            }
-
-            float phase = ((style.DashOffset % total) + total) % total;
-            int index = 0;
-            while (phase >= pattern[index])
-            {
-                phase -= pattern[index];
-                index = (index + 1) % pattern.Count;
-            }
-
-            float remaining = pattern[index] - phase;
+            List<float> pattern = DashPattern(style, out int index, out float remaining);
             List<Vector2>? run = null;
             int pieces = 0;
             int segments = contour.Closed ? contour.Points.Count : contour.Points.Count - 1;
@@ -157,6 +137,32 @@ namespace Render.NET
             {
                 Solid(output, new PathContour(run, false), radius, style);
             }
+        }
+
+        private static List<float> DashPattern(StrokeStyle style, out int index, out float remaining)
+        {
+            var pattern = new List<float>(style.Dashes);
+            if (pattern.Count % 2 != 0)
+            {
+                pattern.AddRange(style.Dashes);
+            }
+
+            float total = 0;
+            foreach (float value in pattern)
+            {
+                total += value;
+            }
+
+            float phase = ((style.DashOffset % total) + total) % total;
+            index = 0;
+            while (phase >= pattern[index])
+            {
+                phase -= pattern[index];
+                index = (index + 1) % pattern.Count;
+            }
+
+            remaining = pattern[index] - phase;
+            return pattern;
         }
 
         private static void Segment(VectorPath output, Vector2 a, Vector2 b, float radius)

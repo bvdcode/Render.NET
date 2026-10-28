@@ -30,6 +30,14 @@ namespace Render.NET.Svg
             var raw = new List<TextCharacter>();
             GatherText(e, style, null, 16, Matrix3x2.Identity, false, raw, depth);
             List<TextCharacter>? text = NormalizeText(raw);
+            List<PlacedGlyph> glyphs = LayoutText(text);
+            AdjustTextLength(e, glyphs);
+            Anchor(glyphs);
+            return BuildTextNodes(glyphs, depth);
+        }
+
+        private List<PlacedGlyph> LayoutText(List<TextCharacter> text)
+        {
             var glyphs = new List<PlacedGlyph>();
             float x = 0, y = 0;
             SvgTrueType? previousFont = null;
@@ -60,8 +68,11 @@ namespace Render.NET.Svg
                 previousGlyph = glyph;
             }
 
-            AdjustTextLength(e, glyphs);
-            Anchor(glyphs);
+            return glyphs;
+        }
+
+        private SvgNode[] BuildTextNodes(List<PlacedGlyph> glyphs, int depth)
+        {
             var result = new List<SvgNode>();
             var spans = new Dictionary<TextSpan, (SvgNode Node, List<SvgNode> Children)>();
             List<SvgNode> Container(TextSpan span)

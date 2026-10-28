@@ -4,7 +4,6 @@ using System.Numerics;
 
 namespace Render.NET
 {
-
     /// <summary>A mutable vector path. Coordinates may use any consistent unit.</summary>
     public partial class VectorPath
     {

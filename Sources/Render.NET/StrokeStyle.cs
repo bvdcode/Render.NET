@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Render.NET
 {
-
     /// <summary>Stroke dimensions in the path's coordinate system.</summary>
     public record StrokeStyle
     {

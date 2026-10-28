@@ -7,7 +7,6 @@ using System.Threading;
 
 namespace Render.NET
 {
-
     public partial class VectorPath
     {
         /// <summary>Combines filled paths by splitting a planar edge arrangement and tracing its boundary.

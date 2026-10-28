@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace Render.NET
 {
-
     internal static class PixelCompositor
     {
         internal static void Blend(Span<byte> pixels, int offset, Rgba32 source, ColorBlendMode mode)

@@ -2,7 +2,6 @@ using System;
 
 namespace Render.NET.Jpeg2000
 {
-
     /// <summary>A decoded image retaining component precision, signs and sampling.</summary>
     public class Jpeg2000Image
     {

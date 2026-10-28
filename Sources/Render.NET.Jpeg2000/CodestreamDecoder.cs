@@ -61,6 +61,12 @@ namespace Render.NET.Jpeg2000
             }
 
             _input.End();
+            ReconstructTiles();
+            return new Jpeg2000Image(_x0, _y0, _x1 - _x0, _y1 - _y0, _components, _info);
+        }
+
+        private void ReconstructTiles()
+        {
             foreach (Tile? tile in _tiles)
             {
                 if (tile is null || tile.PacketIndex != tile.Packets.Length)
@@ -75,8 +81,6 @@ namespace Render.NET.Jpeg2000
 
                 TileAssembler.Copy(tile, _components, _budget);
             }
-
-            return new Jpeg2000Image(_x0, _y0, _x1 - _x0, _y1 - _y0, _components, _info);
         }
 
         private static int Dimension(ByteReader input)

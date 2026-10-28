@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace Render.NET.Svg
 {
-
     internal record SvgMask(SvgNode Content, SvgRegion Region, bool ContentBox, bool Luminance, bool Linear)
     {
         internal void Apply(PixelBuffer source, (float X, float Y, float Width, float Height) box, Matrix3x2 matrix, SvgRenderContext context)

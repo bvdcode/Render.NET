@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace Render.NET.Jbig2
 {
-
     /// <summary>Decodes JBIG2 using managed code, with optional PDF JBIG2Globals.</summary>
     public static class Jbig2Decoder
     {

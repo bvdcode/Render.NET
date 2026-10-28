@@ -80,27 +80,30 @@ namespace Render.NET.Svg
                     }
                 }
 
-                foreach (string name in new[]
-                {
-                    "flood-color",
-                    "flood-opacity",
-                    "lighting-color",
-                    "color-interpolation-filters"
-                }
-
-                )
-                {
-                    if (properties.TryGetValue(name, out string? property))
-                    {
-                        operation.SetAttributeValue(name, property == "currentColor" ? Value(properties, "color", "black") : property);
-                    }
-                }
+                ApplyFilterProperties(operation, properties);
             }
 
             return new SvgFilter(Region(target, "filterUnits"), (string?)target.Attribute("primitiveUnits") == "objectBoundingBox", operations, Value(style, "color-interpolation-filters", "linearRGB") != "sRGB")
             {
                 Images = images
             };
+        }
+
+        private static void ApplyFilterProperties(XElement operation, Dictionary<string, string> properties)
+        {
+            foreach (string name in new[]
+            {
+                "flood-color",
+                "flood-opacity",
+                "lighting-color",
+                "color-interpolation-filters"
+            })
+            {
+                if (properties.TryGetValue(name, out string? property))
+                {
+                    operation.SetAttributeValue(name, property == "currentColor" ? Value(properties, "color", "black") : property);
+                }
+            }
         }
 
         private SvgNode? FilterImage(XElement operation, int depth)

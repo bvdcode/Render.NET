@@ -32,19 +32,7 @@ namespace Render.NET.Pdf
 
             if (shading is not AxialShading && shading is not RadialShading)
             {
-                PdfShadingMesh mesh = PdfShadingMesh.Read(shading, _limits, _cancellationToken);
-                _shadingBytes = checked(_shadingBytes + mesh.StorageBytes);
-                if (_shadingBytes > _limits.MaximumShadingBytes)
-                {
-                    throw new System.IO.InvalidDataException("PDF page exceeds MaximumShadingBytes.");
-                }
-
-                _pathCommands = checked(_pathCommands + (mesh.Triangles.Count * 3) + (mesh.Patches.Count * 16));
-                if (_pathCommands > _limits.MaximumPathCommands)
-                {
-                    throw new System.IO.InvalidDataException("PDF page exceeds MaximumPathCommands including mesh shadings.");
-                }
-
+                PdfShadingMesh mesh = ReadShadingMesh(shading);
                 return new MeshShadingCommand(mesh, placement, opacity, blend, background);
             }
 
@@ -58,6 +46,24 @@ namespace Render.NET.Pdf
             }
 
             return new ShadingCommand(shading, colors, placement, blend, background);
+        }
+
+        private PdfShadingMesh ReadShadingMesh(Shading shading)
+        {
+            PdfShadingMesh mesh = PdfShadingMesh.Read(shading, _limits, _cancellationToken);
+            _shadingBytes = checked(_shadingBytes + mesh.StorageBytes);
+            if (_shadingBytes > _limits.MaximumShadingBytes)
+            {
+                throw new System.IO.InvalidDataException("PDF page exceeds MaximumShadingBytes.");
+            }
+
+            _pathCommands = checked(_pathCommands + (mesh.Triangles.Count * 3) + (mesh.Patches.Count * 16));
+            if (_pathCommands > _limits.MaximumPathCommands)
+            {
+                throw new System.IO.InvalidDataException("PDF page exceeds MaximumPathCommands including mesh shadings.");
+            }
+
+            return mesh;
         }
 
         private void AddFill(VectorPath path, FillRule rule, UglyToad.PdfPig.Graphics.CurrentGraphicsState state)

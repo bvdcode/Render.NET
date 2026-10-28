@@ -3,7 +3,6 @@ using System.IO;
 
 namespace Render.NET.Jpeg2000
 {
-
     internal static class Jp2Container
     {
         internal static (ReadOnlyMemory<byte> Stream, ContainerInfo Info) Read(ReadOnlyMemory<byte> data)
