@@ -14,9 +14,9 @@ namespace Render.NET.Jpeg2000
 
             for (int c = 0; c < outputs.Length; c++)
             {
-                var source = tile.Components[c];
-                var input = source.Output;
-                var output = outputs[c];
+                TileComponent? source = tile.Components[c];
+                Jpeg2000Component? input = source.Output;
+                Jpeg2000Component? output = outputs[c];
                 double shift = output.IsSigned ? 0 : 1 << (output.BitDepth - 1);
                 int minimum = output.IsSigned ? -(1 << (output.BitDepth - 1)) : 0;
                 int maximum = output.IsSigned ? (1 << (output.BitDepth - 1)) - 1 : (1 << output.BitDepth) - 1;
@@ -47,9 +47,9 @@ namespace Render.NET.Jpeg2000
                 throw new InvalidDataException("JPEG 2000 MCT requires three components.");
             }
 
-            var a = components[0];
-            var b = components[1];
-            var c = components[2];
+            TileComponent? a = components[0];
+            TileComponent? b = components[1];
+            TileComponent? c = components[2];
             ValidateGrid(a.Output, b.Output);
             ValidateGrid(a.Output, c.Output);
             for (int i = 0; i < a.Reconstructed.Length; i++)

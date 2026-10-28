@@ -13,7 +13,7 @@ namespace Render.NET.Tests
         public void AppliesAllResourceLimitsAndCancellation()
         {
             byte[] data = Read("text-h0-mmr0-t0-c1-x0");
-            foreach (var options in new Jbig2DecodeOptions[]
+            foreach (Jbig2DecodeOptions options in new Jbig2DecodeOptions[]
             {
                 new()
                 {
@@ -67,7 +67,7 @@ namespace Render.NET.Tests
         {
             string scans = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "Scans");
             byte[] data = File.ReadAllBytes(Path.Combine(scans, "page.jbig2")), globals = File.ReadAllBytes(Path.Combine(scans, "globals.jbig2"));
-            var page = Jbig2Decoder.Decode(data, globals).Pages[0];
+            Jbig2Page? page = Jbig2Decoder.Decode(data, globals).Pages[0];
             Assert.That((page.Width, page.Height), Is.EqualTo((320, 120)));
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(data));
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(data, globals, new() { MaximumEncodedBytes = data.Length + globals.Length - 1 }));
@@ -76,13 +76,13 @@ namespace Render.NET.Tests
         [Test]
         public void DecodesMultiplePagesWithLargePageAssociationsAndChecksThePageLimit()
         {
-            var parts = Parts(Read("mmr-odd"));
+            List<byte[]>? parts = Parts(Read("mmr-odd"));
             byte[] data = Segment(1, 48, 1, parts[0]).Concat(Segment(2, 38, 1, parts[1])).Concat(Segment(3, 48, 300, parts[0])).Concat(Segment(4, 38, 300, parts[1])).ToArray();
-            var result = Jbig2Decoder.Decode(data);
+            Jbig2Document? result = Jbig2Decoder.Decode(data);
             Assert.That(result.Pages.Select(p => p.Number), Is.EqualTo(new uint[] { 1, 300 }));
             Assert.That(result.Pages[1].Data.ToArray(), Is.EqualTo(File.ReadAllBytes(Path.Combine(Root, "mmr-odd.bin"))));
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(data, options: new() { MaximumPages = 1 }));
-            var page = result.Pages[0];
+            Jbig2Page? page = result.Pages[0];
             for (int y = 0; y < page.Height; y++)
             {
                 for (int x = 0; x < page.Width; x++)
@@ -127,7 +127,7 @@ namespace Render.NET.Tests
                 }
             }
 
-            var parts = Parts(Read("generic-t0-tp0-at0"));
+            List<byte[]>? parts = Parts(Read("generic-t0-tp0-at0"));
             byte[] truncated = Segment(1, 48, 1, parts[0]).Concat(Segment(2, 38, 1, parts[1][..^2])).ToArray();
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(truncated));
         }
@@ -135,7 +135,7 @@ namespace Render.NET.Tests
         [Test]
         public void RejectsDuplicateMissingCrossPageAndForwardReferences()
         {
-            var parts = Parts(Read("mmr-odd"));
+            List<byte[]>? parts = Parts(Read("mmr-odd"));
             byte[] page = Segment(1, 48, 1, parts[0]);
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(page.Concat(page).ToArray()));
             Assert.Throws<InvalidDataException>(() => Jbig2Decoder.Decode(Segment(1, 38, 1, parts[1])));
@@ -148,7 +148,7 @@ namespace Render.NET.Tests
         [Test]
         public void RejectsUnsupportedNecessaryExtensionsAndExtendedTemplates()
         {
-            var parts = Parts(Read("generic-t0-tp0-at0"));
+            List<byte[]>? parts = Parts(Read("generic-t0-tp0-at0"));
             byte[] page = Segment(1, 48, 1, parts[0]);
             Assert.Throws<NotSupportedException>(() => Jbig2Decoder.Decode(page.Concat(Segment(2, 62, 0, new byte[] { 128, 0, 0, 0 })).ToArray()));
             parts[1][17] |= 16;
@@ -165,8 +165,8 @@ namespace Render.NET.Tests
         [Test]
         public void MalformedMutationCorpusHasOnlyControlledFailures()
         {
-            var random = new Random(7281);
-            var options = new Jbig2DecodeOptions
+            Random? random = new Random(7281);
+            Jbig2DecodeOptions? options = new Jbig2DecodeOptions
             {
                 MaximumPixels = 10_000,
                 MaximumDecodedPixels = 50_000,
@@ -197,7 +197,7 @@ namespace Render.NET.Tests
                     {
                         Jbig2Decoder.Decode(changed, options: options);
                     }
-                    catch (Exception ex)when (ex is InvalidDataException or NotSupportedException)
+                    catch (Exception ex) when (ex is InvalidDataException or NotSupportedException)
                     {
                     }
                 }
@@ -222,7 +222,7 @@ namespace Render.NET.Tests
 
         private static byte[] Segment(uint number, int type, uint page, byte[] data, params uint[] references)
         {
-            using var stream = new MemoryStream();
+            using MemoryStream? stream = new MemoryStream();
             void U32(uint value)
             {
                 Span<byte> buffer = stackalloc byte[4];

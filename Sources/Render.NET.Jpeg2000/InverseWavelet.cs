@@ -8,22 +8,22 @@ namespace Render.NET.Jpeg2000
         {
             double[] previous = Array.Empty<double>();
             Resolution? low = null;
-            foreach (var resolution in component.Resolutions)
+            foreach (Resolution resolution in component.Resolutions)
             {
                 budget.Cancellation.ThrowIfCancellationRequested();
                 budget.Reserve((long)resolution.Width * resolution.Height * 8);
-                var data = new double[resolution.Width * resolution.Height];
-                if (low != null)
+                double[]? data = new double[resolution.Width * resolution.Height];
+                if (low is not null)
                 {
                     Interleave(previous, low, data, resolution);
                 }
 
-                foreach (var band in resolution.Bands)
+                foreach (Subband band in resolution.Bands)
                 {
-                    DecodeBand(band, component, data, resolution, low == null, budget);
+                    DecodeBand(band, component, data, resolution, low is null, budget);
                 }
 
-                if (low != null)
+                if (low is not null)
                 {
                     Filter(data, resolution, component.Coding.Reversible, budget);
                 }
@@ -50,9 +50,9 @@ namespace Render.NET.Jpeg2000
 
         private static void DecodeBand(Subband band, TileComponent component, double[] data, Resolution resolution, bool lowest, DecodeBudget budget)
         {
-            foreach (var block in band.Blocks)
+            foreach (CodeBlock block in band.Blocks)
             {
-                var decoder = new BlockDecoder(block, band.Orientation, component.Coding.BlockStyle, budget);
+                BlockDecoder? decoder = new BlockDecoder(block, band.Orientation, component.Coding.BlockStyle, budget);
                 double[] values = decoder.Decode(band.Planes, band.Step, component.Coding.Reversible, component.RoiShift);
                 int stride = lowest ? 1 : 2;
                 int x0 = ((stride * block.X0) + (band.Orientation & 1)) - resolution.X0;
@@ -72,7 +72,7 @@ namespace Render.NET.Jpeg2000
             int w = resolution.Width;
             int h = resolution.Height;
             budget.Reserve((long)Math.Max(w, h) * 8);
-            var line = new double[Math.Max(w, h)];
+            double[]? line = new double[Math.Max(w, h)];
             for (int y = 0; y < h; y++)
             {
                 budget.Cancellation.ThrowIfCancellationRequested();

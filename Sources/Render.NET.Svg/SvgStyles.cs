@@ -6,24 +6,24 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private Dictionary<string, string> Style(XElement e, Dictionary<string, string> parent)
         {
             var result = parent.Where(p => Inherited.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value);
             Presentation(e, parent, result);
-            foreach (var rule in _rules.OrderBy(r => r.Specificity))
+            foreach ((string Selector, int Specificity, Dictionary<string, string> Values) rule in _rules.OrderBy(r => r.Specificity))
             {
                 if (Matches(e, rule.Selector))
                 {
-                    foreach (var p in rule.Values)
+                    foreach (KeyValuePair<string, string> p in rule.Values)
                     {
                         Set(result, parent, p.Key, p.Value);
                     }
                 }
             }
 
-            foreach (var p in Declarations((string?)e.Attribute("style") ?? ""))
+            foreach (KeyValuePair<string, string> p in Declarations((string?)e.Attribute("style") ?? ""))
             {
                 Set(result, parent, p.Key, p.Value);
             }
@@ -85,7 +85,7 @@ namespace Render.NET.Svg
 
         private void SetFont(Dictionary<string, string> target, string value)
         {
-            var match = System.Text.RegularExpressions.Regex.Match(value, @"^\s*(?<prefix>.*?)(?<size>(?:\d*\.)?\d+(?:px|pt|pc|mm|cm|in|em|ex|rem|%))(?:\s*/\s*[^\s]+)?\s+(?<family>.+)$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+            System.Text.RegularExpressions.Match? match = System.Text.RegularExpressions.Regex.Match(value, @"^\s*(?<prefix>.*?)(?<size>(?:\d*\.)?\d+(?:px|pt|pc|mm|cm|in|em|ex|rem|%))(?:\s*/\s*[^\s]+)?\s+(?<family>.+)$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
             if (!match.Success)
             {
                 Warn("SVG font shorthand: " + value);
@@ -131,7 +131,7 @@ namespace Render.NET.Svg
         private void StyleSheet(string text)
         {
             string? stripped = StripComments(text);
-            if (stripped == null)
+            if (stripped is null)
             {
                 return;
             }
@@ -210,7 +210,7 @@ namespace Render.NET.Svg
 
         private static bool SelectorPartMatches(XElement e, char prefix, string name) => prefix switch
         {
-            '.' => ((string?)e.Attribute("class") ?? "").Split((char[]? )null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
+            '.' => ((string?)e.Attribute("class") ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Contains(name),
             '#' => (string?)e.Attribute("id") == name,
             _ => name == "*" || e.Name.LocalName == name
         };

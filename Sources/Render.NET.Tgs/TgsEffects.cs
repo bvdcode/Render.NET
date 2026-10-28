@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private void Effects(JsonElement layer, XElement content, double frame)
         {
@@ -103,7 +103,7 @@ namespace Render.NET.Tgs
             };
             string original = "original" + filter.Elements().Count();
             filter.Add(new XElement("feColorMatrix", new XAttribute("result", original)));
-            var gray = new float[20];
+            float[]? gray = new float[20];
             foreach (int row in new[]
             {
                 0,

@@ -9,7 +9,7 @@ using Render.NET.Svg;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private XElement Shapes(JsonElement array, double frame, int depth)
         {
@@ -22,7 +22,7 @@ namespace Render.NET.Tgs
             }
 
             CheckTrimScopes(items);
-            var group = new XElement("g");
+            XElement? group = new XElement("g");
             JsonElement transform = items.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
             group.SetAttributeValue("transform", Matrix(Transform(transform, frame)));
             group.SetAttributeValue("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) / 100, 0, 1)));
@@ -120,7 +120,7 @@ namespace Render.NET.Tgs
                 else
                 {
                     VectorPath? path = Shape(items[i], frame);
-                    if (path != null)
+                    if (path is not null)
                     {
                         Geometry(path);
                         paths.Add((i, path));
@@ -136,7 +136,7 @@ namespace Render.NET.Tgs
                 }
             }
 
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             for (int i = paths.Count - 1; i >= 0; i--)
             {
                 result.Append(paths[i].Path);
@@ -167,7 +167,7 @@ namespace Render.NET.Tgs
             }
             else
             {
-                var combined = new VectorPath();
+                VectorPath? combined = new VectorPath();
                 for (int i = paths.Count - 1; i >= 0; i--)
                 {
                     if (paths[i].Index < index)
@@ -206,7 +206,7 @@ namespace Render.NET.Tgs
                 throw new InvalidDataException("Lottie path tangent counts do not match vertices.");
             }
 
-            var path = new VectorPath();
+            VectorPath? path = new VectorPath();
             if (av.Length == 0)
             {
                 return path;
@@ -274,7 +274,7 @@ namespace Render.NET.Tgs
 
             float r = (float)Math.Clamp(TgsValues.Scalar(TgsJson.Get(item, "r"), frame), 0, Math.Min(size.X, size.Y) / 2);
             float left = p.X - (size.X / 2), right = p.X + (size.X / 2), top = p.Y - (size.Y / 2), bottom = p.Y + (size.Y / 2);
-            var path = new VectorPath();
+            VectorPath? path = new VectorPath();
             bool reverse = TgsJson.Number(item, "d", 1) == 3;
             Vector2[] corners = reverse ? new[]
             {
@@ -322,13 +322,13 @@ namespace Render.NET.Tgs
 
             Vector2 p = TgsValues.Point(TgsJson.Get(item, "p"), frame);
             bool star = TgsJson.Number(item, "sy", 1) == 1;
-            var vertices = StarVertices(item, frame, p, points, star);
-            var path = new VectorPath();
+            List<(Vector2 Point, Vector2 Tangent)>? vertices = StarVertices(item, frame, p, points, star);
+            VectorPath? path = new VectorPath();
             path.MoveTo(vertices[0].Point.X, vertices[0].Point.Y);
             for (int i = 0; i < vertices.Count; i++)
             {
-                var a = vertices[i];
-                var b = vertices[(i + 1) % vertices.Count];
+                (Vector2 Point, Vector2 Tangent) a = vertices[i];
+                (Vector2 Point, Vector2 Tangent) b = vertices[(i + 1) % vertices.Count];
                 if (a.Tangent == Vector2.Zero && b.Tangent == Vector2.Zero)
                 {
                     path.LineTo(b.Point.X, b.Point.Y);

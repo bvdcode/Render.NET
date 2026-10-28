@@ -35,7 +35,7 @@ namespace Render.NET.Mesh
             options ??= new ThreeMfReaderOptions();
             using ThreeMfPackage package = await ThreeMfPackage.OpenAsync(source, options, cancellationToken).ConfigureAwait(false);
             string? part = await package.FindRootRelationshipAsync(ThreeMfPackage.ThumbnailRelationship, false, cancellationToken).ConfigureAwait(false);
-            if (part == null)
+            if (part is null)
             {
                 return null;
             }
@@ -70,7 +70,7 @@ namespace Render.NET.Mesh
         internal static Matrix4x4 Transform(XElement element, float unitScale)
         {
             string? text = (string?)element.Attribute("transform");
-            if (text == null)
+            if (text is null)
             {
                 return Matrix4x4.Identity;
             }

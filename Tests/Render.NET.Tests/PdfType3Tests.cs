@@ -218,8 +218,8 @@ namespace Render.NET.Tests
         [Test]
         public async Task CompressedCharProcIsDecodedWithItsFilter()
         {
-            using var compressed = new MemoryStream();
-            using (var zip = new ZLibStream(compressed, CompressionLevel.SmallestSize, true))
+            using MemoryStream? compressed = new MemoryStream();
+            using (ZLibStream? zip = new ZLibStream(compressed, CompressionLevel.SmallestSize, true))
             {
                 zip.Write(PdfTestDocument.Bytes("600 0 d0 1 0 0 rg " + Rectangle));
             }
@@ -325,8 +325,8 @@ namespace Render.NET.Tests
 
             PixelBuffer[] images = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() => PdfRenderer.Render(page, Exact))));
             Assert.That(images.All(image => image.Pixels.Span.SequenceEqual(images[0].Pixels.Span)), Is.True);
-            using var cancellation = new CancellationTokenSource();
-            cancellation.Cancel();
+            using CancellationTokenSource? cancellation = new CancellationTokenSource();
+            await cancellation.CancelAsync();
             Assert.Throws<OperationCanceledException>(() => PdfRenderer.Render(page, Exact, cancellation.Token));
         }
 
@@ -364,7 +364,7 @@ namespace Render.NET.Tests
         private static async Task Reject(byte[] bytes, string message)
         {
             using PdfDocument document = await Read(bytes);
-            var error = Assert.Throws<InvalidDataException>(() => document.GetPage(1));
+            InvalidDataException? error = Assert.Throws<InvalidDataException>(() => document.GetPage(1));
             Assert.That(error!.Message, Does.Contain(message));
         }
     }

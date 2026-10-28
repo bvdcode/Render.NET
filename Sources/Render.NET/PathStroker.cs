@@ -12,7 +12,7 @@ namespace Render.NET
             Validate(style);
             float scale = Math.Max(new Vector2(transform.M11, transform.M12).Length(), new Vector2(transform.M21, transform.M22).Length());
             float radius = style.Width == 0 ? 0.5f / Math.Max(scale, 0.000001f) : style.Width / 2;
-            var outline = new VectorPath();
+            VectorPath? outline = new VectorPath();
             foreach (PathContour contour in PathFlattener.Flatten(path, Matrix3x2.Identity, 0.2f / Math.Max(scale, 0.000001f), cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -141,7 +141,7 @@ namespace Render.NET
                     remaining -= step;
                     if (remaining <= 0.000001f)
                     {
-                        if (run != null)
+                        if (run is not null)
                         {
                             Solid(output, new PathContour(run, false), radius, style);
                             run = null;
@@ -153,7 +153,7 @@ namespace Render.NET
                 }
             }
 
-            if (run != null)
+            if (run is not null)
             {
                 Solid(output, new PathContour(run, false), radius, style);
             }

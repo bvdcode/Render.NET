@@ -11,7 +11,7 @@ namespace Render.NET.Pdf
         /// <summary>Opens a PDF file. Page numbers start at one.</summary>
         public static async Task<PdfDocument> ReadFileAsync(string path, PdfReaderOptions? options = null, CancellationToken cancellationToken = default)
         {
-            await using var input = File.OpenRead(path);
+            await using FileStream? input = File.OpenRead(path);
             return await ReadAsync(input, options, cancellationToken).ConfigureAwait(false);
         }
 
@@ -21,8 +21,8 @@ namespace Render.NET.Pdf
             ArgumentNullException.ThrowIfNull(input);
             options ??= new PdfReaderOptions();
             Validate(options);
-            using var buffer = new MemoryStream();
-            var chunk = new byte[64 * 1024];
+            using MemoryStream? buffer = new MemoryStream();
+            byte[]? chunk = new byte[64 * 1024];
             while (true)
             {
                 int count = await input.ReadAsync(chunk, cancellationToken).ConfigureAwait(false);
@@ -36,7 +36,7 @@ namespace Render.NET.Pdf
                     throw new InvalidDataException("PDF input exceeds MaximumInputBytes.");
                 }
 
-                buffer.Write(chunk, 0, count);
+                await buffer.WriteAsync(chunk.AsMemory(0, count), cancellationToken).ConfigureAwait(false);
             }
 
             cancellationToken.ThrowIfCancellationRequested();

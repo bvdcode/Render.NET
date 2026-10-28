@@ -38,7 +38,7 @@ namespace Render.NET.Tests
                 }
                 else if (type == "IDAT")
                 {
-                    compressed.Write(png, offset + 8, length);
+                    await compressed.WriteAsync(png.AsMemory(offset + 8, length));
                 }
 
                 offset += length + 12;

@@ -25,7 +25,7 @@ namespace Render.NET.Jpeg2000
                     Sop(input);
                 }
 
-                var bits = new PacketBits(input);
+                PacketBits? bits = new PacketBits(input);
                 var contributions = new List<(CodewordSegment Segment, int Length)>();
                 if (bits.Read() != 0)
                 {
@@ -38,7 +38,7 @@ namespace Render.NET.Jpeg2000
                     throw new InvalidDataException("Missing JPEG 2000 EPH marker.");
                 }
 
-                foreach (var item in contributions)
+                foreach ((CodewordSegment Segment, int Length) item in contributions)
                 {
                     item.Segment.Parts.Add(input.Take(item.Length));
                 }
@@ -57,11 +57,11 @@ namespace Render.NET.Jpeg2000
 
         private static void Header(PacketBits bits, Precinct precinct, int layer, int style, List<(CodewordSegment Segment, int Length)> contributions, DecodeBudget budget)
         {
-            foreach (var band in precinct.Bands)
+            foreach (PrecinctBand band in precinct.Bands)
             {
                 for (int i = 0; i < band.Blocks.Count; i++)
                 {
-                    var block = band.Blocks[i];
+                    CodeBlock? block = band.Blocks[i];
                     bool fresh = block.Passes == 0;
                     bool included = fresh ? band.Inclusion.Below(i, layer + 1, bits) : bits.Read() != 0;
                     if (!included)
@@ -104,7 +104,7 @@ namespace Render.NET.Jpeg2000
             while (passes > 0)
             {
                 CodewordSegment? segment = block.Segments.Count == 0 ? null : block.Segments[^1];
-                if (segment == null || segment.Passes == segment.Capacity)
+                if (segment is null || segment.Passes == segment.Capacity)
                 {
                     budget.Reserve(64);
                     segment = new CodewordSegment(block.Passes, style);

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Render.NET.Jpeg2000
 {
-    internal sealed class ByteReader
+    internal class ByteReader
     {
         internal ReadOnlyMemory<byte> Data { get; }
         internal int Position { get; set; }
@@ -44,7 +44,7 @@ namespace Render.NET.Jpeg2000
         internal ReadOnlyMemory<byte> Take(int count)
         {
             Require(count);
-            var value = Data.Slice(Position, count);
+            ReadOnlyMemory<byte> value = Data.Slice(Position, count);
             Position += count;
             return value;
         }

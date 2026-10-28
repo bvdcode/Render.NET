@@ -11,7 +11,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         private readonly Dictionary<(IType3Font Font, int Code), Type3Glyph?> _type3Glyphs = new();
         private readonly HashSet<(IType3Font Font, int Code)> _activeType3Glyphs = new();
@@ -23,7 +23,7 @@ namespace Render.NET.Pdf
         private void RenderType3Glyph(IType3Font font, int code, TransformationMatrix textToPage)
         {
             Type3Glyph? glyph = Type3GlyphProgram(font, code);
-            if (glyph == null)
+            if (glyph is null)
             {
                 return;
             }
@@ -33,11 +33,11 @@ namespace Render.NET.Pdf
                 throw new InvalidDataException("Recursive Type 3 glyph or glyph/pattern/mask nesting exceeds eight.");
             }
 
-            var savedStack = GraphicsStack;
+            Stack<CurrentGraphicsState>? savedStack = GraphicsStack;
             bool savedUncolored = _uncoloredType3;
             try
             {
-                var state = GetCurrentState().DeepClone();
+                CurrentGraphicsState? state = GetCurrentState().DeepClone();
                 state.CurrentTransformationMatrix = font.GetFontMatrix().Multiply(textToPage);
                 state.CurrentNonStrokingColor = PreservePatternOrigin(state.CurrentNonStrokingColor);
                 state.CurrentStrokingColor = PreservePatternOrigin(state.CurrentStrokingColor);
@@ -88,7 +88,7 @@ namespace Render.NET.Pdf
 
                 // Reuse form resource/state scoping, with a cached stream per glyph. CharProc
                 // dictionaries do not supply a form Matrix or the font-wide clipping rectangle.
-                var form = new StreamToken(new DictionaryToken(dictionary), stream.Data);
+                StreamToken? form = new StreamToken(new DictionaryToken(dictionary), stream.Data);
                 _type3Programs.Add(GetFormOperations(form));
                 glyph = new Type3Glyph(form, stencil);
             }
@@ -127,7 +127,7 @@ namespace Render.NET.Pdf
 
         private DictionaryToken Type3PageResources()
         {
-            if (_type3PageResources != null)
+            if (_type3PageResources is not null)
             {
                 return _type3PageResources;
             }
@@ -173,12 +173,6 @@ namespace Render.NET.Pdf
             => color?.ColorSpace == ColorSpace.Pattern && color is not PatternOrigin
                 ? new PatternOrigin(color, _patternMatrix, _patternState) : color;
 
-        private sealed record Type3Glyph(StreamToken Form, bool Stencil);
-    }
-
-    internal sealed record PatternOrigin(IColor Color, TransformationMatrix Matrix, CurrentGraphicsState State) : IColor
-    {
-        public ColorSpace ColorSpace => ColorSpace.Pattern;
-        public (double r, double g, double b) ToRGBValues() => Color.ToRGBValues();
+        private record Type3Glyph(StreamToken Form, bool Stencil);
     }
 }

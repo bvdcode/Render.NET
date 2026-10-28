@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private VectorPath? Shape(XElement e) => e.Name.LocalName switch
         {
@@ -52,7 +52,7 @@ namespace Render.NET.Svg
                 return new VectorPath().Rectangle(x, y, w, h);
             }
 
-            var path = new VectorPath().MoveTo(x + rx, y).LineTo((x + w) - rx, y);
+            VectorPath? path = new VectorPath().MoveTo(x + rx, y).LineTo((x + w) - rx, y);
             Arc(new Vector2((x + w) - rx, y), new Vector2(x + w, y + ry));
             path.LineTo(x + w, (y + h) - ry);
             Arc(new Vector2(x + w, (y + h) - ry), new Vector2((x + w) - rx, y + h));
@@ -71,7 +71,7 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("Negative SVG ellipse radius.");
             }
 
-            var path = new VectorPath();
+            VectorPath? path = new VectorPath();
             if (rx == 0 || ry == 0)
             {
                 return path;
@@ -91,7 +91,7 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("Odd SVG polygon coordinate count.");
             }
 
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             if (values.Length == 0)
             {
                 return result;

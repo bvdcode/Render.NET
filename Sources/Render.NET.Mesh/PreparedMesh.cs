@@ -85,7 +85,7 @@ namespace Render.NET.Mesh
                 hasSurface = true;
                 faceAreas[face] = area;
                 faceNormals[face] = Vector3.Normalize(area);
-                if (adjacency != null)
+                if (adjacency is not null)
                 {
                     AddFace(adjacency, a, face);
                     AddFace(adjacency, b, face);
@@ -115,7 +115,7 @@ namespace Render.NET.Mesh
 
                 Vector3 normal = faceNormals[corner / 3];
                 normals[corner] = normal;
-                if (normal == Vector3.Zero || adjacency == null)
+                if (normal == Vector3.Zero || adjacency is null)
                 {
                     continue;
                 }

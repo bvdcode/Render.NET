@@ -79,8 +79,12 @@ namespace Render.NET.Mesh
         private static float ReadUnits(XElement root) =>
             ((string?)root.Attribute("unit") ?? "millimeter") switch
             {
-                "micron" => 0.001f, "millimeter" => 1, "centimeter" => 10, "inch" => 25.4f,
-                "foot" => 304.8f, "meter" => 1000,
+                "micron" => 0.001f,
+                "millimeter" => 1,
+                "centimeter" => 10,
+                "inch" => 25.4f,
+                "foot" => 304.8f,
+                "meter" => 1000,
                 _ => throw new InvalidDataException("Unknown 3MF length unit.")
             };
 
@@ -215,13 +219,13 @@ namespace Render.NET.Mesh
             }
 
             string? path = (string?)element.Attribute(ThreeMfReader.Production + "path");
-            if (path != null && (part != _rootPart || !path.StartsWith('/')))
+            if (path is not null && (part != _rootPart || !path.StartsWith('/')))
             {
                 throw new InvalidDataException("3MF Production paths must be absolute and originate in the root model part.");
             }
 
-            string target = path == null ? part : package.CanonicalPart(ThreeMfPackage.Resolve(part, path));
-            if (path != null && !_modelReferences.Contains(target))
+            string target = path is null ? part : package.CanonicalPart(ThreeMfPackage.Resolve(part, path));
+            if (path is not null && !_modelReferences.Contains(target))
             {
                 throw new InvalidDataException("3MF cross-part reference has no matching model relationship.");
             }

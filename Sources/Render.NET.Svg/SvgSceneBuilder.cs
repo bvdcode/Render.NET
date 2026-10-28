@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private readonly XElement _root;
         private readonly SvgReaderOptions _limits;
@@ -48,7 +48,7 @@ namespace Render.NET.Svg
         private SvgDocument BuildViewport()
         {
             float[]? v = _root.Attribute("viewBox") is { } box ? SvgNumbers.List(box.Value) : null;
-            if (v != null && (v.Length != 4 || v[2] <= 0 || v[3] <= 0))
+            if (v is not null && (v.Length != 4 || v[2] <= 0 || v[3] <= 0))
             {
                 throw new InvalidDataException("Invalid SVG viewBox.");
             }
@@ -60,7 +60,7 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("SVG viewport must be positive.");
             }
 
-            var viewBox = v == null ? (0, 0, _width, _height) : (v[0], v[1], v[2], v[3]);
+            (float, float, float, float) viewBox = v is null ? (0, 0, _width, _height) : (v[0], v[1], v[2], v[3]);
             float intrinsicWidth = _width, intrinsicHeight = _height;
             _width = viewBox.Item3;
             _height = viewBox.Item4;
@@ -154,7 +154,7 @@ namespace Render.NET.Svg
             VectorPath? path = Shape(e);
             PixelBuffer? image = name == "image" ? Image(Href(e)) : null;
             Populate(e, name, style, path, children, depth);
-            if (path != null)
+            if (path is not null)
             {
                 path = ValidatePath(path, style);
             }
@@ -166,8 +166,8 @@ namespace Render.NET.Svg
                 Filter = Filter(Value(style, "filter", "none"), style, depth),
                 BlendMode = Blend(Value(style, "mix-blend-mode", "normal")),
                 Image = image,
-                ImageTransform = image == null ? Matrix3x2.Identity : ImagePlacement(e, image),
-                ImageViewport = image == null ? null : new VectorPath().Rectangle(Length(e, "x", 0, _width), Length(e, "y", 0, _height), Length(e, "width", image.Width, _width), Length(e, "height", image.Height, _height))
+                ImageTransform = image is null ? Matrix3x2.Identity : ImagePlacement(e, image),
+                ImageViewport = image is null ? null : new VectorPath().Rectangle(Length(e, "x", 0, _width), Length(e, "y", 0, _height), Length(e, "width", image.Width, _width), Length(e, "height", image.Height, _height))
             };
         }
 
@@ -188,7 +188,7 @@ namespace Render.NET.Svg
                     children.Add(Node(child, style, depth + 1));
                 }
             }
-            else if (path == null && name != "image" && !Metadata.Contains(name))
+            else if (path is null && name != "image" && !Metadata.Contains(name))
             {
                 Warn("SVG element: " + name);
             }
@@ -210,7 +210,7 @@ namespace Render.NET.Svg
         private void Use(XElement e, Dictionary<string, string> style, List<SvgNode> children, int depth)
         {
             XElement? target = Reference(Href(e));
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -239,7 +239,7 @@ namespace Render.NET.Svg
             }
 
             XElement? target = Reference(Url(value));
-            if (target == null)
+            if (target is null)
             {
                 return null;
             }
@@ -266,7 +266,7 @@ namespace Render.NET.Svg
 
         private XElement? Reference(string? href)
         {
-            if (href == null)
+            if (href is null)
             {
                 Warn("Missing SVG reference");
                 return null;

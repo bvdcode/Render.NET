@@ -11,7 +11,7 @@ using Render.NET.Svg;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private readonly TgsDocument _document;
         private readonly CancellationToken _token;
@@ -37,7 +37,7 @@ namespace Render.NET.Tgs
 
         internal SvgDocument Build(double frame, bool allowPartial)
         {
-            var root = new XElement("svg", new XAttribute("width", _document.Width), new XAttribute("height", _document.Height), _defs);
+            XElement? root = new XElement("svg", new XAttribute("width", _document.Width), new XAttribute("height", _document.Height), _defs);
             root.Add(Layers(TgsJson.Get(_document.Root, "layers"), frame, 0));
             if (!allowPartial && _warnings.Count > 0)
             {
@@ -61,7 +61,7 @@ namespace Render.NET.Tgs
                 }
             }
 
-            var group = new XElement("g");
+            XElement? group = new XElement("g");
             var matteLayers = new HashSet<int>();
             for (int i = 0; i < layers.Length; i++)
             {
@@ -119,7 +119,7 @@ namespace Render.NET.Tgs
                 }
 
                 string? blend = BlendMode((int)TgsJson.Number(layer, "bm"));
-                if (blend != null)
+                if (blend is not null)
                 {
                     result.SetAttributeValue("mix-blend-mode", blend);
                 }

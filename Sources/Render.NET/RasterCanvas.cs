@@ -7,7 +7,7 @@ namespace Render.NET
 {
     /// <summary>Scanline vector drawing, clipping, affine images, and alpha compositing into a pixel buffer.
     /// Coordinates address pixel edges. Render at a larger resolution and downsample for antialiasing.</summary>
-    public sealed partial class RasterCanvas
+    public partial class RasterCanvas
     {
         private readonly PixelBuffer _target;
         private readonly Stack<byte[]?> _clips = new Stack<byte[]?>();
@@ -50,18 +50,18 @@ namespace Render.NET
                 throw new ArgumentOutOfRangeException(nameof(opacity), "Invalid opacity or more than eight nested layers.");
             }
 
-            if (alphaMask != null && (alphaMask.Width != _target.Width || alphaMask.Height != _target.Height))
+            if (alphaMask is not null && (alphaMask.Width != _target.Width || alphaMask.Height != _target.Height))
             {
                 throw new ArgumentException("The layer mask must match the canvas dimensions.", nameof(alphaMask));
             }
 
-            var buffer = new PixelBuffer(_target.Width, _target.Height);
+            PixelBuffer? buffer = new PixelBuffer(_target.Width, _target.Height);
             if (!isolated)
             {
                 _target.Pixels.CopyTo(buffer.Pixels);
             }
 
-            var layer = new RasterCanvas(buffer)
+            RasterCanvas? layer = new RasterCanvas(buffer)
             {
                 _clip = _clip,
                 _coverage = new byte[_target.Width * _target.Height],
@@ -91,7 +91,7 @@ namespace Render.NET
                     }
 
                     Rgba32 color = coverage == 0 ? default : isolated ? buffer[x, y] : RemoveBackdrop(buffer[x, y], _target[x, y], coverage);
-                    float mask = alphaMask == null ? 1 : alphaMask[x, y].A / 255f;
+                    float mask = alphaMask is null ? 1 : alphaMask[x, y].A / 255f;
                     Paint(x, y, color with { A = (byte)MathF.Round(coverage * opacity * mask) }, blendMode, shape);
                 }
             }
@@ -127,7 +127,7 @@ namespace Render.NET
                 cancellationToken.ThrowIfCancellationRequested();
                 for (int x = 0; x < _target.Width; x++)
                 {
-                    if (_clip == null || _clip[(y * _target.Width) + x] != 0)
+                    if (_clip is null || _clip[(y * _target.Width) + x] != 0)
                     {
                         Vector2 point = Vector2.Transform(new Vector2(x + 0.5f, y + 0.5f), inverse);
                         Rgba32 color = sample(point);
@@ -173,7 +173,7 @@ namespace Render.NET
         public (int X, int Y, int Width, int Height) GetClipBounds(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (_clip == null)
+            if (_clip is null)
             {
                 return (0, 0, _target.Width, _target.Height);
             }
@@ -238,7 +238,7 @@ namespace Render.NET
                 return;
             }
 
-            var rectangle = new VectorPath().Rectangle(0, 0, image.Width, image.Height);
+            VectorPath? rectangle = new VectorPath().Rectangle(0, 0, image.Width, image.Height);
             ScanlineRasterizer.Paint(rectangle, transform, FillRule.NonZero, _target.Width, _target.Height, (y, left, right) =>
             {
                 for (int x = left; x < right; x++)
@@ -255,18 +255,18 @@ namespace Render.NET
         private void Paint(int x, int y, Rgba32 color, ColorBlendMode mode, byte shape = 255)
         {
             int index = (y * _target.Width) + x;
-            if (_clip != null && _clip[index] == 0)
+            if (_clip is not null && _clip[index] == 0)
             {
                 return;
             }
 
             PixelCompositor.Blend(_target.Pixels.Span, index * 4, color, mode);
-            if (_coverage != null)
+            if (_coverage is not null)
             {
                 _coverage[index] = (byte)(color.A + (((_coverage[index] * (255 - color.A)) + 127) / 255));
             }
 
-            if (_shape != null)
+            if (_shape is not null)
             {
                 if (shape != 0)
                 {

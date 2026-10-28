@@ -7,7 +7,7 @@ namespace Render.NET.Tests
         private static VectorPath Rect(float x, float y, float w = 30, float h = 30) => new VectorPath().MoveTo(x, y).LineTo(x + w, y).LineTo(x + w, y + h).LineTo(x, y + h).Close();
         private static PixelBuffer Draw(VectorPath path, FillRule rule = FillRule.NonZero)
         {
-            var buffer = new PixelBuffer(100, 100);
+            PixelBuffer? buffer = new PixelBuffer(100, 100);
             new RasterCanvas(buffer).FillPath(path, new Rgba32(255, 255, 255), System.Numerics.Matrix3x2.Identity, rule: rule);
             return buffer;
         }
@@ -78,11 +78,11 @@ namespace Render.NET.Tests
         [Test]
         public void CurvedOperandsAndSelfIntersectionsHaveStableBoundaries()
         {
-            var circle = new VectorPath().MoveTo(75, 50).CubicTo(75, 64, 64, 75, 50, 75).CubicTo(36, 75, 25, 64, 25, 50).CubicTo(25, 36, 36, 25, 50, 25).CubicTo(64, 25, 75, 36, 75, 50).Close();
+            VectorPath? circle = new VectorPath().MoveTo(75, 50).CubicTo(75, 64, 64, 75, 50, 75).CubicTo(36, 75, 25, 64, 25, 50).CubicTo(25, 36, 36, 25, 50, 25).CubicTo(64, 25, 75, 36, 75, 50).Close();
             PixelBuffer intersection = Draw(circle.Combine(Rect(50, 0, 50, 100), PathBooleanOperation.Intersection));
             Assert.That(intersection[60, 50].A, Is.EqualTo(255));
             Assert.That(intersection[40, 50].A, Is.Zero);
-            var bow = new VectorPath().MoveTo(10, 10).LineTo(80, 80).LineTo(10, 80).LineTo(80, 10).Close();
+            VectorPath? bow = new VectorPath().MoveTo(10, 10).LineTo(80, 80).LineTo(10, 80).LineTo(80, 10).Close();
             Assert.DoesNotThrow(() => bow.Combine(Rect(30, 30), PathBooleanOperation.ExclusiveOr));
         }
 

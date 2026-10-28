@@ -22,7 +22,7 @@ namespace Render.NET.Tests
 
         internal static byte[] Stream(byte[] bytes, string dictionary = "")
         {
-            using var output = new MemoryStream();
+            using MemoryStream? output = new MemoryStream();
             output.Write(Bytes("<< /Length " + bytes.Length.ToString(CultureInfo.InvariantCulture) + " " + dictionary + " >>\nstream\n"));
             output.Write(bytes);
             output.Write(Bytes("\nendstream"));
@@ -31,7 +31,7 @@ namespace Render.NET.Tests
 
         internal static byte[] Write(List<byte[]> objects)
         {
-            using var output = new MemoryStream();
+            using MemoryStream? output = new MemoryStream();
             output.Write(Bytes("%PDF-1.7\n%\u00e2\u00e3\u00cf\u00d3\n"));
             var offsets = new List<long> { 0 };
             for (int i = 0; i < objects.Count; i++)

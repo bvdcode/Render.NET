@@ -150,7 +150,7 @@ namespace Render.NET.Tests
             PdfPage page = document.GetPage(1);
             Assert.That(page.UnsupportedFeatures, Is.Empty);
             PixelBuffer image = PdfRenderer.Render(page, Exact);
-            var source = StbImageSharp.ImageResult.FromMemory(await File.ReadAllBytesAsync(Path.Combine(root, "Scans", "source.png")),
+            StbImageSharp.ImageResult? source = StbImageSharp.ImageResult.FromMemory(await File.ReadAllBytesAsync(Path.Combine(root, "Scans", "source.png")),
                 StbImageSharp.ColorComponents.RedGreenBlueAlpha);
             Assert.That(image.Pixels.ToArray(), Is.EqualTo(source.Data));
         }
@@ -203,7 +203,7 @@ namespace Render.NET.Tests
         [TestCase(2, "JBIG2Decode")]
         public async Task ScanDimensionsAreValidatedBeforeCompositing(int index, string filter)
         {
-            using var source = UglyToad.PdfPig.PdfDocument.Open(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "scan-codecs.pdf"));
+            using UglyToad.PdfPig.PdfDocument? source = UglyToad.PdfPig.PdfDocument.Open(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Pdf", "scan-codecs.pdf"));
             var image = source.GetPage(1).GetImages().ElementAt(index);
             byte[] picture = PdfTestDocument.Stream(image.RawMemory.ToArray(), "/Type /XObject /Subtype /Image /Width 1 /Height 1 /BitsPerComponent 1 /ColorSpace /DeviceGray /Filter /" + filter);
             using PdfDocument document = await Read(PdfTestDocument.Create("/I Do", resources: "/XObject << /I 5 0 R >>", extraObjects: picture));

@@ -132,8 +132,8 @@ namespace Render.NET.Tests
         public async Task GzipAndJsonRenderIdenticallyAfterSourceDisposal()
         {
             string json = Wrap(Layer(Rectangle + "," + Fill, Identity.Replace("[0,0]", "[50,50]")));
-            using var compressed = new MemoryStream();
-            using (var gzip = new GZipStream(compressed, CompressionLevel.Optimal, true))
+            using MemoryStream? compressed = new MemoryStream();
+            using (GZipStream? gzip = new GZipStream(compressed, CompressionLevel.Optimal, true))
             {
                 gzip.Write(Encoding.UTF8.GetBytes(json));
             }
@@ -141,7 +141,7 @@ namespace Render.NET.Tests
             compressed.Position = 0;
             TgsDocument doc = await TgsReader.ReadAsync(compressed);
             Assert.That(compressed.CanRead, Is.True);
-            compressed.Dispose();
+            await compressed.DisposeAsync();
             PixelBuffer a = TgsRenderer.RenderFrame(doc, 0), b = TgsRenderer.RenderAtTime(Read(json), 0);
             Assert.That(a.Pixels.Span.SequenceEqual(b.Pixels.Span), Is.True);
         }
@@ -182,8 +182,8 @@ namespace Render.NET.Tests
         public void DecompressionAndFrameGeometryHaveSeparateBudgets()
         {
             byte[] bytes = Encoding.UTF8.GetBytes(Wrap(Layer(Rectangle + "," + Fill)));
-            using var encoded = new MemoryStream();
-            using (var gzip = new GZipStream(encoded, CompressionLevel.Optimal, true))
+            using MemoryStream? encoded = new MemoryStream();
+            using (GZipStream? gzip = new GZipStream(encoded, CompressionLevel.Optimal, true))
             {
                 gzip.Write(bytes);
             }

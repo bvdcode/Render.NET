@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private void Modify(List<(int Index, VectorPath Path)> paths, JsonElement modifier, int index, double frame)
         {
@@ -102,7 +102,7 @@ namespace Render.NET.Tgs
         };
         private VectorPath Pucker(VectorPath path, float amount)
         {
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             int start = 0;
             while (start < path.Elements.Count)
             {
@@ -112,7 +112,7 @@ namespace Render.NET.Tgs
                     end++;
                 }
 
-                var elements = path.Elements.GetRange(start, end - start);
+                List<VectorPath.PathElement>? elements = path.Elements.GetRange(start, end - start);
                 PuckerContour(result, elements, amount);
                 start = end;
             }
@@ -132,7 +132,7 @@ namespace Render.NET.Tgs
             Vector2 Vertex(Vector2 point) => center + ((point - center) * (1 - amount));
             Vector2 Tangent(Vector2 point) => center + ((point - center) * (1 + amount));
             Vector2 previous = elements[0].First, first = previous;
-            foreach (var element in elements)
+            foreach (VectorPath.PathElement element in elements)
             {
                 _token.ThrowIfCancellationRequested();
                 if (element.Kind == 0)
@@ -174,8 +174,8 @@ namespace Render.NET.Tgs
             }
         }
 
-        private sealed record ZigCurve(Vector2 A, Vector2 B, Vector2 C, Vector2 D);
-        private sealed record ZigVertex(Vector2 Point, Vector2 In, Vector2 Out);
+        private record ZigCurve(Vector2 A, Vector2 B, Vector2 C, Vector2 D);
+        private record ZigVertex(Vector2 Point, Vector2 In, Vector2 Out);
         private VectorPath ZigZag(VectorPath path, JsonElement modifier, double frame)
         {
             float size = (float)TgsValues.Scalar(TgsJson.Get(modifier, "s"), frame);
@@ -192,10 +192,10 @@ namespace Render.NET.Tgs
 
             JsonElement pointType = TgsJson.Get(modifier, "pt");
             bool smooth = (pointType.ValueKind == JsonValueKind.Object ? TgsValues.Scalar(pointType, frame, 1) : TgsJson.Number(pointType, 1)) == 2;
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             var curves = new List<ZigCurve>();
             Vector2 first = default, previous = default;
-            foreach (var element in path.Elements)
+            foreach (VectorPath.PathElement element in path.Elements)
             {
                 _token.ThrowIfCancellationRequested();
                 if (element.Kind == 0)

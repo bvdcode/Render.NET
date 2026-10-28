@@ -21,11 +21,11 @@ namespace Render.NET.Tgs
                 throw new InvalidDataException("TGS exceeds MaximumInputBytes.");
             }
 
-            using var source = new MemoryStream(data.ToArray(), writable: false);
+            using MemoryStream? source = new MemoryStream(data.ToArray(), writable: false);
             if (data.Length >= 2 && data.Span[0] == 0x1f && data.Span[1] == 0x8b)
             {
-                using var gzip = new GZipStream(source, CompressionMode.Decompress);
-                using var json = new MemoryStream();
+                using GZipStream? gzip = new GZipStream(source, CompressionMode.Decompress);
+                using MemoryStream? json = new MemoryStream();
                 byte[] buffer = new byte[8192];
                 int n;
                 while ((n = gzip.Read(buffer)) != 0)
@@ -56,7 +56,7 @@ namespace Render.NET.Tgs
             ArgumentNullException.ThrowIfNull(source);
             options ??= new TgsReaderOptions();
             Validate(options);
-            using var data = new MemoryStream();
+            using MemoryStream? data = new MemoryStream();
             byte[] buffer = new byte[8192];
             int n;
             while ((n = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) != 0)
@@ -66,7 +66,7 @@ namespace Render.NET.Tgs
                     throw new InvalidDataException("TGS exceeds MaximumInputBytes.");
                 }
 
-                data.Write(buffer, 0, n);
+                await data.WriteAsync(buffer.AsMemory(0, n), cancellationToken).ConfigureAwait(false);
             }
 
             return Read(data.ToArray(), options, cancellationToken);
@@ -75,7 +75,7 @@ namespace Render.NET.Tgs
         /// <summary>Reads a local TGS or Lottie JSON file.</summary>
         public static async Task<TgsDocument> ReadFileAsync(string path, TgsReaderOptions? options = null, CancellationToken cancellationToken = default)
         {
-            await using var source = File.OpenRead(path);
+            await using FileStream? source = File.OpenRead(path);
             return await ReadAsync(source, options, cancellationToken).ConfigureAwait(false);
         }
 

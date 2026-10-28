@@ -4,17 +4,9 @@ using System.Numerics;
 
 namespace Render.NET
 {
-    /// <summary>The rule used to determine the inside of a path.</summary>
-    public enum FillRule
-    {
-        /// <summary>Use the signed number of edge crossings.</summary>
-        NonZero,
-        /// <summary>Alternate between outside and inside at each edge crossing.</summary>
-        EvenOdd
-    }
 
     /// <summary>A mutable vector path. Coordinates may use any consistent unit.</summary>
-    public sealed partial class VectorPath
+    public partial class VectorPath
     {
         internal List<PathElement> Elements { get; } = new List<PathElement>();
 
@@ -59,7 +51,7 @@ namespace Render.NET
         /// <summary>Returns an independently transformed copy.</summary>
         public VectorPath Transform(Matrix3x2 matrix)
         {
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             foreach (PathElement element in Elements)
             {
                 result.Elements.Add(new PathElement(element.Kind,

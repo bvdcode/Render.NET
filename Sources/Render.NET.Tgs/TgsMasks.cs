@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private void Mask(JsonElement layer, XElement content, double frame)
         {
@@ -53,7 +53,7 @@ namespace Render.NET.Tgs
                     filter.Add(InvertRgb(next));
                 }
 
-                if (current == null)
+                if (current is null)
                 {
                     current = next;
                     continue;
@@ -103,7 +103,7 @@ namespace Render.NET.Tgs
         private XElement FullMask(string id, string type) => new("mask", new XAttribute("id", id), new XAttribute("mask-type", type), new XAttribute("maskUnits", "userSpaceOnUse"), new XAttribute("x", -_document.Width * 8), new XAttribute("y", -_document.Height * 8), new XAttribute("width", _document.Width * 17), new XAttribute("height", _document.Height * 17));
         private XElement FullFilter(string id) => new("filter", new XAttribute("id", id), new XAttribute("filterUnits", "userSpaceOnUse"), new XAttribute("color-interpolation-filters", "sRGB"), new XAttribute("x", -_document.Width * 8), new XAttribute("y", -_document.Height * 8), new XAttribute("width", _document.Width * 17), new XAttribute("height", _document.Height * 17));
         private static XElement InvertRgb(string result) => new("feComponentTransfer", new XAttribute("result", result), "RGB".Select(c => new XElement("feFunc" + c, new XAttribute("type", "linear"), new XAttribute("slope", "-1"), new XAttribute("intercept", "1"))));
-        private static readonly string? [] BlendNames =
+        private static readonly string?[] BlendNames =
         {
             null,
             "multiply",

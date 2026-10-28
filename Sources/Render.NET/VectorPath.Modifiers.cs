@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Render.NET
 {
-    public sealed partial class VectorPath
+    public partial class VectorPath
     {
         /// <summary>Rounds contour corners at the supplied user-unit distance. Curves are flattened at 0.05 user units.</summary>
         public VectorPath RoundCorners(float radius, CancellationToken cancellationToken = default)
@@ -22,7 +22,7 @@ namespace Render.NET
                 return new VectorPath().Append(this);
             }
 
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             foreach (PathContour contour in PathFlattener.Flatten(this, Matrix3x2.Identity, .05f, cancellationToken))
             {
                 List<Vector2> points = Clean(contour.Points);
@@ -94,7 +94,7 @@ namespace Render.NET
             }
 
             List<PathContour> contours = PathFlattener.Flatten(this, Matrix3x2.Identity, .05f, cancellationToken);
-            var closed = new VectorPath();
+            VectorPath? closed = new VectorPath();
             foreach (PathContour contour in contours.Where(c => c.Closed))
             {
                 List<Vector2> points = Clean(contour.Points);
@@ -125,7 +125,7 @@ namespace Render.NET
                     continue;
                 }
 
-                var shifted = OffsetOpenContour(points, distance, join, miterLimit, cancellationToken);
+                VectorPath? shifted = OffsetOpenContour(points, distance, join, miterLimit, cancellationToken);
                 result.Append(shifted);
             }
 
@@ -134,7 +134,7 @@ namespace Render.NET
 
         private static VectorPath OffsetOpenContour(List<Vector2> points, float distance, StrokeJoin join, float limit, CancellationToken token)
         {
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             for (int i = 0; i < points.Count; i++)
             {
                 token.ThrowIfCancellationRequested();

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private SvgPaint? Paint(string value, Dictionary<string, string> style)
         {
@@ -26,7 +26,7 @@ namespace Render.NET.Svg
                 if (value.StartsWith("url(", StringComparison.Ordinal))
                 {
                     XElement? e = Reference(Url(value));
-                    if (e == null)
+                    if (e is null)
                     {
                         return null;
                     }
@@ -60,7 +60,7 @@ namespace Render.NET.Svg
 
             var attrs = new Dictionary<string, string>();
             XElement? stopsElement = GradientAttributes(element, attrs);
-            var stops = GradientStops(stopsElement);
+            (float Offset, Rgba32 Color)[]? stops = GradientStops(stopsElement);
             bool box = Value(attrs, "gradientUnits", "objectBoundingBox") != "userSpaceOnUse";
             float x = box ? 1 : _width, y = box ? 1 : _height;
             float diagonal = box ? 1 : Diagonal;
@@ -104,7 +104,7 @@ namespace Render.NET.Svg
             XElement? stopsElement = null;
             var chain = new HashSet<XElement>();
             XElement? current = element;
-            while (current != null)
+            while (current is not null)
             {
                 _token.ThrowIfCancellationRequested();
                 if (!chain.Add(current) || chain.Count > _limits.MaximumDepth)
@@ -117,13 +117,13 @@ namespace Render.NET.Svg
                     attrs.TryAdd(a.Name.LocalName, a.Value);
                 }
 
-                if (stopsElement == null && current.Elements().Any(x => x.Name.LocalName == "stop"))
+                if (stopsElement is null && current.Elements().Any(x => x.Name.LocalName == "stop"))
                 {
                     stopsElement = current;
                 }
 
                 string? href = Href(current);
-                current = href == null ? null : Reference(href);
+                current = href is null ? null : Reference(href);
             }
 
             return stopsElement;
@@ -132,7 +132,7 @@ namespace Render.NET.Svg
         private (float Offset, Rgba32 Color)[] GradientStops(XElement? stopsElement)
         {
             var stops = new List<(float Offset, Rgba32 Color)>();
-            if (stopsElement != null)
+            if (stopsElement is not null)
             {
                 var inherited = new Dictionary<string, string>();
                 foreach (XElement ancestor in stopsElement.AncestorsAndSelf().Reverse())

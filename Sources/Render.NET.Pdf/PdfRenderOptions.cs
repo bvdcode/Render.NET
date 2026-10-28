@@ -1,7 +1,7 @@
 namespace Render.NET.Pdf
 {
     /// <summary>Output resolution, background, and antialiasing settings.</summary>
-    public sealed record PdfRenderOptions
+    public record PdfRenderOptions
     {
         /// <summary>Gets output dots per inch. PDF points are 1/72 inch. Defaults to 96.</summary>
         public double Dpi { get; init; } = 96;

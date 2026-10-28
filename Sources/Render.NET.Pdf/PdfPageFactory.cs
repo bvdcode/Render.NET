@@ -14,13 +14,9 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfPageFactory : BasePageFactory<PdfPage>
+    internal class PdfPageFactory(IPdfTokenScanner scanner, IResourceStore resources, ILookupFilterProvider filters,
+        IPageContentParser parser, ParsingOptions options) : BasePageFactory<PdfPage>(scanner, resources, filters, parser, options)
     {
-        public PdfPageFactory(IPdfTokenScanner scanner, IResourceStore resources, ILookupFilterProvider filters,
-            IPageContentParser parser, ParsingOptions options) : base(scanner, resources, filters, parser, options)
-        {
-        }
-
         protected override PdfPage ProcessPage(int pageNumber, DictionaryToken dictionary, NamedDestinations namedDestinations,
             MediaBox mediaBox, CropBox cropBox, UserSpaceUnit userSpaceUnit, PageRotationDegrees rotation,
             TransformationMatrix initialMatrix, IReadOnlyList<IGraphicsStateOperation> operations)
@@ -35,7 +31,7 @@ namespace Render.NET.Pdf
             }
 
             TransformationMatrix matrix = initialMatrix.Multiply(TransformationMatrix.GetScaleMatrix(units, units));
-            var processor = new PdfStreamProcessor(pageNumber, ResourceStore, PdfScanner, PageContentParser, FilterProvider,
+            PdfStreamProcessor? processor = new PdfStreamProcessor(pageNumber, ResourceStore, PdfScanner, PageContentParser, FilterProvider,
                 cropBox, userSpaceUnit, rotation, matrix, (RenderParsingOptions)ParsingOptions, dictionary);
             processor.PushState();
             processor.Process(pageNumber, operations);

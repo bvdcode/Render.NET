@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Include="EasyExtensions.Analyzers" Version="3.0.92" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

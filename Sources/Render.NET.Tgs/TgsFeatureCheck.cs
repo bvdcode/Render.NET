@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Render.NET.Tgs
 {
-    internal sealed class TgsFeatureCheck
+    internal class TgsFeatureCheck
     {
         private static readonly HashSet<string> ShapeTypes = new("gr tr sh rc el sr fl st gf gs tm rp mm rd op pb zz no".Split(' '), StringComparer.Ordinal);
         private readonly TgsReaderOptions _limits;

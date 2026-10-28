@@ -5,7 +5,7 @@ using UglyToad.PdfPig.Graphics.Colors;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfMeshStream
+    internal class PdfMeshStream
     {
         private readonly ReadOnlyMemory<byte> _data;
         private readonly double[] _decode;
@@ -25,7 +25,8 @@ namespace Render.NET.Pdf
                 LatticeFormGouraudShading s => (s.Data, s.BitsPerCoordinate, s.BitsPerComponent, 0, s.Decode),
                 CoonsPatchMeshesShading s => (s.Data, s.BitsPerCoordinate, s.BitsPerComponent, s.BitsPerFlag, s.Decode),
                 TensorProductPatchMeshesShading s => (s.Data, s.BitsPerCoordinate, s.BitsPerComponent, s.BitsPerFlag, s.Decode),
-                _ => throw new NotSupportedException("Unknown PDF shading type.")};
+                _ => throw new NotSupportedException("Unknown PDF shading type.")
+            };
             Components = shading.Functions?.Length > 0 ? 1 : shading.ColorSpace.NumberOfColorComponents;
             Validate(limits);
         }
@@ -58,7 +59,7 @@ namespace Render.NET.Pdf
         internal int Flag() => (int)(Bits(_flagBits) & 3);
         internal Vector2 Point()
         {
-            var point = new Vector2((float)Decoded(_coordinateBits, 0), (float)Decoded(_coordinateBits, 2));
+            Vector2 point = new Vector2((float)Decoded(_coordinateBits, 0), (float)Decoded(_coordinateBits, 2));
             if (!float.IsFinite(point.X) || !float.IsFinite(point.Y))
             {
                 throw new InvalidDataException("PDF mesh coordinate exceeds the geometry range.");
@@ -70,7 +71,7 @@ namespace Render.NET.Pdf
         internal void Align() => _bit = checked((_bit + 7) & ~7);
         internal double[] Color()
         {
-            var values = new double[Components];
+            double[]? values = new double[Components];
             for (int i = 0; i < values.Length; i++)
             {
                 values[i] = Decoded(_componentBits, 4 + (2 * i));
@@ -81,7 +82,7 @@ namespace Render.NET.Pdf
 
         internal MeshVertex Vertex()
         {
-            var vertex = new MeshVertex(Point(), Color());
+            MeshVertex? vertex = new MeshVertex(Point(), Color());
             Align();
             return vertex;
         }
@@ -104,7 +105,4 @@ namespace Render.NET.Pdf
             return result;
         }
     }
-
-    internal sealed record MeshVertex(Vector2 Position, double[] Components);
-    internal sealed record MeshTriangle(MeshVertex A, MeshVertex B, MeshVertex C);
 }

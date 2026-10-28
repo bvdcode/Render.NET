@@ -47,6 +47,7 @@ namespace Render.NET.Mesh
                 }
                 catch (InvalidDataException exception)
                 {
+                    System.Diagnostics.Trace.TraceError("{0}", exception);
                     throw new InvalidDataException($"Invalid OBJ at line {lineNumber}: {exception.Message}", exception);
                 }
             }
@@ -181,7 +182,7 @@ namespace Render.NET.Mesh
 
                     if (smoothing[current] > 0)
                     {
-                        var key = (item.Vertex, smoothing[current]);
+                        (int Vertex, int) key = (item.Vertex, smoothing[current]);
                         sums.TryGetValue(key, out Vector3 sum);
                         sums[key] = sum + face;
                     }

@@ -6,15 +6,15 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfImageDecoder
+    internal partial class PdfImageDecoder
     {
         private PixelBuffer DecodeJpeg2000(IPdfImage image, Memory<byte> bytes)
         {
-            var decoded = Jpeg2000Decoder.Decode(bytes, new Jpeg2000DecodeOptions { MaximumPixels = _limits.MaximumImagePixels, ExpectedWidth = image.WidthInSamples, ExpectedHeight = image.HeightInSamples }, _cancellationToken);
-            var layout = Jpeg2000Layout(image, decoded);
-            var result = new PixelBuffer(decoded.Width, decoded.Height);
-            var values = new double[layout.Components];
-            var raw = new int[layout.Components];
+            Jpeg2000Image? decoded = Jpeg2000Decoder.Decode(bytes, new Jpeg2000DecodeOptions { MaximumPixels = _limits.MaximumImagePixels, ExpectedWidth = image.WidthInSamples, ExpectedHeight = image.HeightInSamples }, _cancellationToken);
+            (int Components, int Alpha, int Mask) layout = Jpeg2000Layout(image, decoded);
+            PixelBuffer? result = new PixelBuffer(decoded.Width, decoded.Height);
+            double[]? values = new double[layout.Components];
+            int[]? raw = new int[layout.Components];
             for (int y = 0; y < result.Height; y++)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -31,7 +31,7 @@ namespace Render.NET.Pdf
         {
             int alpha = decoded.AlphaComponent;
             int mask = 0;
-            if (image.ImageDictionary.TryGet<NumericToken>(NameToken.Create("SMaskInData"), out var token))
+            if (image.ImageDictionary.TryGet<NumericToken>(NameToken.Create("SMaskInData"), out NumericToken? token))
             {
                 mask = token.Int;
             }
@@ -58,7 +58,7 @@ namespace Render.NET.Pdf
 
         private static void ValidateJpeg2000ColorSpace(IPdfImage image, Jpeg2000Image decoded, int components)
         {
-            if (image.ColorSpaceDetails == null && (decoded.HasIccProfile || (components != 1 && components != 3)))
+            if (image.ColorSpaceDetails is null && (decoded.HasIccProfile || (components != 1 && components != 3)))
             {
                 throw new NotSupportedException("JPEG 2000 embedded colour profile or component layout");
             }
@@ -71,7 +71,7 @@ namespace Render.NET.Pdf
                 int index = layout.Alpha >= 0 && c >= layout.Alpha ? c + 1 : c;
                 raw[c] = decoded.GetSample(x, y, index);
                 values[c] = Jpeg2000Sample(image.ColorSpaceDetails, c, raw[c], decoded.GetComponent(index));
-                if (image.ColorSpaceDetails == null && decoded.ColorSpace == Jpeg2000ColorSpace.Sycc && c > 0)
+                if (image.ColorSpaceDetails is null && decoded.ColorSpace == Jpeg2000ColorSpace.Sycc && c > 0)
                 {
                     int bits = decoded.GetComponent(index).BitDepth;
                     values[c] -= (1 << (bits - 1)) / ((1 << bits) - 1.0);
@@ -87,12 +87,12 @@ namespace Render.NET.Pdf
                 }
             }
 
-            if (image.ImageDictionary.TryGet<ArrayToken>(NameToken.Mask, out var key) && MatchesColorKey(key, raw))
+            if (image.ImageDictionary.TryGet<ArrayToken>(NameToken.Mask, out ArrayToken? key) && MatchesColorKey(key, raw))
             {
                 opacity = 0;
             }
 
-            if (image.ColorSpaceDetails != null)
+            if (image.ColorSpaceDetails is not null)
             {
                 return PdfStreamProcessor.Color(image.ColorSpaceDetails.GetColor(values), opacity);
             }

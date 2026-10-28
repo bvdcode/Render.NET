@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial record SvgFilter
+    internal partial record SvgFilter
     {
         private static PixelBuffer GaussianAligned(PixelBuffer input, float[] kernel, bool horizontal, bool reverse, bool linear, string edge, SvgRenderContext context)
         {
@@ -14,7 +14,7 @@ namespace Render.NET.Svg
             int workers = Math.Min(Environment.ProcessorCount, lines);
             int padded = checked(length + (2 * radius));
             using IDisposable reservation = context.Reserve(padded, workers, 4);
-            var result = new PixelBuffer(input.Width, input.Height);
+            PixelBuffer? result = new PixelBuffer(input.Width, input.Height);
             Parallel.For(0, lines, new ParallelOptions { CancellationToken = context.Token, MaxDegreeOfParallelism = workers },
                 () => new Vector4[padded],
                 (line, _, samples) =>
@@ -45,7 +45,7 @@ namespace Render.NET.Svg
             int padded = checked(length + (2 * radius));
             int workers = Math.Min(Environment.ProcessorCount, lines);
             using IDisposable reservation = context.Reserve(padded, workers, 12);
-            var result = new PixelBuffer(input.Width, input.Height);
+            PixelBuffer? result = new PixelBuffer(input.Width, input.Height);
             Parallel.For(0, lines, new ParallelOptions { CancellationToken = context.Token, MaxDegreeOfParallelism = workers },
                 () => (Samples: new Vector4[padded], Prefix: new Vector4[padded], Suffix: new Vector4[padded]),
                 (line, _, scratch) =>

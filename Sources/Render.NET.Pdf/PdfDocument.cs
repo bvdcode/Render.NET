@@ -6,7 +6,7 @@ using PigDocument = UglyToad.PdfPig.PdfDocument;
 namespace Render.NET.Pdf
 {
     /// <summary>An open PDF document. Access to its parser is serialized; detached pages can render concurrently.</summary>
-    public sealed class PdfDocument : IDisposable
+    public class PdfDocument : IDisposable
     {
         private readonly PigDocument _document;
         private readonly RenderParsingOptions _options;
@@ -56,20 +56,6 @@ namespace Render.NET.Pdf
                     _disposed = true;
                 }
             }
-        }
-    }
-
-    internal sealed class RenderParsingOptions : ParsingOptions
-    {
-        internal PdfReaderOptions Limits { get; }
-        internal CancellationToken CancellationToken { get; set; }
-
-        internal RenderParsingOptions(PdfReaderOptions options)
-        {
-            Limits = options;
-            Password = options.Password;
-            UseLenientParsing = false;
-            ClipPaths = false;
         }
     }
 }

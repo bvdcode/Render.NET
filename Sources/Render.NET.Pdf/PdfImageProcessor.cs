@@ -7,7 +7,7 @@ using UglyToad.PdfPig.XObjects;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         protected override void RenderXObjectImage(XObjectContentRecord record)
         {
@@ -54,19 +54,19 @@ namespace Render.NET.Pdf
         private void AddPatternedImageMask(PixelBuffer mask, Matrix3x2 pixelsToPage, Matrix3x2 unitToPage, CurrentGraphicsState state)
         {
             IPdfDrawCommand? paint = CreatePatternPaint(state.CurrentNonStrokingColor, state.AlphaConstantNonStroking, Blend(state.BlendMode));
-            if (paint == null)
+            if (paint is null)
             {
                 return;
             }
 
-            var transfer = new byte[256];
+            byte[]? transfer = new byte[256];
             for (int i = 0; i < transfer.Length; i++)
             {
                 transfer[i] = (byte)i;
             }
 
-            var commands = new IPdfDrawCommand[] { new ImageCommand(mask, pixelsToPage, 1, ColorBlendMode.Normal) };
-            var maskPlan = new MaskPlan(commands, false, default, transfer);
+            IPdfDrawCommand[]? commands = new IPdfDrawCommand[] { new ImageCommand(mask, pixelsToPage, 1, ColorBlendMode.Normal) };
+            MaskPlan? maskPlan = new MaskPlan(commands, false, default, transfer);
             VectorPath bounds = new VectorPath().Rectangle(0, 0, 1, 1).Transform(unitToPage);
             AddPaint(new MaskedCommand(new PatternPaintCommand(bounds, FillRule.NonZero, paint), maskPlan), state);
         }

@@ -3,31 +3,14 @@ using System.Numerics;
 
 namespace Render.NET.Svg
 {
-    internal sealed record SvgRegion(string X, string Y, string Width, string Height, bool ObjectBox, float ViewWidth, float ViewHeight)
-    {
-        internal VectorPath Path((float X, float Y, float Width, float Height) box)
-        {
-            float x = SvgLength.Parse(X, ObjectBox ? 1 : ViewWidth), y = SvgLength.Parse(Y, ObjectBox ? 1 : ViewHeight);
-            float width = SvgLength.Parse(Width, ObjectBox ? 1 : ViewWidth), height = SvgLength.Parse(Height, ObjectBox ? 1 : ViewHeight);
-            if (ObjectBox)
-            {
-                x = box.X + (x * box.Width);
-                y = box.Y + (y * box.Height);
-                width *= box.Width;
-                height *= box.Height;
-            }
 
-            return width <= 0 || height <= 0 ? new VectorPath() : new VectorPath().Rectangle(x, y, width, height);
-        }
-    }
-
-    internal sealed record SvgMask(SvgNode Content, SvgRegion Region, bool ContentBox, bool Luminance, bool Linear)
+    internal record SvgMask(SvgNode Content, SvgRegion Region, bool ContentBox, bool Luminance, bool Linear)
     {
         internal void Apply(PixelBuffer source, (float X, float Y, float Width, float Height) box, Matrix3x2 matrix, SvgRenderContext context)
         {
             using IDisposable reservation = context.Reserve(source.Width, source.Height, 1);
-            var mask = new PixelBuffer(source.Width, source.Height);
-            var canvas = new RasterCanvas(mask);
+            PixelBuffer? mask = new PixelBuffer(source.Width, source.Height);
+            RasterCanvas? canvas = new RasterCanvas(mask);
             canvas.ClipPath(Region.Path(box), matrix, cancellationToken: context.Token);
             Matrix3x2 content = ContentBox ? Matrix3x2.CreateScale(box.Width, box.Height) * Matrix3x2.CreateTranslation(box.X, box.Y) * matrix : matrix;
             Content.Draw(canvas, content, context);

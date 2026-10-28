@@ -29,10 +29,14 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Tables/*.csv" />
+
     <Compile Include="../Shared/MqDecoder.cs" Link="MqDecoder.cs" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />
     <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/BundledResources.cs" Link="BundledResources.cs" />
+    <EmbeddedResource Update="BundledResources.resx" LogicalName="Render.NET.Resources.BundledResources.resources" />
   </ItemGroup>
 </Project>

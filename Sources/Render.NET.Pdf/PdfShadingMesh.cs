@@ -7,7 +7,7 @@ using UglyToad.PdfPig.Graphics.Colors;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfShadingMesh
+    internal class PdfShadingMesh
     {
         internal Shading Shading { get; }
         internal List<MeshTriangle> Triangles { get; } = new();
@@ -28,7 +28,7 @@ namespace Render.NET.Pdf
 
         internal static PdfShadingMesh Read(Shading shading, PdfReaderOptions limits, CancellationToken token)
         {
-            var mesh = new PdfShadingMesh(shading, limits, token);
+            PdfShadingMesh? mesh = new PdfShadingMesh(shading, limits, token);
             switch (shading)
             {
                 case FreeFormGouraudShading:
@@ -61,7 +61,7 @@ namespace Render.NET.Pdf
                     _stream.Flag();
                     triangle = new MeshTriangle(next, second, _stream.Vertex());
                 }
-                else if (previous != null && flag is 1 or 2)
+                else if (previous is not null && flag is 1 or 2)
                 {
                     triangle = new MeshTriangle(flag == 1 ? previous.B : previous.A, previous.C, next);
                 }
@@ -105,7 +105,7 @@ namespace Render.NET.Pdf
 
         private MeshVertex[] ReadRow(int count)
         {
-            var row = new MeshVertex[count];
+            MeshVertex[]? row = new MeshVertex[count];
             for (int i = 0; i < count; i++)
             {
                 _token.ThrowIfCancellationRequested();
@@ -122,12 +122,12 @@ namespace Render.NET.Pdf
             {
                 _token.ThrowIfCancellationRequested();
                 int flag = _stream.Flag();
-                var points = new Vector2[tensor ? 16 : 12];
-                var colors = new double[4][];
+                Vector2[]? points = new Vector2[tensor ? 16 : 12];
+                double[][]? colors = new double[4][];
                 int first = 0;
                 if (flag != 0)
                 {
-                    if (previous == null)
+                    if (previous is null)
                     {
                         throw new InvalidDataException("PDF patch continuation without a preceding patch.");
                     }

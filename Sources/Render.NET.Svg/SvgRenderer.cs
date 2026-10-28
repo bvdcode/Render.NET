@@ -18,9 +18,9 @@ namespace Render.NET.Svg
                 throw new NotSupportedException("Unsupported SVG features: " + string.Join("; ", document.UnsupportedFeatures));
             }
 
-            var(width, height) = Dimensions(document, options);
+            var (width, height) = Dimensions(document, options);
             int factor = options.Supersampling;
-            var image = new PixelBuffer(width * factor, height * factor);
+            PixelBuffer? image = new PixelBuffer(width * factor, height * factor);
             image.Clear(options.Background);
             Matrix3x2 matrix = Viewport(document.ViewBox, width, height, document.AspectRatio) * Matrix3x2.CreateScale(factor);
             document.Root.Draw(new RasterCanvas(image), matrix, new SvgRenderContext(options, cancellationToken));

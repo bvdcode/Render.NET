@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Render.NET.Pdf
 {
-    internal sealed record PdfMeshPatch(Vector2[] Points, double[][] Colors)
+    internal record PdfMeshPatch(Vector2[] Points, double[][] Colors)
     {
         private static readonly int[] TensorOrder = { 0, 11, 10, 9, 1, 12, 15, 8, 2, 13, 14, 7, 3, 4, 5, 6 };
 
@@ -70,7 +70,7 @@ namespace Render.NET.Pdf
 
         internal void Tessellate(List<MeshTriangle> triangles, int steps, int limit, CancellationToken token)
         {
-            var previous = Row(0, steps);
+            MeshVertex[]? previous = Row(0, steps);
             for (int y = 1; y <= steps; y++)
             {
                 token.ThrowIfCancellationRequested();
@@ -87,11 +87,11 @@ namespace Render.NET.Pdf
 
         private MeshVertex[] Row(float v, int steps)
         {
-            var row = new MeshVertex[steps + 1];
+            MeshVertex[]? row = new MeshVertex[steps + 1];
             for (int x = 0; x <= steps; x++)
             {
                 float u = x / (float)steps;
-                var components = new double[Colors[0].Length];
+                double[]? components = new double[Colors[0].Length];
                 for (int i = 0; i < components.Length; i++)
                 {
                     double bottom = (Colors[0][i] * (1 - u)) + (Colors[3][i] * u);

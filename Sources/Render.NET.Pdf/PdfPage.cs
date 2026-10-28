@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Render.NET.Pdf
 {
     /// <summary>A detached, interpreted page. It can be rendered repeatedly after its document is disposed.</summary>
-    public sealed class PdfPage
+    public class PdfPage
     {
         /// <summary>Gets the one-based page number.</summary>
         public int Number { get; }

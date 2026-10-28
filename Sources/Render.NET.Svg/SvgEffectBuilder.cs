@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private SvgRegion Region(XElement e, string units, string x = "-10%", string y = "-10%", string width = "120%", string height = "120%") => new((string?)e.Attribute("x") ?? x, (string?)e.Attribute("y") ?? y, (string?)e.Attribute("width") ?? width, (string?)e.Attribute("height") ?? height, (string?)e.Attribute(units) != "userSpaceOnUse", _width, _height);
         private SvgMask? Mask(string value, int depth)
@@ -17,7 +17,7 @@ namespace Render.NET.Svg
             }
 
             XElement? target = Reference(Url(value));
-            if (target == null)
+            if (target is null)
             {
                 return new SvgMask(Empty, new SvgRegion("0", "0", "0", "0", true, _width, _height), false, false, false);
             }
@@ -45,7 +45,7 @@ namespace Render.NET.Svg
             }
 
             XElement? target = Reference(Url(value));
-            if (target == null)
+            if (target is null)
             {
                 return null;
             }
@@ -109,7 +109,7 @@ namespace Render.NET.Svg
             if (href?.StartsWith('#') == true)
             {
                 XElement? referenced = Reference(href);
-                return referenced == null ? null : Node(referenced, new Dictionary<string, string>(), depth + 1, true);
+                return referenced is null ? null : Node(referenced, new Dictionary<string, string>(), depth + 1, true);
             }
 
             return Image(href) is { } image ? Empty with
@@ -151,7 +151,7 @@ namespace Render.NET.Svg
 
                 string name = value[position..start].Trim(), argument = value[(start + 1)..end].Trim();
                 XElement? operation = SvgFilter.CssOperation(name, argument);
-                if (operation == null)
+                if (operation is null)
                 {
                     Warn("SVG CSS filter: " + name);
                 }

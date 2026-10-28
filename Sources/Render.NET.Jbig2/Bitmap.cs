@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Render.NET.Jbig2
 {
-    internal sealed class Bitmap
+    internal class Bitmap
     {
         internal Bitmap(int width, int height, DecodeBudget budget, int fill = 0)
         {
@@ -99,7 +99,7 @@ namespace Render.NET.Jbig2
 
         internal Bitmap Slice(int x, int width, DecodeBudget budget)
         {
-            var result = new Bitmap(width, Height, budget);
+            Bitmap? result = new Bitmap(width, Height, budget);
             result.Compose(this, -x, 0, 4, budget);
             return result;
         }

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Render.NET.Jbig2
 {
-    internal sealed class BitReader
+    internal class BitReader
     {
         private readonly ReadOnlyMemory<byte> _data;
         internal BitReader(ReadOnlyMemory<byte> data)

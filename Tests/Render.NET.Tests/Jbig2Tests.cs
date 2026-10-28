@@ -11,8 +11,8 @@ namespace Render.NET.Tests
 
         public static IEnumerable<TestCaseData> Fixtures()
         {
-            using var manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Root, "manifest.json")));
-            foreach (var entry in manifest.RootElement.EnumerateArray())
+            using JsonDocument? manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Root, "manifest.json")));
+            foreach (JsonElement entry in manifest.RootElement.EnumerateArray())
             {
                 yield return new TestCaseData(entry.Clone()).SetName("Jbig2_" + entry.GetProperty("name").GetString());
             }
@@ -26,9 +26,9 @@ namespace Render.NET.Tests
             byte[] expected = File.ReadAllBytes(Path.Combine(Root, name + ".bin"));
             Assert.That(Convert.ToHexStringLower(SHA256.HashData(encoded)), Is.EqualTo(entry.GetProperty("sha256").GetString()));
             Assert.That(Convert.ToHexStringLower(SHA256.HashData(expected)), Is.EqualTo(entry.GetProperty("pixelSha256").GetString()));
-            var document = Jbig2Decoder.Decode(encoded);
+            Jbig2Document? document = Jbig2Decoder.Decode(encoded);
             Assert.That(document.Pages.Count, Is.EqualTo(1));
-            var page = document.Pages[0];
+            Jbig2Page? page = document.Pages[0];
             Assert.That(page.Width, Is.EqualTo(entry.GetProperty("width").GetInt32()));
             Assert.That(page.Height, Is.EqualTo(entry.GetProperty("height").GetInt32()));
             Assert.That(page.Data.ToArray(), Is.EqualTo(File.ReadAllBytes(Path.Combine(Root, name + ".bin"))));

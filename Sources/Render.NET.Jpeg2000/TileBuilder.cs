@@ -10,7 +10,7 @@ namespace Render.NET.Jpeg2000
         internal static Tile Build(Jpeg2000Component[] outputs, HeaderSettings settings, int x0, int y0, int x1, int y1, DecodeBudget budget)
         {
             CodingStyle coding = settings.DefaultCoding ?? throw new InvalidDataException("JPEG 2000 is missing COD.");
-            var components = new TileComponent[outputs.Length];
+            TileComponent[]? components = new TileComponent[outputs.Length];
             var packets = new List<Packet>();
             for (int c = 0; c < outputs.Length; c++)
             {
@@ -39,8 +39,8 @@ namespace Render.NET.Jpeg2000
             int cy0 = ByteReader.Ceil(y0, output.VerticalSampling);
             int cx1 = ByteReader.Ceil(x1, output.HorizontalSampling);
             int cy1 = ByteReader.Ceil(y1, output.VerticalSampling);
-            var metadata = new Jpeg2000Component(cx0, cy0, cx1 - cx0, cy1 - cy0, output.BitDepth, output.IsSigned, output.HorizontalSampling, output.VerticalSampling, Array.Empty<int>());
-            var resolutions = new Resolution[coding.Levels + 1];
+            Jpeg2000Component? metadata = new Jpeg2000Component(cx0, cy0, cx1 - cx0, cy1 - cy0, output.BitDepth, output.IsSigned, output.HorizontalSampling, output.VerticalSampling, Array.Empty<int>());
+            Resolution[]? resolutions = new Resolution[coding.Levels + 1];
             for (int r = 0; r < resolutions.Length; r++)
             {
                 resolutions[r] = Resolution(metadata, coding, quantization, r, x0, y0, budget);
@@ -62,7 +62,7 @@ namespace Render.NET.Jpeg2000
             int y0 = ByteReader.Ceil(component.Y0, scale);
             int x1 = ByteReader.Ceil(component.X0 + component.Width, scale);
             int y1 = ByteReader.Ceil(component.Y0 + component.Height, scale);
-            var resolution = new Resolution
+            Resolution? resolution = new Resolution
             {
                 X0 = x0,
                 Y0 = y0,
@@ -118,7 +118,7 @@ namespace Render.NET.Jpeg2000
             int x1 = ByteReader.Ceil((component.X0 + component.Width) - ox, divisor);
             int y1 = ByteReader.Ceil((component.Y0 + component.Height) - oy, divisor);
             int index = r == 0 ? 0 : (3 * (r - 1)) + orientation;
-            var quant = quantization.ForBand(index, r, coding.Levels, component.BitDepth, orientation, coding.Reversible);
+            (int Planes, double Step) quant = quantization.ForBand(index, r, coding.Levels, component.BitDepth, orientation, coding.Reversible);
             return new Subband
             {
                 X0 = x0,
@@ -147,7 +147,7 @@ namespace Render.NET.Jpeg2000
                     int y0 = (int)Math.Max(band.Y0, (long)(gridY + y) * ph);
                     int x1 = (int)Math.Min(band.X0 + band.Width, ((long)gridX + x + 1) * pw);
                     int y1 = (int)Math.Min(band.Y0 + band.Height, ((long)gridY + y + 1) * ph);
-                    var part = new PrecinctBand(band);
+                    PrecinctBand? part = new PrecinctBand(band);
                     if (x0 < x1 && y0 < y1)
                     {
                         Blocks(part, x0, y0, x1, y1, bw, bh, budget);
@@ -173,7 +173,7 @@ namespace Render.NET.Jpeg2000
                 {
                     int left = Math.Max(x0, x * width);
                     int top = Math.Max(y0, y * height);
-                    var block = new CodeBlock
+                    CodeBlock? block = new CodeBlock
                     {
                         X0 = left,
                         Y0 = top,
@@ -190,7 +190,7 @@ namespace Render.NET.Jpeg2000
         {
             for (int r = 0; r < component.Resolutions.Length; r++)
             {
-                var precincts = component.Resolutions[r].Precincts;
+                Precinct[]? precincts = component.Resolutions[r].Precincts;
                 budget.Packets((long)precincts.Length * layers);
                 budget.Reserve((long)precincts.Length * layers * 80);
                 for (int p = 0; p < precincts.Length; p++)
@@ -210,6 +210,7 @@ namespace Render.NET.Jpeg2000
             2 => packets.OrderBy(p => p.Resolution).ThenBy(p => p.Y).ThenBy(p => p.X).ThenBy(p => p.Component).ThenBy(p => p.Layer),
             3 => packets.OrderBy(p => p.Y).ThenBy(p => p.X).ThenBy(p => p.Component).ThenBy(p => p.Resolution).ThenBy(p => p.Layer),
             4 => packets.OrderBy(p => p.Component).ThenBy(p => p.Y).ThenBy(p => p.X).ThenBy(p => p.Resolution).ThenBy(p => p.Layer),
-            _ => throw new NotSupportedException("JPEG 2000 progression order.")};
+            _ => throw new NotSupportedException("JPEG 2000 progression order.")
+        };
     }
 }

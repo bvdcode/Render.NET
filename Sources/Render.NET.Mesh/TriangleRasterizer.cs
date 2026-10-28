@@ -64,7 +64,7 @@ namespace Render.NET.Mesh
                         }
 
                         depths[offset] = depth;
-                        if (normals != null)
+                        if (normals is not null)
                         {
                             Vector3 normal = (mesh.Normals[corner] * wa) + (mesh.Normals[corner + 1] * wb) + (mesh.Normals[corner + 2] * wc);
                             if (normal.LengthSquared() < 0.000001f)

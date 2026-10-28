@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial record SvgFilter(SvgRegion Region, bool PrimitiveBox, XElement[] Primitives, bool Linear)
+    internal partial record SvgFilter(SvgRegion Region, bool PrimitiveBox, XElement[] Primitives, bool Linear)
     {
         internal IReadOnlyDictionary<XElement, SvgNode> Images { get; init; } = new Dictionary<XElement, SvgNode>();
         internal bool Unbounded { get; init; }
@@ -35,7 +35,7 @@ namespace Render.NET.Svg
                 PixelBuffer input = Input(Text(primitive, "in"), previous, results, source, context);
                 PixelBuffer second = Input(Text(primitive, "in2", "SourceGraphic"), source, results, source, context);
                 bool linear = Text(primitive, "color-interpolation-filters", Linear ? "linearRGB" : "sRGB") != "sRGB";
-                var region = PrimitiveRegion(primitive, box, context);
+                (float X, float Y, float Width, float Height) region = PrimitiveRegion(primitive, box, context);
                 previous = Execute(primitive, input, second, results, source, units, matrix, region, regions.GetValueOrDefault(input, Region.Path(box).GetBounds(context.Token)), linear, context);
                 ClipPrimitive(previous, region, matrix, context);
                 regions[previous] = region;
@@ -56,8 +56,8 @@ namespace Render.NET.Svg
                 return previous;
             }
 
-            var clipped = new PixelBuffer(source.Width, source.Height);
-            var canvas = new RasterCanvas(clipped);
+            PixelBuffer? clipped = new PixelBuffer(source.Width, source.Height);
+            RasterCanvas? canvas = new RasterCanvas(clipped);
             canvas.ClipPath(Region.Path(box), matrix, cancellationToken: context.Token);
             canvas.DrawImage(previous, Matrix3x2.Identity, cancellationToken: context.Token);
             return clipped;
@@ -97,7 +97,8 @@ namespace Render.NET.Svg
             "feDiffuseLighting" or "feSpecularLighting" => Lighting(p, input, units, matrix, linear, context),
             "feTile" => Tile(input, inputRegion, matrix, linear, context),
             "feImage" => FilterImage(p, source, units, matrix, region, context),
-            _ => SvgPixels.Copy(input)};
+            _ => SvgPixels.Copy(input)
+        };
         private static readonly HashSet<string> ColorOperations = new("feColorMatrix feComponentTransfer feComposite feBlend feMerge feFlood".Split(' '));
         private static PixelBuffer ExecuteColor(XElement p, PixelBuffer input, PixelBuffer second, Dictionary<string, PixelBuffer> results, PixelBuffer source, bool linear, SvgRenderContext context) => p.Name.LocalName switch
         {
@@ -107,18 +108,19 @@ namespace Render.NET.Svg
             "feBlend" => BlendPixels(p, input, second, linear, context),
             "feMerge" => Merge(p, input, results, source, context),
             "feFlood" => Flood(p, source),
-            _ => SvgPixels.Copy(input)};
+            _ => SvgPixels.Copy(input)
+        };
         private (float X, float Y, float Width, float Height) PrimitiveRegion(XElement primitive, (float X, float Y, float Width, float Height) box, SvgRenderContext context)
         {
-            var region = Region.Path(box).GetBounds(context.Token);
+            (float X, float Y, float Width, float Height) region = Region.Path(box).GetBounds(context.Token);
             float Get(string name, float fallback, float size, float origin, float viewport) => primitive.Attribute(name) is { } a ? PrimitiveBox ? (SvgLength.Parse(a.Value, 1) * size) + origin : SvgLength.Parse(a.Value, viewport) : fallback;
             return (Get("x", region.X, box.Width, box.X, Region.ViewWidth), Get("y", region.Y, box.Height, box.Y, Region.ViewHeight), Get("width", region.Width, box.Width, 0, Region.ViewWidth), Get("height", region.Height, box.Height, 0, Region.ViewHeight));
         }
 
         private static void Clip(PixelBuffer image, (float X, float Y, float Width, float Height) region, Matrix3x2 matrix, SvgRenderContext context)
         {
-            var mask = new PixelBuffer(image.Width, image.Height);
-            var path = region.Width <= 0 || region.Height <= 0 ? new VectorPath() : new VectorPath().Rectangle(region.X, region.Y, region.Width, region.Height);
+            PixelBuffer? mask = new PixelBuffer(image.Width, image.Height);
+            VectorPath? path = region.Width <= 0 || region.Height <= 0 ? new VectorPath() : new VectorPath().Rectangle(region.X, region.Y, region.Width, region.Height);
             new RasterCanvas(mask).FillPath(path, new Rgba32(0, 0, 0), matrix, cancellationToken: context.Token);
             Span<byte> pixels = image.Pixels.Span;
             ReadOnlySpan<byte> clip = mask.Pixels.Span;
@@ -156,7 +158,7 @@ namespace Render.NET.Svg
             {
                 if (requested.Contains(name))
                 {
-                    var buffer = new PixelBuffer(source.Width, source.Height);
+                    PixelBuffer? buffer = new PixelBuffer(source.Width, source.Height);
                     paint?.DrawUnbounded(new RasterCanvas(buffer), box, matrix, opacity, context.Token);
                     results[name] = buffer;
                 }
@@ -168,14 +170,14 @@ namespace Render.NET.Svg
 
         private PixelBuffer FilterImage(XElement p, PixelBuffer source, Matrix3x2 units, Matrix3x2 matrix, (float X, float Y, float Width, float Height) region, SvgRenderContext context)
         {
-            var result = new PixelBuffer(source.Width, source.Height);
+            PixelBuffer? result = new PixelBuffer(source.Width, source.Height);
             if (!Images.TryGetValue(p, out SvgNode? node) || region.Width <= 0 || region.Height <= 0)
             {
                 return result;
             }
 
-            var canvas = new RasterCanvas(result);
-            if (node.Image != null)
+            RasterCanvas? canvas = new RasterCanvas(result);
+            if (node.Image is not null)
             {
                 Matrix3x2 viewport = SvgRenderer.Viewport((0, 0, node.Image.Width, node.Image.Height), region.Width, region.Height, Text(p, "preserveAspectRatio", "xMidYMid meet")) * Matrix3x2.CreateTranslation(region.X, region.Y);
                 canvas.DrawImage(node.Image, viewport * matrix, cancellationToken: context.Token);
@@ -304,7 +306,7 @@ namespace Render.NET.Svg
                     .7152f,
                     .0722f
                 };
-                var values = new float[20];
+                float[]? values = new float[20];
                 for (int i = 0; i < 3; i++)
                 {
                     for (int j = 0; j < 3; j++)

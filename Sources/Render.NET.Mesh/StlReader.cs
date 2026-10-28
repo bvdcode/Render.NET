@@ -28,7 +28,7 @@ namespace Render.NET.Mesh
                 throw new InvalidDataException("The STL input exceeds MaxInputBytes.");
             }
 
-            using MemoryStream input = new();
+            await using MemoryStream input = new();
             byte[] buffer = new byte[65536];
             while (true)
             {
@@ -43,7 +43,7 @@ namespace Render.NET.Mesh
                     throw new InvalidDataException("The STL input exceeds MaxInputBytes.");
                 }
 
-                input.Write(buffer, 0, count);
+                await input.WriteAsync(buffer.AsMemory(0, count), cancellationToken).ConfigureAwait(false);
             }
 
             return Parse(input.GetBuffer().AsSpan(0, checked((int)input.Length)), options, cancellationToken);

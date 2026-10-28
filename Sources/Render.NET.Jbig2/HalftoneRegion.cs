@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Render.NET.Jbig2
 {
-    internal sealed partial class DocumentDecoder
+    internal partial class DocumentDecoder
     {
         private Bitmap[] Patterns(BitReader input)
         {
@@ -21,7 +21,7 @@ namespace Render.NET.Jbig2
             }
             else
             {
-                var at = new[]
+                (int, int)[]? at = new[]
                 {
                     (-width, 0),
                     (-3, -1),
@@ -32,7 +32,7 @@ namespace Render.NET.Jbig2
             }
 
             _budget.Allocate((long)count * 8);
-            var result = new Bitmap[count];
+            Bitmap[]? result = new Bitmap[count];
             for (int i = 0; i < count; i++)
             {
                 result[i] = collective.Slice(i * width, width, _budget);
@@ -44,18 +44,18 @@ namespace Render.NET.Jbig2
         private byte[] GenericContexts(int template) => _budget.Contexts(1 << (template == 0 ? 16 : template == 1 ? 13 : 10));
         private void Halftone(Segment segment, BitReader input)
         {
-            var region = Region(input);
+            Region? region = Region(input);
             int flags = input.Byte(), template = (flags >> 1) & 3;
             int width = Dimension(input), height = Dimension(input), gx = input.I32(), gy = input.I32(), rx = input.U16(), ry = input.U16();
-            var dictionaries = References<Bitmap[]>(segment);
+            System.Collections.Generic.List<Bitmap[]>? dictionaries = References<Bitmap[]>(segment);
             if (dictionaries.Count != 1)
             {
                 throw new InvalidDataException("JBIG2 halftone requires one pattern dictionary.");
             }
 
-            var patterns = dictionaries[0];
+            Bitmap[]? patterns = dictionaries[0];
             bool mmr = (flags & 1) != 0;
-            var result = new Bitmap(region.Width, region.Height, _budget, flags >> 7);
+            Bitmap? result = new Bitmap(region.Width, region.Height, _budget, flags >> 7);
             if (mmr && (flags & 8) != 0)
             {
                 throw new InvalidDataException("MMR halftones cannot skip pixels.");
@@ -63,10 +63,10 @@ namespace Render.NET.Jbig2
 
             Bitmap? skip = (flags & 8) == 0 ? null : HalftoneSkip(width, height, gx, gy, rx, ry, patterns[0], region);
             int bits = CodeBits(patterns.Length);
-            var planes = new Bitmap[bits];
+            Bitmap[]? planes = new Bitmap[bits];
             Arithmetic? arithmetic = mmr ? null : new Arithmetic(input.Rest(), _budget);
-            var contexts = GenericContexts(template);
-            var at = new[]
+            byte[]? contexts = GenericContexts(template);
+            (int, int)[]? at = new[]
             {
                 (template <= 1 ? 3 : 2, -1),
                 (-3, -1),
@@ -88,14 +88,14 @@ namespace Render.NET.Jbig2
 
         private Bitmap HalftoneSkip(int width, int height, int gx, int gy, int rx, int ry, Bitmap pattern, Region region)
         {
-            var skip = new Bitmap(width, height, _budget);
+            Bitmap? skip = new Bitmap(width, height, _budget);
             _budget.Work((long)width * height);
             for (int y = 0; y < height; y++)
             {
                 _budget.Cancellation.ThrowIfCancellationRequested();
                 for (int x = 0; x < width; x++)
                 {
-                    var p = Grid(x, y, gx, gy, rx, ry);
+                    (long X, long Y) p = Grid(x, y, gx, gy, rx, ry);
                     if (p.X + pattern.Width <= 0 || p.Y + pattern.Height <= 0 || p.X >= region.Width || p.Y >= region.Height)
                     {
                         skip.Set(x, y, 1);
@@ -130,7 +130,7 @@ namespace Render.NET.Jbig2
                         throw new InvalidDataException("Invalid JBIG2 halftone pattern index.");
                     }
 
-                    var p = Grid(x, y, gx, gy, rx, ry);
+                    (long X, long Y) p = Grid(x, y, gx, gy, rx, ry);
                     result.Compose(patterns[value], p.X, p.Y, op, _budget);
                 }
             }

@@ -25,8 +25,13 @@ namespace Render.NET.Tests
                 new(-1, -1, -1), new(1, -1, -0.5f), new(0, 1, -1)];
             MeshRenderOptions options = new()
             {
-                Width = 64, Height = 64, Supersampling = 1, CameraDirection = Vector3.UnitZ,
-                CameraUp = Vector3.UnitY, Shadows = false, AmbientOcclusion = false
+                Width = 64,
+                Height = 64,
+                Supersampling = 1,
+                CameraDirection = Vector3.UnitZ,
+                CameraUp = Vector3.UnitY,
+                Shadows = false,
+                AmbientOcclusion = false
             };
             PixelBuffer first = MeshRenderer.Render(new TriangleMesh(vertices, [0, 1, 2, 3, 4, 5]), options);
             PixelBuffer reversed = MeshRenderer.Render(new TriangleMesh(vertices, [3, 4, 5, 0, 1, 2]), options);
@@ -63,8 +68,13 @@ namespace Render.NET.Tests
             TriangleMesh triangle = new([new(-1, -1, 0), new(1, -1, 0), new(0, 1, 0)], [0, 1, 2]);
             PixelBuffer image = MeshRenderer.Render(triangle, new MeshRenderOptions
             {
-                Width = 65, Height = 65, Supersampling = 4, CameraDirection = Vector3.UnitZ,
-                CameraUp = Vector3.UnitY, Shadows = false, AmbientOcclusion = false
+                Width = 65,
+                Height = 65,
+                Supersampling = 4,
+                CameraDirection = Vector3.UnitZ,
+                CameraUp = Vector3.UnitY,
+                Shadows = false,
+                AmbientOcclusion = false
             });
             Rgba32 interior = image[32, 32];
             int edges = 0;
@@ -90,7 +100,11 @@ namespace Render.NET.Tests
             Rgba32 background = new(21, 43, 65, 128);
             PixelBuffer image = MeshRenderer.Render(Cube(), new MeshRenderOptions
             {
-                Width = 48, Height = 48, Background = background, Shadows = false, AmbientOcclusion = false
+                Width = 48,
+                Height = 48,
+                Background = background,
+                Shadows = false,
+                AmbientOcclusion = false
             });
             Assert.That(image[0, 0], Is.EqualTo(background));
             Assert.That(image[24, 24].A, Is.EqualTo(255));

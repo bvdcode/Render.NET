@@ -178,11 +178,11 @@ namespace Render.NET.Tests
             using PdfDocument document = await Fixture("graphics.pdf");
             Assert.Throws<ArgumentOutOfRangeException>(() => document.GetPage(0));
             Assert.Throws<ArgumentOutOfRangeException>(() => document.GetPage(3));
-            using var cancellation = new CancellationTokenSource();
-            cancellation.Cancel();
+            using CancellationTokenSource? cancellation = new CancellationTokenSource();
+            await cancellation.CancelAsync();
             Assert.Throws<OperationCanceledException>(() => document.GetPage(1, cancellation.Token));
             Assert.Throws<OperationCanceledException>(() => PdfRenderer.Render(document.GetPage(1), Exact, cancellation.Token));
-            using var input = File.OpenRead(FixturePath("graphics.pdf"));
+            using FileStream? input = File.OpenRead(FixturePath("graphics.pdf"));
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await PdfReader.ReadAsync(input, cancellationToken: cancellation.Token));
             Assert.That(input.CanRead, Is.True);
         }
@@ -211,7 +211,7 @@ namespace Render.NET.Tests
         public async Task ReadsCurrentStreamPositionAndNonSeekableInputWithoutClosingEither()
         {
             byte[] data = PdfTestDocument.Create("1 0 0 rg 0 0 10 10 re f");
-            using var input = new MemoryStream();
+            using MemoryStream? input = new MemoryStream();
             input.Write(new byte[17]);
             input.Write(data);
             input.Position = 17;
@@ -222,7 +222,7 @@ namespace Render.NET.Tests
 
             Assert.That(input.CanRead, Is.True);
             input.Position = 17;
-            using var nonSeekable = new StlReaderTests.NonSeekableStream(input);
+            using StlReaderTests.NonSeekableStream? nonSeekable = new StlReaderTests.NonSeekableStream(input);
             using PdfDocument second = await PdfReader.ReadAsync(nonSeekable);
             Assert.That(second.PageCount, Is.EqualTo(1));
             Assert.That(nonSeekable.CanRead, Is.True);
@@ -234,7 +234,7 @@ namespace Render.NET.Tests
             int calls = 0;
             string fontFile = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory,
                 "../../../../../Sources/Render.NET.Pdf/Fonts/Aileron-Regular.ttf"));
-            var options = new PdfReaderOptions
+            PdfReaderOptions? options = new PdfReaderOptions
             {
                 FontResolver = name =>
                 {

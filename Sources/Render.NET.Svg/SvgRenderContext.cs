@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Render.NET.Svg
 {
-    internal sealed class SvgRenderContext
+    internal class SvgRenderContext
     {
         private long _reserved;
         internal SvgRenderOptions Options { get; }
@@ -27,7 +27,7 @@ namespace Render.NET.Svg
             return new Reservation(this, bytes);
         }
 
-        private sealed class Reservation(SvgRenderContext owner, long bytes) : IDisposable
+        private class Reservation(SvgRenderContext owner, long bytes) : IDisposable
         {
             public void Dispose() => owner._reserved -= bytes;
         }

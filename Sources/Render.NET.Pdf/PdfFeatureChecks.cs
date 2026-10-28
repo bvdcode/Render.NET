@@ -3,7 +3,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         private void Warn(string feature)
         {

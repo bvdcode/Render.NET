@@ -11,7 +11,7 @@ namespace Render.NET.Tests
         private const string Red = "{\"ty\":\"fl\",\"c\":{\"k\":[1,0,0]},\"o\":{\"k\":100}}";
         private static string Rect(int x, int y, int w = 30, int h = 30) => $$$$"""{"ty":"rc","p":{"k":[{{{{x}}}},{{{{y}}}}]},"s":{"k":[{{{{w}}}},{{{{h}}}}]}}""";
         private static string Layer(string shapes, string extra = "") => "{\"ty\":4,\"ks\":{},\"shapes\":[" + shapes + "]" + extra + "}";
-        private static string Effect(int type, params object? [] values) => ",\"ef\":" + JsonSerializer.Serialize(new[] { new { ty = type, ef = values.Select(k => new { v = new { k } }).ToArray() } });
+        private static string Effect(int type, params object?[] values) => ",\"ef\":" + JsonSerializer.Serialize(new[] { new { ty = type, ef = values.Select(k => new { v = new { k } }).ToArray() } });
         private static string Mask(string mode, bool invert = false, int opacity = 100, int x = 20, int w = 40, int feather = 0) => $$$$"""{"mode":"{{{{mode}}}}","inv":{{{{invert.ToString().ToLowerInvariant()}}}},"o":{"k":{{{{opacity}}}}},"f":{"k":[{{{{feather}}}},{{{{feather}}}}]},"pt":{"k":{"v":[[{{{{x}}}},20],[{{{{x + w}}}},20],[{{{{x + w}}}},80],[{{{{x}}}},80]],"i":[[0,0],[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0],[0,0]],"c":true}}}""";
         private static PixelBuffer Render(string layers, double frame = 0)
         {
@@ -116,7 +116,7 @@ namespace Render.NET.Tests
         [Test]
         public void LevelsCanInvertOneChannelWithoutChangingAlpha()
         {
-            var values = new object? [36];
+            object?[]? values = new object?[36];
             values[10] = 1;
             values[11] = 0;
             PixelBuffer image = Render(Layer(Rect(50, 50) + "," + Red, Effect(24, values)));

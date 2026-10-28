@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace Render.NET
 {
-    internal sealed record PathContour(List<Vector2> Points, bool Closed);
 
     internal static class PathFlattener
     {
@@ -27,22 +26,22 @@ namespace Render.NET
                         contours.Add(new PathContour(points, false));
                         current = first;
                         break;
-                    case 1 when points != null:
+                    case 1 when points is not null:
                         points.Add(first);
                         current = first;
                         break;
-                    case 2 when points != null:
+                    case 2 when points is not null:
                         Vector2 end = Vector2.Transform(element.Second, transform);
                         FlattenCubic(points, current, current + ((first - current) * (2f / 3)),
                             end + ((first - end) * (2f / 3)), end, tolerance, 0, ref remaining, cancellationToken);
                         current = end;
                         break;
-                    case 3 when points != null:
+                    case 3 when points is not null:
                         Vector2 third = Vector2.Transform(element.Third, transform);
                         FlattenCubic(points, current, first, Vector2.Transform(element.Second, transform), third, tolerance, 0, ref remaining, cancellationToken);
                         current = third;
                         break;
-                    case 4 when points != null:
+                    case 4 when points is not null:
                         contours[contours.Count - 1] = new PathContour(points, true);
                         current = points[0];
                         points = new List<Vector2> { current };

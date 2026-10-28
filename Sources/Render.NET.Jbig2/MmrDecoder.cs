@@ -9,12 +9,12 @@ namespace Render.NET.Jbig2
         private static readonly Dictionary<int, int>[] Runs = Codes();
         private static Dictionary<int, int>[] Codes()
         {
-            var result = new[]
+            Dictionary<int, int>[]? result = new[]
             {
                 new Dictionary<int, int>(),
                 new Dictionary<int, int>()
             };
-            foreach (var row in StandardHuffman.Rows("Fax"))
+            foreach (string[] row in StandardHuffman.Rows("Fax"))
             {
                 for (int color = 0; color < result.Length; color++)
                 {
@@ -28,11 +28,11 @@ namespace Render.NET.Jbig2
 
         internal static Bitmap Decode(BitReader input, int width, int height, DecodeBudget budget, bool requireTerminator = false)
         {
-            var bitmap = new Bitmap(width, height, budget);
+            Bitmap? bitmap = new Bitmap(width, height, budget);
             budget.Work((long)width * height);
             budget.Allocate(((long)width + 2) * 8);
-            var reference = new int[checked(width + 2)];
-            var current = new int[reference.Length];
+            int[]? reference = new int[checked(width + 2)];
+            int[]? current = new int[reference.Length];
             int referenceCount = 2;
             reference[0] = width;
             reference[1] = width;
@@ -154,7 +154,7 @@ namespace Render.NET.Jbig2
         private static int Run(BitReader input, int color, int maximum)
         {
             int total = 0;
-            var codes = Runs[color];
+            Dictionary<int, int>? codes = Runs[color];
             while (true)
             {
                 int code = 1, run = -1;

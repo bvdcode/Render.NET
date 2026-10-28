@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private void ApplyStyle(XElement path, JsonElement style, double frame)
         {
@@ -71,7 +71,7 @@ namespace Render.NET.Tgs
             bool radial = TgsJson.Number(style, "t", 1) == 2;
             Vector2 start = TgsValues.Point(TgsJson.Get(style, "s"), frame), end = TgsValues.Point(TgsJson.Get(style, "e"), frame);
             string id = Id();
-            var gradient = new XElement(radial ? "radialGradient" : "linearGradient", new XAttribute("id", id), new XAttribute("gradientUnits", "userSpaceOnUse"));
+            XElement? gradient = new XElement(radial ? "radialGradient" : "linearGradient", new XAttribute("id", id), new XAttribute("gradientUnits", "userSpaceOnUse"));
             if (radial)
             {
                 float radius = Vector2.Distance(start, end);

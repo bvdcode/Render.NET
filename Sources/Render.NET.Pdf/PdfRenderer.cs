@@ -20,10 +20,10 @@ namespace Render.NET.Pdf
 
             (int width, int height) = Dimensions(page, options);
             int samples = options.Supersampling;
-            var image = new PixelBuffer(width * samples, height * samples);
+            PixelBuffer? image = new PixelBuffer(width * samples, height * samples);
             image.Clear(options.Background);
-            var canvas = new RasterCanvas(image);
-            var transform = new Matrix3x2((float)(image.Width / page.Width), 0, 0, (float)(-image.Height / page.Height), 0, image.Height);
+            RasterCanvas? canvas = new RasterCanvas(image);
+            Matrix3x2 transform = new Matrix3x2((float)(image.Width / page.Width), 0, 0, (float)(-image.Height / page.Height), 0, image.Height);
             foreach (IPdfDrawCommand command in page.Commands)
             {
                 cancellationToken.ThrowIfCancellationRequested();

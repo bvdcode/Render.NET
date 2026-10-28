@@ -311,7 +311,7 @@ namespace Render.NET.Tests
         [Test]
         public async Task PatternInterpretationCountsAgainstThePageOperationBudget()
         {
-            using var stream = new MemoryStream(PatternPage("0 0 5 5 re f"));
+            using MemoryStream? stream = new MemoryStream(PatternPage("0 0 5 5 re f"));
             using PdfDocument document = await PdfReader.ReadAsync(stream, new PdfReaderOptions { MaximumOperations = 4 });
             Assert.Throws<InvalidDataException>(() => document.GetPage(1));
         }
@@ -347,7 +347,7 @@ namespace Render.NET.Tests
 
         private static async Task<PdfDocument> Read(byte[] data)
         {
-            using var stream = new MemoryStream(data);
+            using MemoryStream? stream = new MemoryStream(data);
             return await PdfReader.ReadAsync(stream);
         }
 

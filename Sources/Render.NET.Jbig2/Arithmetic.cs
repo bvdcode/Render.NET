@@ -6,7 +6,7 @@ using Render.NET.Entropy;
 namespace Render.NET.Jbig2
 {
     // ITU-T T.88 Annex A. Each integer class owns an independent set of contexts.
-    internal sealed class Arithmetic
+    internal class Arithmetic
     {
         private readonly Dictionary<string, byte[]> _integers = new();
         private readonly DecodeBudget _budget;
@@ -27,7 +27,7 @@ namespace Render.NET.Jbig2
 
         internal int? Integer(string name)
         {
-            if (!_integers.TryGetValue(name, out var contexts))
+            if (!_integers.TryGetValue(name, out byte[]? contexts))
             {
                 contexts = _budget.Contexts(512);
                 _integers.Add(name, contexts);

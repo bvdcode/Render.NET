@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfMeshIndex
+    internal class PdfMeshIndex
     {
         private readonly MeshTriangle[] _triangles;
         private readonly int[] _order;
@@ -43,7 +43,7 @@ namespace Render.NET.Pdf
                 max = Vector2.Max(max, Vector2.Max(t.A.Position, Vector2.Max(t.B.Position, t.C.Position)));
             }
 
-            var node = new Node(min, max, start, count);
+            Node? node = new Node(min, max, start, count);
             if (count > 8)
             {
                 bool horizontal = max.X - min.X >= max.Y - min.Y;
@@ -65,7 +65,7 @@ namespace Render.NET.Pdf
                 return;
             }
 
-            if (node.Left != null)
+            if (node.Left is not null)
             {
                 Query(node.Left, point, ref found, ref weights);
                 Query(node.Right!, point, ref found, ref weights);
@@ -111,7 +111,7 @@ namespace Render.NET.Pdf
         private static float Center(MeshTriangle t, bool x)
             => x ? t.A.Position.X + t.B.Position.X + t.C.Position.X : t.A.Position.Y + t.B.Position.Y + t.C.Position.Y;
 
-        private sealed record Node(Vector2 Min, Vector2 Max, int Start, int Count)
+        private record Node(Vector2 Min, Vector2 Max, int Start, int Count)
         {
             internal Node? Left { get; set; }
             internal Node? Right { get; set; }

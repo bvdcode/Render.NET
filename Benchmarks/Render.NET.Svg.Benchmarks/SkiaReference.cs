@@ -36,7 +36,7 @@ namespace Render.NET.Svg.Benchmarks
         private static SKSvg Parse(string xml)
         {
             SKSvg svg = new();
-            if (svg.FromSvg(xml) == null)
+            if (svg.FromSvg(xml) is null)
             {
                 svg.Dispose();
                 throw new InvalidDataException("Svg.Skia returned no picture.");

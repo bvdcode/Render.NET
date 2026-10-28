@@ -3,7 +3,7 @@ using System;
 namespace Render.NET.Entropy
 {
     // Numerical probability states specified by ITU-T T.800 Table C.2 and ITU-T T.88 Table E.1.
-    internal sealed class MqDecoder
+    internal class MqDecoder
     {
         private static readonly (ushort Probability, byte NextMps, byte NextLps)[] ProbabilityStates =
         {

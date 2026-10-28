@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private static IEnumerable<JsonElement> ExpandEffects(JsonElement array)
         {
@@ -41,7 +41,7 @@ namespace Render.NET.Tgs
             }
 
             _defs.Add(filter);
-            var group = new XElement("g", new XAttribute("filter", "url(#" + filter.Attribute("id")!.Value + ")"), content.Nodes().ToArray());
+            XElement? group = new XElement("g", new XAttribute("filter", "url(#" + filter.Attribute("id")!.Value + ")"), content.Nodes().ToArray());
             content.ReplaceNodes(group);
         }
 
@@ -72,7 +72,7 @@ namespace Render.NET.Tgs
             float height = (float)Scalar(3, 100) / 100, width = Scalar(2, 1) == 1 ? height : (float)Scalar(4, 100) / 100;
             float skew = (float)((Scalar(5) * Math.PI) / 180), axis = (float)(((Scalar(6) + 90) * Math.PI) / 180);
             Matrix3x2 matrix = Matrix3x2.CreateTranslation(-anchor) * Matrix3x2.CreateScale(width, height) * Matrix3x2.CreateRotation(-axis) * new Matrix3x2(1, 0, -MathF.Tan(skew), 1, 0, 0) * Matrix3x2.CreateRotation(axis) * Matrix3x2.CreateRotation((float)((Scalar(7) * Math.PI) / 180)) * Matrix3x2.CreateTranslation(position);
-            var group = new XElement("g", new XAttribute("transform", Matrix(matrix)), new XAttribute("opacity", F(Math.Clamp(Scalar(8, 100) / 100, 0, 1))), content.Nodes().ToArray());
+            XElement? group = new XElement("g", new XAttribute("transform", Matrix(matrix)), new XAttribute("opacity", F(Math.Clamp(Scalar(8, 100) / 100, 0, 1))), content.Nodes().ToArray());
             content.ReplaceNodes(group);
         }
 
@@ -83,7 +83,7 @@ namespace Render.NET.Tgs
             JsonElement[] masks = TgsJson.Array(TgsJson.Get(layer, "masksProperties"));
             int paint = (int)Scalar(10, 1), selected = (int)Scalar(0, 1) - 1;
             bool all = Scalar(1) == 1;
-            var strokes = new XElement("g", new XAttribute("fill", "none"), new XAttribute("stroke-linecap", "round"), new XAttribute("stroke-linejoin", "round"), new XAttribute("stroke-width", F(Math.Max(0, Scalar(4, 2)) * 2)), new XAttribute("opacity", F(Math.Clamp(Scalar(6, 1), 0, 1))));
+            XElement? strokes = new XElement("g", new XAttribute("fill", "none"), new XAttribute("stroke-linecap", "round"), new XAttribute("stroke-linejoin", "round"), new XAttribute("stroke-width", F(Math.Max(0, Scalar(4, 2)) * 2)), new XAttribute("opacity", F(Math.Clamp(Scalar(6, 1), 0, 1))));
             double[] ink = values.Length > 3 ? TgsValues.Vector(TgsJson.Get(values[3], "v"), frame, new[] { 1d, 1d, 1d }) : new[]
             {
                 1d,
@@ -122,7 +122,7 @@ namespace Render.NET.Tgs
                 XElement mask = FullMask(id, "alpha");
                 mask.Add(strokes);
                 _defs.Add(mask);
-                var group = new XElement("g", new XAttribute("mask", "url(#" + id + ")"), content.Nodes().ToArray());
+                XElement? group = new XElement("g", new XAttribute("mask", "url(#" + id + ")"), content.Nodes().ToArray());
                 content.ReplaceNodes(group);
             }
             else if (paint is 1 or 2)

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Render.NET.Jpeg2000
 {
-    internal sealed class BlockDecoder
+    internal class BlockDecoder
     {
         private readonly CodeBlock _block;
         private readonly int _orientation;
@@ -44,7 +44,7 @@ namespace Render.NET.Jpeg2000
                 throw new InvalidDataException("Too many JPEG 2000 coding passes.");
             }
 
-            foreach (var segment in _block.Segments)
+            foreach (CodewordSegment segment in _block.Segments)
             {
                 byte[] data = segment.Join(_budget);
                 _raw = segment.Raw ? new RawBits(data) : null;
@@ -76,7 +76,7 @@ namespace Render.NET.Jpeg2000
             return Reconstruct(step, reversible, roi);
         }
 
-        private int Bit(int context) => _raw != null ? _raw.Read() : _mq!.Read(context);
+        private int Bit(int context) => _raw is not null ? _raw.Read() : _mq!.Read(context);
         private byte Flag(int x, int y, int currentY)
         {
             if ((uint)x >= _block.Width || (uint)y >= _block.Height)
@@ -140,7 +140,7 @@ namespace Render.NET.Jpeg2000
             }
 
             int context = h == 0 ? 9 + Math.Abs(v) : 12 + v;
-            int sign = _raw != null ? _raw.Read() : _mq!.Read(context) ^ predict;
+            int sign = _raw is not null ? _raw.Read() : _mq!.Read(context) ^ predict;
             _magnitude[index] = 1 << _plane;
             _lowest[index] = (byte)_plane;
             _flags[index] |= (byte)(1 | (sign << 3));
@@ -265,7 +265,7 @@ namespace Render.NET.Jpeg2000
 
         private double[] Reconstruct(double step, bool reversible, int roi)
         {
-            var values = new double[_magnitude.Length];
+            double[]? values = new double[_magnitude.Length];
             for (int i = 0; i < values.Length; i++)
             {
                 int magnitude = _magnitude[i];
@@ -293,7 +293,7 @@ namespace Render.NET.Jpeg2000
             return values;
         }
 
-        private sealed class RawBits
+        private class RawBits
         {
             private readonly byte[] _data;
             private int _position;

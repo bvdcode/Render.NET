@@ -5,9 +5,9 @@ using System.Numerics;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgTrueType
+    internal partial class SvgTrueType
     {
-        private sealed record GlyphShape(List<FontPoint> Points, List<int> Ends);
+        private record GlyphShape(List<FontPoint> Points, List<int> Ends);
         private readonly record struct FontPoint(Vector2 Position, bool OnCurve);
         private GlyphShape ReadGlyph(int glyph, HashSet<int> active, int depth)
         {
@@ -21,7 +21,7 @@ namespace Render.NET.Svg
                 int table = Table("loca", 0), unit = _locaFormat == 0 ? 2 : 4;
                 int start = _locaFormat == 0 ? U16(table + (glyph * unit)) * 2 : Offset(table + (glyph * unit));
                 int end = _locaFormat == 0 ? U16(table + ((glyph + 1) * unit)) * 2 : Offset(table + ((glyph + 1) * unit));
-                var data = _tables["glyf"];
+                (int Start, int Length) data = _tables["glyf"];
                 if (end < start || end > data.Length)
                 {
                     throw new InvalidDataException("Invalid TrueType glyph location.");
@@ -67,7 +67,7 @@ namespace Render.NET.Svg
             int instructions = U16(position);
             position = checked(position + 2 + instructions);
             int count = contours == 0 ? 0 : ends[^1] + 1;
-            var flags = new byte[count];
+            byte[]? flags = new byte[count];
             for (int i = 0; i < count; i++)
             {
                 byte flag = Byte(position++);
@@ -128,7 +128,7 @@ namespace Render.NET.Svg
 
         private GlyphShape Composite(ref int position, HashSet<int> active, int depth)
         {
-            var result = new GlyphShape(new List<FontPoint>(), new List<int>());
+            GlyphShape? result = new GlyphShape(new List<FontPoint>(), new List<int>());
             int flags;
             do
             {
@@ -220,7 +220,7 @@ namespace Render.NET.Svg
 
         private static VectorPath Path(GlyphShape shape)
         {
-            var path = new VectorPath();
+            VectorPath? path = new VectorPath();
             int first = 0;
             foreach (int end in shape.Ends)
             {

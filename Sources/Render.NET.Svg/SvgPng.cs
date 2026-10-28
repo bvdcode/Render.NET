@@ -17,13 +17,13 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("Invalid embedded PNG signature.");
             }
 
-            using var compressed = new MemoryStream();
+            using MemoryStream? compressed = new MemoryStream();
             PngHeader header = ReadChunks(bytes, compressed, maximumPixels, token);
             int width = header.Width, height = header.Height, depth = header.Depth, color = header.Color, interlace = header.Interlace;
             byte[] palette = header.Palette, transparency = header.Transparency;
-            var image = new PixelBuffer(width, height);
+            PixelBuffer? image = new PixelBuffer(width, height);
             compressed.Position = 0;
-            using var zlib = new ZLibStream(compressed, CompressionMode.Decompress);
+            using ZLibStream? zlib = new ZLibStream(compressed, CompressionMode.Decompress);
             int[][] passes = interlace == 0 ? new[]
             {
                 new[]
@@ -100,7 +100,7 @@ namespace Render.NET.Svg
             return image;
         }
 
-        private sealed class PngHeader
+        private class PngHeader
         {
             internal int Width, Height, Depth, Color, Interlace;
             internal byte[] Palette = Array.Empty<byte>(), Transparency = Array.Empty<byte>();
@@ -108,7 +108,7 @@ namespace Render.NET.Svg
 
         private static PngHeader ReadChunks(byte[] bytes, Stream compressed, int maximumPixels, CancellationToken token)
         {
-            var header = new PngHeader();
+            PngHeader? header = new PngHeader();
             int position = 8;
             bool ended = false;
             while (position <= bytes.Length - 12 && !ended)
@@ -249,7 +249,8 @@ namespace Render.NET.Svg
                     2 => b,
                     3 => (a + b) / 2,
                     4 => Paeth(a, b, c),
-                    _ => throw new InvalidDataException("Invalid PNG row filter.")};
+                    _ => throw new InvalidDataException("Invalid PNG row filter.")
+                };
                 row[i] = unchecked((byte)(row[i] + predictor));
             }
         }

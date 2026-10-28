@@ -31,7 +31,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="../Render.NET.Pdf/Fonts/*.ttf" LogicalName="Render.NET.Svg.Fonts.%(Filename)%(Extension)" />
+
         <None Include="../Render.NET.Pdf/Fonts/provenance.json" Pack="true" PackagePath="/fonts/" />
         <ProjectReference Include="../Render.NET/Render.NET.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
@@ -39,4 +39,8 @@
         <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
     </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="../Shared/BundledResources.cs" Link="BundledResources.cs" />
+    <EmbeddedResource Update="BundledResources.resx" LogicalName="Render.NET.Resources.BundledResources.resources" />
+  </ItemGroup>
 </Project>

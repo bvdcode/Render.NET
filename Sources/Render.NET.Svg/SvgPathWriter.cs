@@ -11,7 +11,7 @@ namespace Render.NET.Svg
         public static string Write(VectorPath path)
         {
             ArgumentNullException.ThrowIfNull(path);
-            var result = new StringBuilder();
+            StringBuilder? result = new StringBuilder();
             foreach (VectorPath.PathElement element in path.Elements)
             {
                 result.Append(element.Kind switch

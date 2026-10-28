@@ -13,7 +13,7 @@ namespace Render.NET
                 throw new ArgumentOutOfRangeException(nameof(factor));
             }
 
-            var output = new PixelBuffer(Width / factor, Height / factor);
+            PixelBuffer? output = new PixelBuffer(Width / factor, Height / factor);
             for (int y = 0; y < output.Height; y++)
             {
                 cancellationToken.ThrowIfCancellationRequested();

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using Render.NET.Resources;
 
 namespace Render.NET.Jbig2
 {
@@ -11,10 +13,9 @@ namespace Render.NET.Jbig2
         internal static readonly HuffmanTable[] Tables = Load();
         internal static IEnumerable<string[]> Rows(string name)
         {
-            using var stream = typeof(StandardHuffman).Assembly.GetManifestResourceStream("Render.NET.Jbig2.Tables." + name + ".csv")!;
-            using var reader = new StreamReader(stream);
+            using StringReader reader = new(Encoding.UTF8.GetString(BundledResources.Read(name)));
             reader.ReadLine();
-            while (reader.ReadLine()is string line)
+            while (reader.ReadLine() is string line)
             {
                 yield return line.Split(',');
             }
@@ -23,13 +24,13 @@ namespace Render.NET.Jbig2
         internal static int Number(string value) => int.Parse(value, CultureInfo.InvariantCulture);
         private static HuffmanTable[] Load()
         {
-            var rows = new List<HuffmanRow>[16];
+            List<HuffmanRow>[]? rows = new List<HuffmanRow>[16];
             for (int i = 0; i < rows.Length; i++)
             {
                 rows[i] = new List<HuffmanRow>();
             }
 
-            foreach (var row in Rows("Huffman"))
+            foreach (string[] row in Rows("Huffman"))
             {
                 rows[Number(row[0])].Add(new HuffmanRow(Number(row[1]), Number(row[2]), Number(row[3]), row[4] == "1"));
             }

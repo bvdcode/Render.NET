@@ -4,8 +4,7 @@ using System.IO;
 
 namespace Render.NET.Jbig2
 {
-    internal sealed record HuffmanRow(int Length, int Range, int Base, bool Lower = false);
-    internal sealed class HuffmanTable
+    internal class HuffmanTable
     {
         private readonly Dictionary<ulong, HuffmanRow> _codes = new();
         internal HuffmanTable(IReadOnlyList<HuffmanRow> rows)
@@ -13,7 +12,7 @@ namespace Render.NET.Jbig2
             ulong code = 0;
             for (int length = 1; length <= 32; length++)
             {
-                foreach (var row in rows)
+                foreach (HuffmanRow row in rows)
                 {
                     if (row.Length != length)
                     {
@@ -38,7 +37,7 @@ namespace Render.NET.Jbig2
             for (int length = 1; length <= 32; length++)
             {
                 code = (code << 1) | (uint)input.Bit();
-                if (!_codes.TryGetValue(((ulong)length << 32) | code, out var row))
+                if (!_codes.TryGetValue(((ulong)length << 32) | code, out HuffmanRow? row))
                 {
                     continue;
                 }
@@ -113,14 +112,14 @@ namespace Render.NET.Jbig2
 
         internal static HuffmanTable SymbolCodes(BitReader input, int count, DecodeBudget budget)
         {
-            var runRows = new HuffmanRow[35];
+            HuffmanRow[]? runRows = new HuffmanRow[35];
             for (int i = 0; i < runRows.Length; i++)
             {
                 runRows[i] = new HuffmanRow((int)input.Bits(4), 0, i);
             }
 
-            var runs = new HuffmanTable(runRows);
-            var rows = new HuffmanRow[count];
+            HuffmanTable? runs = new HuffmanTable(runRows);
+            HuffmanRow[]? rows = new HuffmanRow[count];
             int index = 0, previous = 0;
             budget.Allocate((long)count * 128);
             while (index < count)

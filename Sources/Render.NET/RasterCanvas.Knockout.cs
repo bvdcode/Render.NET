@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Render.NET
 {
-    public sealed partial class RasterCanvas
+    public partial class RasterCanvas
     {
         /// <summary>Paints one elementary object in the current group. In a knockout layer the
         /// object's shape replaces earlier objects, while its opacity and blend use the initial backdrop.
@@ -41,9 +41,9 @@ namespace Render.NET
 
         private RasterCanvas PrepareElement(CancellationToken token)
         {
-            if (_element == null)
+            if (_element is null)
             {
-                var buffer = new PixelBuffer(_target.Width, _target.Height);
+                PixelBuffer? buffer = new PixelBuffer(_target.Width, _target.Height);
                 _knockoutBackdrop?.Pixels.CopyTo(buffer.Pixels);
                 _element = new RasterCanvas(buffer)
                 {

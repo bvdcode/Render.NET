@@ -26,6 +26,7 @@ namespace Render.NET.Mesh
             _input = input;
             _options = options;
             _archive = new ZipArchive(input, ZipArchiveMode.Read, leaveOpen: true);
+            bool completed = false;
             try
             {
                 if (_archive.Entries.Count > options.MaxArchiveEntries)
@@ -47,11 +48,14 @@ namespace Render.NET.Mesh
                         throw new InvalidDataException("3MF has duplicate or ambiguous part names.");
                     }
                 }
+                completed = true;
             }
-            catch
+            finally
             {
-                _archive.Dispose();
-                throw;
+                if (!completed)
+                {
+                    _archive.Dispose();
+                }
             }
         }
 
@@ -59,14 +63,18 @@ namespace Render.NET.Mesh
         {
             options.Validate();
             MemoryStream input = await BoundedInput.ReadAsync(source, options.MaxInputBytes, token).ConfigureAwait(false);
+            ThreeMfPackage? package = null;
             try
             {
-                return new ThreeMfPackage(input, options);
+                package = new ThreeMfPackage(input, options);
+                return package;
             }
-            catch
+            finally
             {
-                input.Dispose();
-                throw;
+                if (package is null)
+                {
+                    await input.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
 
@@ -85,8 +93,8 @@ namespace Render.NET.Mesh
                 throw new InvalidDataException("3MF part exceeds its configured byte limit.");
             }
 
-            using Stream source = entry.Open();
-            using MemoryStream bytes = await BoundedInput.ReadAsync(source, maximum, token).ConfigureAwait(false);
+            await using Stream source = await entry.OpenAsync(token).ConfigureAwait(false);
+            await using MemoryStream bytes = await BoundedInput.ReadAsync(source, maximum, token).ConfigureAwait(false);
             _readBytes += bytes.Length;
             if (_readBytes > _options.MaxUncompressedBytes)
             {
@@ -114,6 +122,7 @@ namespace Render.NET.Mesh
             }
             catch (XmlException exception)
             {
+                System.Diagnostics.Trace.TraceError("{0}", exception);
                 throw new InvalidDataException($"Invalid XML in 3MF part '{path}'.", exception);
             }
         }
@@ -184,6 +193,7 @@ namespace Render.NET.Mesh
             }
             catch (UriFormatException exception)
             {
+                System.Diagnostics.Trace.TraceError("{0}", exception);
                 throw new InvalidDataException("Invalid 3MF part URI.", exception);
             }
 

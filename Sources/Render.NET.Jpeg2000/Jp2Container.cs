@@ -3,29 +3,19 @@ using System.IO;
 
 namespace Render.NET.Jpeg2000
 {
-    internal sealed class ContainerInfo
-    {
-        internal Jpeg2000ColorSpace ColorSpace { get; set; }
-        internal int Alpha { get; set; } = -1;
-        internal bool Premultiplied { get; set; }
-        internal int Width { get; set; }
-        internal int Height { get; set; }
-        internal int Components { get; set; }
-        internal bool Profile { get; set; }
-    }
 
     internal static class Jp2Container
     {
         internal static (ReadOnlyMemory<byte> Stream, ContainerInfo Info) Read(ReadOnlyMemory<byte> data)
         {
-            var info = new ContainerInfo();
+            ContainerInfo? info = new ContainerInfo();
             if (data.Length >= 2 && data.Span[0] == 255 && data.Span[1] == 0x4f)
             {
                 return (data, info);
             }
 
-            var input = new ByteReader(data);
-            var first = Box(input);
+            ByteReader? input = new ByteReader(data);
+            (uint Type, ByteReader Data) first = Box(input);
             if (first.Type != 0x6a502020 || first.Data.U32() != 0x0d0a870a)
             {
                 throw new InvalidDataException("Not a JP2 file or J2K codestream.");
@@ -43,7 +33,7 @@ namespace Render.NET.Jpeg2000
                     throw new InvalidDataException("Too many JP2 boxes.");
                 }
 
-                var box = Box(input);
+                (uint Type, ByteReader Data) box = Box(input);
                 ReadBox(box.Type, box.Data, info, ref header, ref brand, ref stream);
             }
 
@@ -140,7 +130,7 @@ namespace Render.NET.Jpeg2000
                     throw new InvalidDataException("Too many JP2 header boxes.");
                 }
 
-                var box = Box(input);
+                (uint Type, ByteReader Data) box = Box(input);
                 switch (box.Type)
                 {
                     case 0x69686472:

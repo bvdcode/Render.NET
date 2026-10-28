@@ -8,7 +8,7 @@ using UglyToad.PdfPig.Fonts.TrueType.Parser;
 
 namespace Render.NET.Pdf
 {
-    internal sealed class PdfFallbackFont
+    internal class PdfFallbackFont
     {
         private readonly TrueTypeFont _font;
         private readonly string _name;
@@ -42,7 +42,7 @@ namespace Render.NET.Pdf
                 font = _unicodeFont;
             }
 
-            if (!HasCharacter(font, character) || !font.TryGetPath(character, out var glyph))
+            if (!HasCharacter(font, character) || !font.TryGetPath(character, out IReadOnlyList<PdfSubpath>? glyph))
             {
                 return false;
             }
@@ -55,7 +55,7 @@ namespace Render.NET.Pdf
         }
 
         private static bool HasCharacter(TrueTypeFont font, int character)
-            => font.TableRegister.CMapTable != null
+            => font.TableRegister.CMapTable is not null
                 && font.TableRegister.CMapTable.TryGetGlyphIndex(character, out int index) && index != 0;
 
         private static byte[] ReadBundled(string name, string family)
@@ -63,11 +63,7 @@ namespace Render.NET.Pdf
             bool bold = name.Contains("Bold", StringComparison.OrdinalIgnoreCase);
             bool italic = name.Contains("Italic", StringComparison.OrdinalIgnoreCase) || name.Contains("Oblique", StringComparison.OrdinalIgnoreCase);
             string style = bold ? italic ? "BoldItalic" : "Bold" : italic ? "Italic" : "Regular";
-            using Stream input = typeof(PdfFallbackFont).Assembly.GetManifestResourceStream("Render.NET.Pdf.Fonts." + family + "-" + style + ".ttf")
-                ?? throw new InvalidOperationException("Bundled font resource is missing.");
-            using var output = new MemoryStream();
-            input.CopyTo(output);
-            return output.ToArray();
+            return Resources.BundledResources.Read(family + "-" + style);
         }
     }
 }

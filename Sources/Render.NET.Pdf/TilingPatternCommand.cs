@@ -6,7 +6,7 @@ using UglyToad.PdfPig.Core;
 
 namespace Render.NET.Pdf
 {
-    internal sealed record TilingPatternCommand(IPdfDrawCommand[] Commands, PdfRectangle Box, double XStep, double YStep,
+    internal record TilingPatternCommand(IPdfDrawCommand[] Commands, PdfRectangle Box, double XStep, double YStep,
         Matrix3x2 Placement, float Opacity, ColorBlendMode Blend, int TilingType) : IPdfDrawCommand
     {
         private const int MaximumTiles = 4096;
@@ -86,7 +86,7 @@ namespace Render.NET.Pdf
 
         private void DrawTiles(RasterCanvas canvas, Matrix3x2 transform, Matrix3x2 inverse, CancellationToken token)
         {
-            var clip = canvas.GetClipBounds(token);
+            (int X, int Y, int Width, int Height) clip = canvas.GetClipBounds(token);
             if (clip.Width == 0 || clip.Height == 0)
             {
                 return;

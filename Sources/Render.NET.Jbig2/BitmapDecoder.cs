@@ -7,7 +7,7 @@ namespace Render.NET.Jbig2
     {
         internal static (int X, int Y)[] Adaptive(BitReader input, int count)
         {
-            var points = new (int X, int Y)[count];
+            (int X, int Y)[]? points = new (int X, int Y)[count];
             for (int i = 0; i < count; i++)
             {
                 points[i] = (input.SignedByte(), input.SignedByte());
@@ -18,7 +18,7 @@ namespace Render.NET.Jbig2
 
         internal static (int X, int Y)[] Template(int template, (int X, int Y)[] at)
         {
-            foreach (var point in at)
+            foreach ((int X, int Y) point in at)
             {
                 if (point.Y > 0 || (point.Y == 0 && point.X >= 0))
                 {
@@ -89,13 +89,14 @@ namespace Render.NET.Jbig2
                     (-2, 0),
                     (-1, 0)
                 },
-                _ => throw new InvalidDataException("Invalid JBIG2 template.")};
+                _ => throw new InvalidDataException("Invalid JBIG2 template.")
+            };
         }
 
         internal static Bitmap Generic(int width, int height, Arithmetic arithmetic, int template, (int X, int Y)[] at, bool typical, byte[] contexts, DecodeBudget budget, Bitmap? skip = null)
         {
-            var result = new Bitmap(width, height, budget);
-            var points = Template(template, at);
+            Bitmap? result = new Bitmap(width, height, budget);
+            (int X, int Y)[]? points = Template(template, at);
             int reused = template switch
             {
                 0 => 0x9b25,
@@ -136,7 +137,7 @@ namespace Render.NET.Jbig2
         private static int Context(Bitmap bitmap, int x, int y, (int X, int Y)[] points)
         {
             int context = 0;
-            foreach (var p in points)
+            foreach ((int X, int Y) p in points)
             {
                 context = (context << 1) | bitmap.Get(x + p.X, y + p.Y);
             }
@@ -146,8 +147,8 @@ namespace Render.NET.Jbig2
 
         internal static Bitmap Refine(int width, int height, Arithmetic arithmetic, int template, (int X, int Y)[] at, bool typical, byte[] contexts, Bitmap reference, int dx, int dy, DecodeBudget budget)
         {
-            var result = new Bitmap(width, height, budget);
-            var output = template == 0 ? new[]
+            Bitmap? result = new Bitmap(width, height, budget);
+            (int, int)[]? output = template == 0 ? new[]
             {
                 at[0],
                 (0, -1),
@@ -167,7 +168,7 @@ namespace Render.NET.Jbig2
                 throw new InvalidDataException("Non-causal JBIG2 refinement pixel.");
             }
 
-            var source = template == 0 ? new[]
+            (int, int)[]? source = template == 0 ? new[]
             {
                 at[1],
                 (0, -1),

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Aileron-Bold" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Aileron-Bold.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Aileron-BoldItalic" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Aileron-BoldItalic.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Aileron-Italic" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Aileron-Italic.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Aileron-Regular" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Aileron-Regular.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Canada1500-Bold" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Canada1500-Bold.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Canada1500-BoldItalic" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Canada1500-BoldItalic.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Canada1500-Italic" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Canada1500-Italic.ttf;System.Byte[], mscorlib</value></data>
+  <data name="Canada1500-Regular" type="System.Resources.ResXFileRef, System.Windows.Forms"><value>Fonts/Canada1500-Regular.ttf;System.Byte[], mscorlib</value></data>
+</root>

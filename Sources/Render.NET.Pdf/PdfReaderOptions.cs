@@ -3,7 +3,7 @@ using System;
 namespace Render.NET.Pdf
 {
     /// <summary>PDF input and page interpretation limits. These do not replace process isolation for hostile documents.</summary>
-    public sealed record PdfReaderOptions
+    public record PdfReaderOptions
     {
         /// <summary>Gets the document password, if required.</summary>
         public string Password { get; init; } = string.Empty;

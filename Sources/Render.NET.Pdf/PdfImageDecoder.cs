@@ -10,7 +10,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfImageDecoder
+    internal partial class PdfImageDecoder
     {
         private readonly PdfReaderOptions _limits;
         private readonly ILookupFilterProvider _filters;
@@ -31,7 +31,7 @@ namespace Render.NET.Pdf
             CheckSize(image.WidthInSamples, image.HeightInSamples);
             Memory<byte> bytes = image.RawMemory;
             bool jpeg = false;
-            var filters = _filters.GetFilters(image.ImageDictionary, _scanner);
+            System.Collections.Generic.IReadOnlyList<IFilter>? filters = _filters.GetFilters(image.ImageDictionary, _scanner);
             for (int i = 0; i < filters.Count; i++)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -86,9 +86,9 @@ namespace Render.NET.Pdf
         private PixelBuffer DecodeJpeg(IPdfImage image, Memory<byte> bytes)
         {
             byte[] encoded = bytes.ToArray();
-            using var input = new MemoryStream(encoded, false);
+            using MemoryStream? input = new MemoryStream(encoded, false);
             ImageInfo? info = ImageInfo.FromStream(input);
-            if (info == null || info.Value.Width != image.WidthInSamples || info.Value.Height != image.HeightInSamples)
+            if (info is null || info.Value.Width != image.WidthInSamples || info.Value.Height != image.HeightInSamples)
             {
                 throw new InvalidDataException("JPEG dimensions do not match the PDF image dictionary.");
             }
@@ -99,7 +99,7 @@ namespace Render.NET.Pdf
             }
 
             ImageResult decoded = ImageResult.FromMemory(encoded, ColorComponents.RedGreenBlueAlpha);
-            var result = new PixelBuffer(decoded.Width, decoded.Height);
+            PixelBuffer? result = new PixelBuffer(decoded.Width, decoded.Height);
             decoded.Data.CopyTo(result.Pixels.Span);
             return result;
         }
@@ -124,9 +124,9 @@ namespace Render.NET.Pdf
                 throw new InvalidDataException("The PDF image sample data is truncated.");
             }
 
-            var output = new PixelBuffer(image.WidthInSamples, image.HeightInSamples);
-            var values = new double[components];
-            var raw = new int[components];
+            PixelBuffer? output = new PixelBuffer(image.WidthInSamples, image.HeightInSamples);
+            double[]? values = new double[components];
+            int[]? raw = new int[components];
             for (int y = 0; y < output.Height; y++)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -174,9 +174,9 @@ namespace Render.NET.Pdf
                 return stencilColor with { A = (byte)Math.Clamp((int)Math.Round((1 - values[0]) * 255), 0, 255) };
             }
 
-            var rgb = image.ColorSpaceDetails!.GetColor(values);
+            IColor? rgb = image.ColorSpaceDetails!.GetColor(values);
             Rgba32 result = PdfStreamProcessor.Color(rgb);
-            if (image.ImageDictionary.TryGet<ArrayToken>(NameToken.Mask, out var mask) && MatchesColorKey(mask, raw))
+            if (image.ImageDictionary.TryGet<ArrayToken>(NameToken.Mask, out ArrayToken? mask) && MatchesColorKey(mask, raw))
             {
                 return result with { A = 0 };
             }
@@ -205,7 +205,7 @@ namespace Render.NET.Pdf
 
         private void ApplyMask(PixelBuffer image, IPdfImage? mask)
         {
-            if (mask == null)
+            if (mask is null)
             {
                 return;
             }

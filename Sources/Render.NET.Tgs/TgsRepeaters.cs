@@ -8,14 +8,14 @@ using System.Xml.Linq;
 
 namespace Render.NET.Tgs
 {
-    internal sealed partial class TgsSceneBuilder
+    internal partial class TgsSceneBuilder
     {
         private XElement RepeatShapes(JsonElement[] items, int index, double frame, int depth)
         {
             JsonElement repeater = items[index];
             int count = RepeaterCount(repeater, frame);
             JsonElement transform = items.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
-            var group = new XElement("g", new XAttribute("transform", Matrix(Transform(transform, frame))), new XAttribute("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) / 100, 0, 1))));
+            XElement? group = new XElement("g", new XAttribute("transform", Matrix(Transform(transform, frame))), new XAttribute("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) / 100, 0, 1))));
             JsonElement[] prefix = items.Take(index).Where(p => TgsJson.Text(p, "ty") != "tr").Concat(items.Skip(index + 1).Where(p => IsStyle(TgsJson.Text(p, "ty")))).ToArray();
             XElement original = ShapesArray(prefix, frame, depth + 1);
             int elements = original.DescendantsAndSelf().Count();
@@ -96,7 +96,7 @@ namespace Render.NET.Tgs
             for (int i = count - 1; i >= 0; i--)
             {
                 Matrix3x2 matrix = RepeaterTransform(transform, i + offset, frame);
-                foreach (var source in affected)
+                foreach ((int Index, VectorPath Path) source in affected)
                 {
                     Count(0);
                     VectorPath path = source.Path.Transform(matrix);

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial record SvgFilter
+    internal partial record SvgFilter
     {
         private static PixelBuffer ColorMatrix(XElement p, PixelBuffer input, bool linear, SvgRenderContext context)
         {
@@ -142,7 +142,7 @@ namespace Render.NET.Svg
 
         private static Func<float, float> TransferFunction(XElement? function)
         {
-            if (function == null)
+            if (function is null)
             {
                 return x => x;
             }
@@ -170,7 +170,7 @@ namespace Render.NET.Svg
         private static PixelBuffer Composite(XElement p, PixelBuffer input, PixelBuffer second, bool linear, SvgRenderContext context)
         {
             string operation = Text(p, "operator", "over");
-            var coefficients = new Vector4(Number(p, "k1"), Number(p, "k2"), Number(p, "k3"), Number(p, "k4"));
+            Vector4 coefficients = new Vector4(Number(p, "k1"), Number(p, "k2"), Number(p, "k3"), Number(p, "k4"));
             return SvgPixels.Map(input, (x, y) =>
             {
                 Vector4 a = SvgPixels.At(input, x, y, linear), b = SvgPixels.At(second, x, y, linear);
@@ -182,7 +182,8 @@ namespace Render.NET.Svg
                     "xor" => (a * (1 - b.W)) + (b * (1 - a.W)),
                     "arithmetic" => Arithmetic(a, b, coefficients),
                     "lighter" => Vector4.Min(a + b, Vector4.One),
-                    _ => a + (b * (1 - a.W))};
+                    _ => a + (b * (1 - a.W))
+                };
             }, linear, context.Token);
         }
 
@@ -200,7 +201,7 @@ namespace Render.NET.Svg
                 throw new NotSupportedException("SVG filter blend mode: " + name);
             }
 
-            var output = SvgPixels.Copy(second);
+            PixelBuffer? output = SvgPixels.Copy(second);
             for (int y = 0; y < input.Height; y++)
             {
                 context.Token.ThrowIfCancellationRequested();
@@ -229,8 +230,8 @@ namespace Render.NET.Svg
 
         private static PixelBuffer Merge(XElement p, PixelBuffer previous, Dictionary<string, PixelBuffer> results, PixelBuffer source, SvgRenderContext context)
         {
-            var output = new PixelBuffer(source.Width, source.Height);
-            var canvas = new RasterCanvas(output);
+            PixelBuffer? output = new PixelBuffer(source.Width, source.Height);
+            RasterCanvas? canvas = new RasterCanvas(output);
             foreach (XElement child in p.Elements().Where(e => e.Name.LocalName == "feMergeNode"))
             {
                 canvas.DrawImage(Input(Text(child, "in"), previous, results, source, context), Matrix3x2.Identity, cancellationToken: context.Token);
@@ -242,7 +243,7 @@ namespace Render.NET.Svg
         private static PixelBuffer Flood(XElement p, PixelBuffer source)
         {
             Rgba32 color = SvgColor.Parse(Text(p, "flood-color", "black"));
-            var result = new PixelBuffer(source.Width, source.Height);
+            PixelBuffer? result = new PixelBuffer(source.Width, source.Height);
             result.Clear(color with { A = (byte)MathF.Round(color.A * Math.Clamp(Number(p, "flood-opacity", 1), 0, 1)) });
             return result;
         }

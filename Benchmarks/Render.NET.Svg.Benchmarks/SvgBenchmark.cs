@@ -13,14 +13,16 @@ namespace Render.NET.Svg.Benchmarks
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(samples);
             ArgumentOutOfRangeException.ThrowIfNegative(warmups);
             Directory.CreateDirectory(output);
+            Dictionary<string, string> versions = (await File.ReadAllLinesAsync(Path.Combine(AppContext.BaseDirectory, "versions.txt")))
+                .Select(line => line.Split('=', 2)).ToDictionary(parts => parts[0], parts => parts[1], StringComparer.Ordinal);
             using StreamWriter results = new(Path.Combine(output, "results.jsonl"));
             await results.WriteLineAsync(JsonSerializer.Serialize(new
             {
                 kind = "environment", timestamp = DateTimeOffset.UtcNow, runtime = RuntimeInformation.FrameworkDescription,
                 os = RuntimeInformation.OSDescription, processors = Environment.ProcessorCount,
-                renderNet = typeof(SvgRenderer).Assembly.GetName().Version?.ToString(),
-                svgSkia = typeof(global::Svg.Skia.SKSvg).Assembly.GetName().Version?.ToString(),
-                skiaSharp = typeof(SkiaSharp.SKSurface).Assembly.GetName().Version?.ToString(),
+                renderNet = versions["Render.NET.Svg"],
+                svgSkia = versions["Svg.Skia"],
+                skiaSharp = versions["SkiaSharp"],
                 size, samples, warmups, supersampling = 1, gpu = false,
                 tieredCompilation = Environment.GetEnvironmentVariable("DOTNET_TieredCompilation"),
                 processorCount = Environment.GetEnvironmentVariable("DOTNET_PROCESSOR_COUNT")

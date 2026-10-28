@@ -5,14 +5,7 @@ using System.Linq;
 
 namespace Render.NET.Jbig2
 {
-    internal sealed record Segment(uint Number, int Type, uint Page, uint[] References, int Length)
-    {
-        internal ReadOnlyMemory<byte> Data { get; set; }
-    }
-
-    internal sealed record Region(int Width, int Height, int X, int Y, int Op);
-    internal sealed record PageState(Bitmap Bitmap, int Flags);
-    internal sealed partial class DocumentDecoder
+    internal partial class DocumentDecoder
     {
         private static readonly byte[] Signature =
         {
@@ -48,7 +41,7 @@ namespace Render.NET.Jbig2
 
         private void Read(ReadOnlyMemory<byte> data, bool globals)
         {
-            var input = new BitReader(data);
+            BitReader? input = new BitReader(data);
             bool sequential = true;
             if (data.Span.StartsWith(Signature))
             {
@@ -70,7 +63,7 @@ namespace Render.NET.Jbig2
             while (input.Remaining > 0)
             {
                 _budget.Cancellation.ThrowIfCancellationRequested();
-                var segment = Header(input);
+                Segment? segment = Header(input);
                 if (globals && segment.Page != 0)
                 {
                     throw new InvalidDataException("JBIG2 globals contain a page-associated segment.");
@@ -97,7 +90,7 @@ namespace Render.NET.Jbig2
                 }
             }
 
-            foreach (var segment in pending)
+            foreach (Segment segment in pending)
             {
                 segment.Data = input.Take(segment.Length);
                 DecodeSegment(segment);
@@ -125,7 +118,7 @@ namespace Render.NET.Jbig2
             }
 
             _budget.Allocate(((long)count * 4) + 128);
-            var references = new uint[count];
+            uint[]? references = new uint[count];
             for (int i = 0; i < count; i++)
             {
                 uint reference = number <= 256 ? input.Byte() : number <= 65536 ? (uint)input.U16() : input.U32();
@@ -150,13 +143,13 @@ namespace Render.NET.Jbig2
         {
             foreach (uint reference in segment.References)
             {
-                if (!_segments.TryGetValue(reference, out var target) || (target.Page != 0 && target.Page != segment.Page) || !AllowedReference(segment.Type, target.Type))
+                if (!_segments.TryGetValue(reference, out Segment? target) || (target.Page != 0 && target.Page != segment.Page) || !AllowedReference(segment.Type, target.Type))
                 {
                     throw new InvalidDataException("Missing or cross-page JBIG2 segment reference.");
                 }
             }
 
-            var input = new BitReader(segment.Data);
+            BitReader? input = new BitReader(segment.Data);
             if (segment.Type >= 48)
             {
                 Metadata(segment, input);
@@ -253,7 +246,7 @@ namespace Render.NET.Jbig2
 
         private void Finish(Segment segment, Region region, Bitmap bitmap)
         {
-            if (!_pages.TryGetValue(segment.Page, out var page))
+            if (!_pages.TryGetValue(segment.Page, out PageState? page))
             {
                 throw new InvalidDataException("JBIG2 region precedes its page information.");
             }
@@ -270,7 +263,7 @@ namespace Render.NET.Jbig2
 
         private void Generic(Segment segment, BitReader input)
         {
-            var region = Region(input);
+            Region? region = Region(input);
             int flags = input.Byte(), template = (flags >> 1) & 3;
             if ((flags & 0xf0) != 0)
             {
@@ -284,7 +277,7 @@ namespace Render.NET.Jbig2
             }
             else
             {
-                var at = BitmapDecoder.Adaptive(input, template == 0 ? 4 : 1);
+                (int X, int Y)[]? at = BitmapDecoder.Adaptive(input, template == 0 ? 4 : 1);
                 bitmap = BitmapDecoder.Generic(region.Width, region.Height, new Arithmetic(input.Rest(), _budget), template, at, (flags & 8) != 0, _budget.Contexts(1 << (template == 0 ? 16 : template == 1 ? 13 : 10)), _budget);
             }
 
@@ -293,21 +286,21 @@ namespace Render.NET.Jbig2
 
         private void Refinement(Segment segment, BitReader input)
         {
-            var region = Region(input);
+            Region? region = Region(input);
             int flags = input.Byte(), template = flags & 1;
             if ((flags & 0xfc) != 0)
             {
                 throw new InvalidDataException("Invalid JBIG2 refinement flags.");
             }
 
-            var at = template == 0 ? BitmapDecoder.Adaptive(input, 2) : Array.Empty<(int, int)>();
+            (int, int)[]? at = template == 0 ? BitmapDecoder.Adaptive(input, 2) : Array.Empty<(int, int)>();
             Bitmap reference;
             int dx = 0, dy = 0;
             if (segment.References.Length == 1 && _decoded[segment.References[0]] is Bitmap referred)
             {
                 reference = referred;
             }
-            else if (segment.References.Length == 0 && _pages.TryGetValue(segment.Page, out var page))
+            else if (segment.References.Length == 0 && _pages.TryGetValue(segment.Page, out PageState? page))
             {
                 reference = page.Bitmap;
                 dx = -region.X;
@@ -318,7 +311,7 @@ namespace Render.NET.Jbig2
                 throw new InvalidDataException("Invalid JBIG2 refinement reference.");
             }
 
-            var bitmap = BitmapDecoder.Refine(region.Width, region.Height, new Arithmetic(input.Rest(), _budget), template, at, (flags & 2) != 0, _budget.Contexts(template == 0 ? 8192 : 1024), reference, dx, dy, _budget);
+            Bitmap? bitmap = BitmapDecoder.Refine(region.Width, region.Height, new Arithmetic(input.Rest(), _budget), template, at, (flags & 2) != 0, _budget.Contexts(template == 0 ? 8192 : 1024), reference, dx, dy, _budget);
             Finish(segment, region, bitmap);
         }
     }

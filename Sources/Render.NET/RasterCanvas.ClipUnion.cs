@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Render.NET
 {
-    public sealed partial class RasterCanvas
+    public partial class RasterCanvas
     {
         /// <summary>Intersects the current clip with the union of independently filled transformed paths.
         /// Each path keeps its own fill rule; overlaps do not create even-odd holes between objects.</summary>
@@ -14,8 +14,8 @@ namespace Render.NET
             ArgumentNullException.ThrowIfNull(paths);
             cancellationToken.ThrowIfCancellationRequested();
             byte[]? previous = _clip;
-            var next = new byte[_target.Width * _target.Height];
-            foreach (var item in paths)
+            byte[]? next = new byte[_target.Width * _target.Height];
+            foreach ((VectorPath Path, Matrix3x2 Transform, FillRule Rule) item in paths)
             {
                 ArgumentNullException.ThrowIfNull(item.Path);
                 cancellationToken.ThrowIfCancellationRequested();
@@ -24,7 +24,7 @@ namespace Render.NET
                     for (int x = left; x < right; x++)
                     {
                         int index = (y * _target.Width) + x;
-                        next[index] = previous == null ? (byte)255 : previous[index];
+                        next[index] = previous is null ? (byte)255 : previous[index];
                     }
                 }, cancellationToken);
             }

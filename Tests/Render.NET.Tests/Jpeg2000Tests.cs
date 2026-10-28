@@ -12,8 +12,8 @@ namespace Render.NET.Tests
 
         public static IEnumerable<TestCaseData> Fixtures()
         {
-            using var manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Root, "manifest.json")));
-            foreach (var entry in manifest.RootElement.EnumerateArray())
+            using JsonDocument? manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Root, "manifest.json")));
+            foreach (JsonElement entry in manifest.RootElement.EnumerateArray())
             {
                 yield return new TestCaseData(entry.Clone()).SetName("Jpeg2000_" + entry.GetProperty("name").GetString());
             }

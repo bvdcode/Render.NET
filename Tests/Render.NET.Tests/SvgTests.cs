@@ -32,7 +32,7 @@ namespace Render.NET.Tests
         public void CurvesAndArcsProduceFiniteGeometry(string data)
         {
             VectorPath path = SvgPathParser.Parse(data);
-            var bounds = path.GetBounds();
+            (float X, float Y, float Width, float Height) bounds = path.GetBounds();
             Assert.That(bounds.Width, Is.GreaterThan(70));
             Assert.That(bounds.Height, Is.GreaterThan(20));
             Assert.That(path.CommandCount, Is.GreaterThan(2));
@@ -131,7 +131,7 @@ namespace Render.NET.Tests
         [Test]
         public void SvgPathWriterRoundTripsAllCoreCommands()
         {
-            var path = new VectorPath().MoveTo(1, 2).LineTo(4, 5).QuadraticTo(6, 7, 8, 9).CubicTo(1, 3, 5, 7, 9, 11).Close();
+            VectorPath? path = new VectorPath().MoveTo(1, 2).LineTo(4, 5).QuadraticTo(6, 7, 8, 9).CubicTo(1, 3, 5, 7, 9, 11).Close();
             string data = SvgPathWriter.Write(path);
             Assert.That(SvgPathWriter.Write(SvgPathParser.Parse(data)), Is.EqualTo(data));
         }
@@ -166,7 +166,7 @@ namespace Render.NET.Tests
         [Test]
         public async Task StreamsRemainOpenAndDocumentsRenderConcurrently()
         {
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(Wrap("<circle cx='50' cy='50' r='40' fill='rgba(100,150,200,.5)'/>")));
+            using MemoryStream? stream = new MemoryStream(Encoding.UTF8.GetBytes(Wrap("<circle cx='50' cy='50' r='40' fill='rgba(100,150,200,.5)'/>")));
             SvgDocument doc = await SvgReader.ReadAsync(stream);
             Assert.That(stream.CanRead, Is.True);
             PixelBuffer[] images = await Task.WhenAll(Enumerable.Range(0, 4).Select(_ => Task.Run(() => SvgRenderer.Render(doc))));
@@ -188,8 +188,8 @@ namespace Render.NET.Tests
         [Test]
         public void PathTrimmingFollowsLengthAndWraps()
         {
-            var path = new VectorPath().MoveTo(0, 0).LineTo(100, 0);
-            var selected = path.Trim(.25f, .75f).GetBounds();
+            VectorPath? path = new VectorPath().MoveTo(0, 0).LineTo(100, 0);
+            (float X, float Y, float Width, float Height) selected = path.Trim(.25f, .75f).GetBounds();
             Assert.That(selected.X, Is.EqualTo(25).Within(.01));
             Assert.That(selected.Width, Is.EqualTo(50).Within(.01));
             Assert.That(path.Trim(.8f, .2f).CommandCount, Is.EqualTo(4));

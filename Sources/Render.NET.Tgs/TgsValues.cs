@@ -5,7 +5,6 @@ using System.Text.Json;
 
 namespace Render.NET.Tgs
 {
-    internal readonly record struct TgsKeyPair(JsonElement Start, JsonElement End, JsonElement Key, double Progress);
     internal static class TgsValues
     {
         internal static TgsKeyPair Keys(JsonElement property, double frame)
@@ -78,7 +77,7 @@ namespace Render.NET.Tgs
                 throw new InvalidDataException("Mismatched Lottie keyframe dimensions.");
             }
 
-            var result = new double[a.Length];
+            double[]? result = new double[a.Length];
             for (int i = 0; i < a.Length; i++)
             {
                 result[i] = a[i] + ((b[i] - a[i]) * Ease(pair.Key, pair.Progress, i));
@@ -120,7 +119,7 @@ namespace Render.NET.Tgs
             }
 
             JsonElement[] items = TgsJson.Array(value);
-            var result = new double[items.Length];
+            double[]? result = new double[items.Length];
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = TgsJson.Number(items[i]);

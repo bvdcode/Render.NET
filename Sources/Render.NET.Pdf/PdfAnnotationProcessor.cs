@@ -7,7 +7,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         internal void ProcessAnnotations(DictionaryToken page)
         {
@@ -19,7 +19,7 @@ namespace Render.NET.Pdf
             foreach (IToken item in annotations.Data)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
-                if (DirectObjectFinder.TryGet<DictionaryToken>(item, PdfScanner, out var annotation))
+                if (DirectObjectFinder.TryGet<DictionaryToken>(item, PdfScanner, out DictionaryToken? annotation))
                 {
                     ProcessAnnotation(annotation);
                 }
@@ -35,7 +35,7 @@ namespace Render.NET.Pdf
             }
 
             StreamToken? normal = AnnotationAppearance(annotation);
-            if (normal == null)
+            if (normal is null)
             {
                 return;
             }
@@ -144,7 +144,7 @@ namespace Render.NET.Pdf
         private bool Resolve<T>(DictionaryToken dictionary, NameToken key, out T result) where T : class, IToken
         {
             result = null!;
-            if (dictionary.TryGet(key, out IToken token) && DirectObjectFinder.TryGet<T>(token, PdfScanner, out var resolved))
+            if (dictionary.TryGet(key, out IToken token) && DirectObjectFinder.TryGet<T>(token, PdfScanner, out T? resolved))
             {
                 result = resolved;
                 return true;

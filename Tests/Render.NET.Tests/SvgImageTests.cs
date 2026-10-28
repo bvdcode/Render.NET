@@ -72,7 +72,8 @@ namespace Render.NET.Tests
                     {
                         0 => new Rgba32(v, v, v),
                         4 => new Rgba32(v, v, v, (byte)(255 - v)),
-                        _ => new Rgba32(v, (byte)(255 - v), v)};
+                        _ => new Rgba32(v, (byte)(255 - v), v)
+                    };
                     if (expected.A == 0)
                     {
                         expected = default;
@@ -96,7 +97,7 @@ namespace Render.NET.Tests
         [Test]
         public void ResolverImageIsCopiedAndExternalResourcesAreExplicit()
         {
-            var input = new PixelBuffer(2, 2);
+            PixelBuffer? input = new PixelBuffer(2, 2);
             input.Clear(new Rgba32(0, 255, 0));
             const string xml = "<svg width='20' height='20'><image width='20' height='20' href='custom:image'/></svg>";
             SvgDocument document = SvgReader.Read(xml, new SvgReaderOptions { ImageResolver = _ => input });

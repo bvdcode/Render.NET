@@ -10,7 +10,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         private readonly HashSet<StreamToken> _activePatterns = new(ReferenceEqualityComparer.Instance);
         private static readonly HashSet<string> ColorOperators = new(StringComparer.Ordinal)
@@ -24,7 +24,7 @@ namespace Render.NET.Pdf
             IColor? color = stroke ? state.CurrentStrokingColor : state.CurrentNonStrokingColor;
             double opacity = stroke ? state.AlphaConstantStroking : state.AlphaConstantNonStroking;
             IPdfDrawCommand? paint = CreatePatternPaint(color, opacity, Blend(state.BlendMode));
-            if (paint != null)
+            if (paint is not null)
             {
                 AddPaint(new PatternPaintCommand(path, rule, paint, stroke ? Stroke(state) : null,
                     Matrix(state.CurrentTransformationMatrix)), state);
@@ -88,14 +88,14 @@ namespace Render.NET.Pdf
                 throw new InvalidDataException("Recursive tiling pattern or pattern/mask nesting exceeds eight.");
             }
 
-            var savedStack = GraphicsStack;
+            Stack<CurrentGraphicsState>? savedStack = GraphicsStack;
             bool savedUncolored = _uncoloredPattern;
             bool savedType3 = _uncoloredType3;
             int start = Commands.Count;
             Matrix3x2 placement = Matrix(pattern.Matrix.Multiply(_patternMatrix));
             try
             {
-                var state = _patternState.DeepClone();
+                CurrentGraphicsState? state = _patternState.DeepClone();
                 state.CurrentTransformationMatrix = TransformationMatrix.Identity;
                 state.AlphaConstantNonStroking = 1;
                 state.AlphaConstantStroking = 1;
@@ -119,7 +119,7 @@ namespace Render.NET.Pdf
                     [NameToken.Resources] = pattern.Resources
                 };
                 ProcessFormXObject(new StreamToken(new DictionaryToken(dictionary), pattern.Data.ToArray()), NameToken.Create("RenderPattern"));
-                var commands = Commands.GetRange(start, Commands.Count - start).ToArray();
+                IPdfDrawCommand[]? commands = Commands.GetRange(start, Commands.Count - start).ToArray();
                 return new TilingPatternCommand(commands, pattern.BBox, Math.Abs(pattern.XStep), Math.Abs(pattern.YStep),
                     placement, (float)opacity, blend, (int)pattern.TilingType);
             }
@@ -202,11 +202,5 @@ namespace Render.NET.Pdf
                 }
             }
         }
-    }
-
-    internal sealed record PatternInk(TilingPatternColor Pattern, IColor Ink) : IColor
-    {
-        public ColorSpace ColorSpace => ColorSpace.Pattern;
-        public (double r, double g, double b) ToRGBValues() => Ink.ToRGBValues();
     }
 }

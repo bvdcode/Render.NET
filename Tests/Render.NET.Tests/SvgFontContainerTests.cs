@@ -9,15 +9,12 @@ namespace Render.NET.Tests
     {
         private static byte[] Font()
         {
-            using Stream resource = typeof(SvgReader).Assembly.GetManifestResourceStream("Render.NET.Svg.Fonts.Canada1500-Regular.ttf")!;
-            using var output = new MemoryStream();
-            resource.CopyTo(output);
-            return output.ToArray();
+            return File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Fonts", "Canada1500-Regular.ttf"));
         }
 
         private static PixelBuffer Render(byte[] bytes)
         {
-            var doc = SvgReader.Read("<svg width='300' height='70'><text x='5' y='50' font-size='35' font-family='Test'>AV Привет!</text></svg>", new SvgReaderOptions { FontResolver = _ => bytes });
+            SvgDocument? doc = SvgReader.Read("<svg width='300' height='70'><text x='5' y='50' font-size='35' font-family='Test'>AV Привет!</text></svg>", new SvgReaderOptions { FontResolver = _ => bytes });
             Assert.That(doc.UnsupportedFeatures, Is.Empty);
             return SvgRenderer.Render(doc, new SvgRenderOptions { Supersampling = 1 });
         }
@@ -33,7 +30,7 @@ namespace Render.NET.Tests
             ttf.AsSpan(0, 4).CopyTo(header.AsSpan(4));
             BinaryPrimitives.WriteUInt16BigEndian(header.AsSpan(12), (ushort)count);
             BinaryPrimitives.WriteUInt32BigEndian(header.AsSpan(16), (uint)ttf.Length);
-            using var output = new MemoryStream();
+            using MemoryStream? output = new MemoryStream();
             output.Write(header);
             for (int i = 0; i < count; i++)
             {
@@ -42,8 +39,8 @@ namespace Render.NET.Tests
                 byte[] payload = ttf.AsSpan(offset, length).ToArray();
                 if (compress)
                 {
-                    using var encoded = new MemoryStream();
-                    using (var zlib = new ZLibStream(encoded, CompressionLevel.Optimal, true))
+                    using MemoryStream? encoded = new MemoryStream();
+                    using (ZLibStream? zlib = new ZLibStream(encoded, CompressionLevel.Optimal, true))
                         zlib.Write(payload);
                     if (encoded.Length < payload.Length)
                     {

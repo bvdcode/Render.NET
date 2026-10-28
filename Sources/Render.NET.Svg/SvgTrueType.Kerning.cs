@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgTrueType
+    internal partial class SvgTrueType
     {
         internal float Kerning(int left, int right)
         {
@@ -25,7 +25,7 @@ namespace Render.NET.Svg
 
         private float LegacyKerning(int left, int right)
         {
-            if (!_tables.TryGetValue("kern", out var table) || table.Length < 4 || U16(table.Start) != 0)
+            if (!_tables.TryGetValue("kern", out (int Start, int Length) table) || table.Length < 4 || U16(table.Start) != 0)
             {
                 return 0;
             }
@@ -72,7 +72,7 @@ namespace Render.NET.Svg
 
         private float GposKerning(int left, int right)
         {
-            if (!_tables.TryGetValue("GPOS", out var table) || table.Length < 10)
+            if (!_tables.TryGetValue("GPOS", out (int Start, int Length) table) || table.Length < 10)
             {
                 return float.NaN;
             }

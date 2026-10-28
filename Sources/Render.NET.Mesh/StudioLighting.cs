@@ -61,7 +61,7 @@ namespace Render.NET.Mesh
 
         private float Shadow(Vector3 point, Vector3 normal)
         {
-            if (_shadowCamera == null || _shadowDepths == null)
+            if (_shadowCamera is null || _shadowDepths is null)
             {
                 return 1;
             }

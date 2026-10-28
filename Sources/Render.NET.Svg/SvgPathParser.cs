@@ -16,7 +16,7 @@ namespace Render.NET.Svg
             return new Parser(data, maximumCommands, cancellationToken).Run();
         }
 
-        private sealed class Parser
+        private class Parser
         {
             private readonly SvgNumbers _numbers;
             private readonly VectorPath _path = new();

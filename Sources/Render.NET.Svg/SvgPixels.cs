@@ -9,7 +9,7 @@ namespace Render.NET.Svg
         internal static Vector4 Read(ReadOnlySpan<byte> data, int offset, bool linear = false, bool premultiplied = true)
         {
             float alpha = data[offset + 3] / 255f;
-            var color = new Vector4(data[offset] / 255f, data[offset + 1] / 255f, data[offset + 2] / 255f, alpha);
+            Vector4 color = new Vector4(data[offset] / 255f, data[offset + 1] / 255f, data[offset + 2] / 255f, alpha);
             if (linear)
             {
                 color.X = Linear(color.X);
@@ -84,7 +84,7 @@ namespace Render.NET.Svg
 
         internal static PixelBuffer Map(PixelBuffer size, Func<int, int, Vector4> sample, bool linear, CancellationToken token, bool premultiplied = true)
         {
-            var output = new PixelBuffer(size.Width, size.Height);
+            PixelBuffer? output = new PixelBuffer(size.Width, size.Height);
             for (int y = 0; y < output.Height; y++)
             {
                 token.ThrowIfCancellationRequested();
@@ -99,7 +99,7 @@ namespace Render.NET.Svg
 
         internal static PixelBuffer Copy(PixelBuffer image)
         {
-            var result = new PixelBuffer(image.Width, image.Height);
+            PixelBuffer? result = new PixelBuffer(image.Width, image.Height);
             image.Pixels.CopyTo(result.Pixels);
             return result;
         }

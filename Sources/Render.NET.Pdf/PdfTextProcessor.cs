@@ -6,7 +6,7 @@ using UglyToad.PdfPig.PdfFonts;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         private VectorPath? _textClip;
         private readonly Dictionary<(IFont Font, int Code), VectorPath?> _glyphs = new Dictionary<(IFont, int), VectorPath?>();
@@ -38,7 +38,7 @@ namespace Render.NET.Pdf
             }
 
             VectorPath? glyph = Glyph(font, code, unicode);
-            if (glyph == null)
+            if (glyph is null)
             {
                 if (!string.IsNullOrWhiteSpace(unicode))
                 {
@@ -60,7 +60,7 @@ namespace Render.NET.Pdf
 
         public override void EndText()
         {
-            if (_textClip != null)
+            if (_textClip is not null)
             {
                 StorePath(_textClip);
                 Commands.Add(new ClipCommand(_textClip, FillRule.NonZero));
@@ -110,7 +110,7 @@ namespace Render.NET.Pdf
                 return null;
             }
 
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             foreach (PdfSubpath path in paths)
             {
                 AppendGlyph(result, path);

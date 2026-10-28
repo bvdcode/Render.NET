@@ -8,7 +8,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor
+    internal partial class PdfStreamProcessor
     {
         private readonly Dictionary<SoftMask, TransformationMatrix> _maskMatrices = new();
         private readonly Dictionary<SoftMask, MaskPlan> _masks = new();
@@ -17,15 +17,15 @@ namespace Render.NET.Pdf
         public override void SetNamedGraphicsState(NameToken stateName)
         {
             CheckPatternGraphicsState(stateName);
-            var savedIntent = GetCurrentState().RenderingIntent;
+            UglyToad.PdfPig.Graphics.Core.RenderingIntent savedIntent = GetCurrentState().RenderingIntent;
             base.SetNamedGraphicsState(stateName);
-            var state = GetCurrentState();
+            CurrentGraphicsState? state = GetCurrentState();
             if (_uncoloredType3)
             {
                 state.RenderingIntent = savedIntent;
             }
 
-            if (state.SoftMask != null && !_maskMatrices.ContainsKey(state.SoftMask))
+            if (state.SoftMask is not null && !_maskMatrices.ContainsKey(state.SoftMask))
             {
                 _maskMatrices.Add(state.SoftMask, CurrentTransformationMatrix);
             }
@@ -33,7 +33,7 @@ namespace Render.NET.Pdf
 
         private void AddPaint(IPdfDrawCommand command, CurrentGraphicsState state)
         {
-            Commands.Add(state.SoftMask == null ? command : new MaskedCommand(command, GetMask(state.SoftMask)));
+            Commands.Add(state.SoftMask is null ? command : new MaskedCommand(command, GetMask(state.SoftMask)));
         }
 
         private MaskPlan GetMask(SoftMask mask)
@@ -48,12 +48,12 @@ namespace Render.NET.Pdf
                 throw new NotSupportedException("Soft mask nesting exceeds eight.");
             }
 
-            var savedStack = GraphicsStack;
+            Stack<CurrentGraphicsState>? savedStack = GraphicsStack;
             bool savedType3 = _uncoloredType3;
             int start = Commands.Count;
             try
             {
-                var state = GetCurrentState().DeepClone();
+                CurrentGraphicsState? state = GetCurrentState().DeepClone();
                 state.SoftMask = null;
                 state.AlphaConstantNonStroking = 1;
                 state.AlphaConstantStroking = 1;
@@ -63,9 +63,9 @@ namespace Render.NET.Pdf
                 GraphicsStack.Push(state);
                 _uncoloredType3 = false;
                 ProcessFormXObject(mask.TransparencyGroup, NameToken.Create("RenderSoftMask"));
-                var commands = Commands.GetRange(start, Commands.Count - start).ToArray();
+                IPdfDrawCommand[]? commands = Commands.GetRange(start, Commands.Count - start).ToArray();
                 Rgba32 background = MaskBackground(mask);
-                var transfer = new byte[256];
+                byte[]? transfer = new byte[256];
                 for (int i = 0; i < transfer.Length; i++)
                 {
                     double value = mask.TransferFunction?.Eval(new[] { i / 255d })[0] ?? i / 255d;
@@ -87,7 +87,7 @@ namespace Render.NET.Pdf
 
         private Rgba32 MaskBackground(SoftMask mask)
         {
-            if (mask.Subtype != SoftMaskType.Luminosity || mask.BC == null)
+            if (mask.Subtype != SoftMaskType.Luminosity || mask.BC is null)
             {
                 return new Rgba32(0, 0, 0);
             }
@@ -115,13 +115,13 @@ namespace Render.NET.Pdf
             FillRule? savedClip = _pendingClip;
             _path = new VectorPath();
             _pendingClip = null;
-            var savedText = TextMatrices.TextMatrix;
-            var savedTextLine = TextMatrices.TextLineMatrix;
-            var savedExtendedFont = ActiveExtendedGraphicsStateFont;
+            TransformationMatrix savedText = TextMatrices.TextMatrix;
+            TransformationMatrix savedTextLine = TextMatrices.TextLineMatrix;
+            UglyToad.PdfPig.PdfFonts.IFont? savedExtendedFont = ActiveExtendedGraphicsStateFont;
             VectorPath? savedTextClip = _textClip;
             _textClip = null;
             int start = Commands.Count;
-            var state = GetCurrentState().DeepClone();
+            CurrentGraphicsState? state = GetCurrentState().DeepClone();
             bool grouped = Resolve(formStream.StreamDictionary, NameToken.Group, out DictionaryToken group);
             try
             {
@@ -137,7 +137,7 @@ namespace Render.NET.Pdf
                     bool isolated = Resolve(group, NameToken.I, out BooleanToken isolation) && isolation.Data;
                     bool knocksOut = Resolve(group, NameToken.K, out BooleanToken knockout) && knockout.Data;
 
-                    var commands = Commands.GetRange(start, Commands.Count - start).ToArray();
+                    IPdfDrawCommand[]? commands = Commands.GetRange(start, Commands.Count - start).ToArray();
                     Commands.RemoveRange(start, Commands.Count - start);
                     AddPaint(new GroupCommand(commands, (float)state.AlphaConstantNonStroking, Blend(state.BlendMode), isolated, knocksOut), state);
                 }
@@ -153,67 +153,6 @@ namespace Render.NET.Pdf
                 ActiveExtendedGraphicsStateFont = savedExtendedFont;
                 _textClip = savedTextClip;
             }
-        }
-    }
-
-    internal sealed record GroupCommand(IPdfDrawCommand[] Commands, float Opacity, ColorBlendMode Blend, bool Isolated, bool Knockout = false) : IPdfDrawCommand
-    {
-        public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken cancellationToken)
-            => canvas.DrawLayer(layer => DrawCommands(Commands, layer, device, cancellationToken), Knockout, Opacity, Blend, Isolated, cancellationToken: cancellationToken);
-
-        internal static void DrawCommands(IPdfDrawCommand[] commands, RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
-        {
-            foreach (IPdfDrawCommand command in commands)
-            {
-                token.ThrowIfCancellationRequested();
-                if (command is StateCommand or ClipCommand)
-                {
-                    command.Draw(canvas, device, token);
-                }
-                else
-                {
-                    canvas.DrawObject(element => command.Draw(element, device, token), token);
-                }
-            }
-        }
-    }
-
-    internal sealed record MaskPlan(IPdfDrawCommand[] Commands, bool Luminosity, Rgba32 Background, byte[] Transfer)
-    {
-        internal PixelBuffer Render(RasterCanvas parent, Matrix3x2 device, CancellationToken token)
-        {
-            var image = new PixelBuffer(parent.Buffer.Width, parent.Buffer.Height);
-            if (Luminosity)
-            {
-                image.Clear(Background);
-            }
-
-            GroupCommand.DrawCommands(Commands, new RasterCanvas(image), device, token);
-            for (int y = 0; y < image.Height; y++)
-            {
-                token.ThrowIfCancellationRequested();
-                for (int x = 0; x < image.Width; x++)
-                {
-                    Rgba32 c = image[x, y];
-                    double alpha = c.A / 255d;
-                    double luminosity = (0.3 * ((c.R * alpha) + (Background.R * (1 - alpha))))
-                        + (0.59 * ((c.G * alpha) + (Background.G * (1 - alpha))))
-                        + (0.11 * ((c.B * alpha) + (Background.B * (1 - alpha))));
-                    int value = Luminosity ? Math.Clamp((int)Math.Round(luminosity), 0, 255) : c.A;
-                    image[x, y] = new Rgba32(0, 0, 0, Transfer[value]);
-                }
-            }
-
-            return image;
-        }
-    }
-
-    internal sealed record MaskedCommand(IPdfDrawCommand Command, MaskPlan Mask) : IPdfDrawCommand
-    {
-        public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
-        {
-            PixelBuffer mask = Mask.Render(canvas, device, token);
-            canvas.DrawLayer(layer => Command.Draw(layer, device, token), isolated: false, alphaMask: mask, cancellationToken: token);
         }
     }
 }

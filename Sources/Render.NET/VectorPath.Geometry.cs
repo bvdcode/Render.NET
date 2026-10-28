@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Render.NET
 {
-    public sealed partial class VectorPath
+    public partial class VectorPath
     {
         /// <summary>Returns numerical path bounds using curve flattening with 0.01 user-unit tolerance.</summary>
         public (float X, float Y, float Width, float Height) GetBounds(CancellationToken cancellationToken = default)
@@ -40,7 +40,7 @@ namespace Render.NET
                 return new VectorPath().Append(this);
             }
 
-            var result = new VectorPath();
+            VectorPath? result = new VectorPath();
             if (start == end)
             {
                 return result;

@@ -6,12 +6,12 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private readonly Dictionary<string, PixelBuffer?> _images = new(StringComparer.Ordinal);
         private PixelBuffer? Image(string? href)
         {
-            if (href == null)
+            if (href is null)
             {
                 Warn("Missing SVG image href");
                 return null;

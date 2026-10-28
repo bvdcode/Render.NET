@@ -17,7 +17,7 @@ using UglyToad.PdfPig.Tokens;
 
 namespace Render.NET.Pdf
 {
-    internal sealed partial class PdfStreamProcessor : BaseStreamProcessor<int>
+    internal partial class PdfStreamProcessor : BaseStreamProcessor<int>
     {
         private readonly PdfReaderOptions _limits;
         private readonly CancellationToken _cancellationToken;
@@ -186,7 +186,7 @@ namespace Render.NET.Pdf
 
         protected override void ClipToRectangle(PdfRectangle rectangle, FillingRule clippingRule)
         {
-            var path = new VectorPath().Rectangle((float)rectangle.Left, (float)rectangle.Bottom, (float)rectangle.Width, (float)rectangle.Height);
+            VectorPath? path = new VectorPath().Rectangle((float)rectangle.Left, (float)rectangle.Bottom, (float)rectangle.Width, (float)rectangle.Height);
             path = path.Transform(Matrix(CurrentTransformationMatrix));
             StorePath(path);
             Commands.Add(new ClipCommand(path, Rule(clippingRule)));
@@ -227,7 +227,7 @@ namespace Render.NET.Pdf
 
         private static StrokeStyle Stroke(CurrentGraphicsState state)
         {
-            var dashes = new float[state.LineDashPattern.Array.Count];
+            float[]? dashes = new float[state.LineDashPattern.Array.Count];
             for (int i = 0; i < dashes.Length; i++)
             {
                 dashes[i] = (float)state.LineDashPattern.Array[i];

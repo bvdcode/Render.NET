@@ -23,7 +23,7 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("SVG exceeds MaximumInputBytes.");
             }
 
-            using var source = new StringReader(xml);
+            using StringReader? source = new StringReader(xml);
             using XmlReader reader = XmlReader.Create(source, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = options.MaximumInputBytes });
             XElement root = XElement.Load(reader);
             return new SvgSceneBuilder(root, options, cancellationToken).Build();
@@ -35,7 +35,7 @@ namespace Render.NET.Svg
             ArgumentNullException.ThrowIfNull(source);
             options ??= new SvgReaderOptions();
             Validate(options);
-            using var data = new MemoryStream();
+            using MemoryStream? data = new MemoryStream();
             byte[] buffer = new byte[8192];
             int count;
             while ((count = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) != 0)
@@ -45,18 +45,18 @@ namespace Render.NET.Svg
                     throw new InvalidDataException("SVG exceeds MaximumInputBytes.");
                 }
 
-                data.Write(buffer, 0, count);
+                await data.WriteAsync(buffer.AsMemory(0, count), cancellationToken).ConfigureAwait(false);
             }
 
             data.Position = 0;
-            using var text = new StreamReader(data, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+            using StreamReader? text = new StreamReader(data, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
             return Read(await text.ReadToEndAsync(cancellationToken).ConfigureAwait(false), options, cancellationToken);
         }
 
         /// <summary>Reads a local SVG file.</summary>
         public static async Task<SvgDocument> ReadFileAsync(string path, SvgReaderOptions? options = null, CancellationToken cancellationToken = default)
         {
-            await using var source = File.OpenRead(path);
+            await using FileStream? source = File.OpenRead(path);
             return await ReadAsync(source, options, cancellationToken).ConfigureAwait(false);
         }
 

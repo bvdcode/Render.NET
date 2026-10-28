@@ -17,8 +17,8 @@ namespace Render.NET.Tests
         public async Task PdfColorsMatchIndependentlyDecodedSamples(string file, int width, int height, string colorSpace, int components, int bits)
         {
             PixelBuffer image = await Render(file, width, height, colorSpace);
-            byte[] raw = File.ReadAllBytes(Path.Combine(Root, Path.GetFileNameWithoutExtension(file) + ".raw"));
-            foreach (var point in new[]
+            byte[] raw = await File.ReadAllBytesAsync(Path.Combine(Root, Path.GetFileNameWithoutExtension(file) + ".raw"));
+            foreach ((int, int) point in new[]
             {
                 (3, 7),
                 (21, 15),
@@ -28,7 +28,7 @@ namespace Render.NET.Tests
             )
             {
                 int start = ((point.Item2 * width) + point.Item1) * components * (bits / 8);
-                var values = new double[components];
+                double[]? values = new double[components];
                 for (int c = 0; c < components; c++)
                 {
                     values[c] = bits == 16 ? BinaryPrimitives.ReadUInt16LittleEndian(raw.AsSpan(start + (c * 2), 2)) / 65535.0 : raw[start + c] / 255.0;
@@ -56,7 +56,7 @@ namespace Render.NET.Tests
         {
             const int x = 21, y = 15, width = 63, height = 45;
             PixelBuffer image = await Render("RGBA-63x45.jp2", width, height, "/DeviceRGB", "/SMaskInData " + mode);
-            byte[] raw = File.ReadAllBytes(Path.Combine(Root, "RGBA-63x45.raw"));
+            byte[] raw = await File.ReadAllBytesAsync(Path.Combine(Root, "RGBA-63x45.raw"));
             int offset = ((y * width) + x) * 4;
             double alpha = mode == 0 ? 1 : raw[offset + 3] / 255.0;
             double red = raw[offset] / 255.0;
@@ -71,7 +71,7 @@ namespace Render.NET.Tests
         [Test]
         public async Task UnsupportedJpeg2000ExtensionsAreReportedByThePdfReader()
         {
-            byte[] encoded = File.ReadAllBytes(Path.Combine(Root, "raw.j2k"));
+            byte[] encoded = await File.ReadAllBytesAsync(Path.Combine(Root, "raw.j2k"));
             int offset = 4 + BinaryPrimitives.ReadUInt16BigEndian(encoded.AsSpan(4));
             byte[] changed = encoded[..offset].Concat(new byte[] { 255, 0x5f, 0, 2 }).Concat(encoded[offset..]).ToArray();
             using PdfDocument document = await PdfReader.ReadAsync(new MemoryStream(Document(changed, 63, 45, "/DeviceRGB")));
@@ -82,7 +82,7 @@ namespace Render.NET.Tests
 
         private static async Task<PixelBuffer> Render(string file, int width, int height, string space, string additional = "")
         {
-            using PdfDocument document = await PdfReader.ReadAsync(new MemoryStream(Document(File.ReadAllBytes(Path.Combine(Root, file)), width, height, space, additional)));
+            using PdfDocument document = await PdfReader.ReadAsync(new MemoryStream(Document(await File.ReadAllBytesAsync(Path.Combine(Root, file)), width, height, space, additional)));
             PdfPage page = document.GetPage(1);
             Assert.That(page.UnsupportedFeatures, Is.Empty);
             return PdfRenderer.Render(page, new PdfRenderOptions { Dpi = 72, Supersampling = 1 });

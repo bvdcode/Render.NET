@@ -31,7 +31,7 @@ namespace Render.NET.Tests
         [TestCase(32)]
         public async Task FreeTrianglesDecodeEveryCoordinateBitWidthAndInterpolate(int bits)
         {
-            var writer = new Bits();
+            Bits? writer = new Bits();
             Vertex(writer, 0, 0, 0, new[] { 1d, 0, 0 }, bits);
             Vertex(writer, 3, 1, 0, new[] { 0d, 1, 0 }, bits);
             Vertex(writer, 3, 0, 1, new[] { 0d, 0, 1 }, bits);
@@ -51,8 +51,8 @@ namespace Render.NET.Tests
         [TestCase(16)]
         public async Task LatticeSupportsEveryComponentBitWidth(int bits)
         {
-            var writer = new Bits();
-            foreach (var p in new[] { (0d, 0d), (1d, 0d), (0d, 1d), (1d, 1d) })
+            Bits? writer = new Bits();
+            foreach ((double, double) p in new[] { (0d, 0d), (1d, 0d), (0d, 1d), (1d, 1d) })
             {
                 Vertex(writer, 0, p.Item1, p.Item2, new[] { p.Item1, p.Item2, 0d }, componentBits: bits, flags: 0);
             }
@@ -68,7 +68,7 @@ namespace Render.NET.Tests
         [TestCase(2)]
         public async Task TriangleContinuationReusesTheSpecifiedPreviousEdge(int flag)
         {
-            var writer = new Bits();
+            Bits? writer = new Bits();
             Vertex(writer, 0, 0, 0, new[] { 1d, 0, 0 });
             Vertex(writer, 0, 1, 0, new[] { 1d, 0, 0 });
             Vertex(writer, 0, 0, 1, new[] { 1d, 0, 0 });
@@ -116,10 +116,10 @@ namespace Render.NET.Tests
                 next[i] = new[] { next[i][0] + 0.15, next[i][1] + 0.1 };
             }
 
-            var continued = new Bits();
+            Bits? continued = new Bits();
             WritePatch(continued, points, colors, 0);
             WritePatch(continued, next, nextColors, flag);
-            var independent = new Bits();
+            Bits? independent = new Bits();
             WritePatch(independent, points, colors, 0);
             WritePatch(independent, next, nextColors, 0);
             PixelBuffer actual = await Render(Page(Mesh(type, continued.Data())));
@@ -146,7 +146,7 @@ namespace Render.NET.Tests
         [Test]
         public async Task MeshFunctionsRunAfterParameterInterpolation()
         {
-            var writer = new Bits();
+            Bits? writer = new Bits();
             Vertex(writer, 0, 0, 0, new[] { 0d });
             Vertex(writer, 0, 1, 0, new[] { 1d });
             Vertex(writer, 0, 0, 1, new[] { 1d });
@@ -159,7 +159,7 @@ namespace Render.NET.Tests
         [Test]
         public async Task MeshOpacityAppliesOnceAtSharedEdgesAndOverlappingTriangles()
         {
-            var writer = new Bits();
+            Bits? writer = new Bits();
             for (int i = 0; i < 2; i++)
             {
                 Vertex(writer, 0, 0, 0, new[] { 1d, 0, 0 });
@@ -213,7 +213,7 @@ namespace Render.NET.Tests
 
         private static byte[] Patch(int type)
         {
-            var writer = new Bits();
+            Bits? writer = new Bits();
             WritePatch(writer, PatchPoints(type), PatchColors(), 0);
             return writer.Data();
         }
@@ -282,7 +282,7 @@ namespace Render.NET.Tests
             return PdfRenderer.Render(page, Exact);
         }
 
-        private sealed class Bits
+        private class Bits
         {
             private readonly List<byte> _bytes = new();
             private int _bit;

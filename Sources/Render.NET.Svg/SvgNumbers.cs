@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace Render.NET.Svg
 {
-    internal sealed class SvgNumbers
+    internal class SvgNumbers
     {
         private readonly string _text;
         private int _position;
@@ -76,7 +76,8 @@ namespace Render.NET.Svg
             {
                 '0' => false,
                 '1' => true,
-                _ => throw new InvalidDataException("An SVG arc flag must be 0 or 1.")};
+                _ => throw new InvalidDataException("An SVG arc flag must be 0 or 1.")
+            };
         }
 
         private void Sign()
@@ -97,7 +98,7 @@ namespace Render.NET.Svg
 
         internal static float[] List(string text)
         {
-            var reader = new SvgNumbers(text);
+            SvgNumbers? reader = new SvgNumbers(text);
             var result = new System.Collections.Generic.List<float>();
             while (!reader.End)
             {
@@ -155,6 +156,7 @@ namespace Render.NET.Svg
             ("rotate", 3) => Matrix3x2.CreateRotation((v[0] * MathF.PI) / 180, new Vector2(v[1], v[2])),
             ("skewX", 1) => new Matrix3x2(1, 0, MathF.Tan((v[0] * MathF.PI) / 180), 1, 0, 0),
             ("skewY", 1) => new Matrix3x2(1, MathF.Tan((v[0] * MathF.PI) / 180), 0, 1, 0, 0),
-            _ => throw new InvalidDataException("Invalid SVG transform: " + name)};
+            _ => throw new InvalidDataException("Invalid SVG transform: " + name)
+        };
     }
 }

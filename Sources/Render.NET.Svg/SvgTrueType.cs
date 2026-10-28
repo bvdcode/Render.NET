@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgTrueType
+    internal partial class SvgTrueType
     {
         private readonly byte[] _data;
         private readonly Dictionary<string, (int Start, int Length)> _tables = new(StringComparer.Ordinal);
@@ -39,7 +39,7 @@ namespace Render.NET.Svg
             _metrics = U16(hhea + 34);
             Ascent = S16(hhea + 4);
             Descent = S16(hhea + 6);
-            XHeight = _tables.TryGetValue("OS/2", out var os) && os.Length >= 88 && U16(os.Start) >= 2 ? S16(os.Start + 86) : Units * .5f;
+            XHeight = _tables.TryGetValue("OS/2", out (int Start, int Length) os) && os.Length >= 88 && U16(os.Start) >= 2 ? S16(os.Start + 86) : Units * .5f;
             if (Units == 0 || _glyphs == 0 || _metrics == 0 || _metrics > _glyphs || _locaFormat is < 0 or > 1)
             {
                 throw new InvalidDataException("Invalid TrueType font metrics.");
@@ -72,7 +72,7 @@ namespace Render.NET.Svg
 
         private int Table(string name, int minimum)
         {
-            if (!_tables.TryGetValue(name, out var table) || table.Length < minimum)
+            if (!_tables.TryGetValue(name, out (int Start, int Length) table) || table.Length < minimum)
             {
                 throw new NotSupportedException("SVG font requires an OpenType " + name + " table with TrueType outlines.");
             }
@@ -270,8 +270,8 @@ namespace Render.NET.Svg
                 return data;
             }
 
-            using var input = new MemoryStream(data, false);
-            using var reader = new BinaryReader(input);
+            using MemoryStream? input = new MemoryStream(data, false);
+            using BinaryReader? reader = new BinaryReader(input);
             uint Read32() => System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(reader.ReadBytes(4));
             ushort Read16() => System.Buffers.Binary.BinaryPrimitives.ReadUInt16BigEndian(reader.ReadBytes(2));
             input.Position = 4;
@@ -285,7 +285,7 @@ namespace Render.NET.Svg
                 throw new InvalidDataException("Invalid WOFF font size.");
             }
 
-            var result = new byte[length];
+            byte[]? result = new byte[length];
             void Write32(int position, uint value) => System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(position), value);
             Write32(0, flavor);
             System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(result.AsSpan(4), (ushort)count);
@@ -309,8 +309,8 @@ namespace Render.NET.Svg
                 }
                 else
                 {
-                    using var compressedData = new MemoryStream(data, (int)offset, (int)compressed, false);
-                    using var zlib = new ZLibStream(compressedData, CompressionMode.Decompress);
+                    using MemoryStream? compressedData = new MemoryStream(data, (int)offset, (int)compressed, false);
+                    using ZLibStream? zlib = new ZLibStream(compressedData, CompressionMode.Decompress);
                     zlib.ReadExactly(result.AsSpan(destination, (int)original));
                     if (zlib.ReadByte() != -1)
                     {

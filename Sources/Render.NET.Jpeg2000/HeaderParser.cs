@@ -56,14 +56,14 @@ namespace Render.NET.Jpeg2000
         private static CodingStyle Coding(ByteReader data, CodingStyle? inherited)
         {
             int flags = data.U8();
-            if ((flags & ~(inherited == null ? 7 : 1)) != 0)
+            if ((flags & ~(inherited is null ? 7 : 1)) != 0)
             {
                 throw new NotSupportedException("JPEG 2000 coding style flags.");
             }
 
             int progression = inherited?.Progression ?? data.U8();
             int layers = inherited?.Layers ?? data.U16();
-            int mct = inherited == null ? data.U8() : inherited.Mct ? 1 : 0;
+            int mct = inherited is null ? data.U8() : inherited.Mct ? 1 : 0;
             if (progression > 4 || layers < 1 || mct > 1)
             {
                 throw new NotSupportedException("JPEG 2000 progression or component transform.");
@@ -75,8 +75,8 @@ namespace Render.NET.Jpeg2000
             int style = data.U8();
             int transform = data.U8();
             ValidateCoding(levels, bx, by, style, transform);
-            var precincts = ReadPrecincts(data, flags, levels);
-            if (inherited != null)
+            byte[]? precincts = ReadPrecincts(data, flags, levels);
+            if (inherited is not null)
             {
                 flags |= inherited.Flags & 6;
             }
@@ -94,7 +94,7 @@ namespace Render.NET.Jpeg2000
 
         private static byte[] ReadPrecincts(ByteReader data, int flags, int levels)
         {
-            var precincts = new byte[levels + 1];
+            byte[]? precincts = new byte[levels + 1];
             for (int i = 0; i < precincts.Length; i++)
             {
                 precincts[i] = (flags & 1) != 0 ? data.U8() : (byte)255;
@@ -122,8 +122,8 @@ namespace Render.NET.Jpeg2000
                 throw new InvalidDataException("Invalid JPEG 2000 quantization table.");
             }
 
-            var exponents = new int[count];
-            var mantissas = new int[count];
+            int[]? exponents = new int[count];
+            int[]? mantissas = new int[count];
             for (int i = 0; i < count; i++)
             {
                 int value = kind == 0 ? data.U8() << 8 : data.U16();

@@ -8,7 +8,7 @@ namespace Render.NET.Tests
         [Test]
         public void ClipBoundsFollowIntersectionsEmptyClipsAndStateRestoration()
         {
-            var canvas = new RasterCanvas(new PixelBuffer(50, 40));
+            RasterCanvas? canvas = new RasterCanvas(new PixelBuffer(50, 40));
             Assert.That(canvas.GetClipBounds(), Is.EqualTo((0, 0, 50, 40)));
             canvas.ClipPath(new VectorPath().Rectangle(5, 8, 20, 10), Matrix3x2.Identity);
             Assert.That(canvas.GetClipBounds(), Is.EqualTo((5, 8, 20, 10)));
@@ -24,9 +24,9 @@ namespace Render.NET.Tests
         [Test]
         public void FillRulesDistinguishNestedContoursAndClipRestores()
         {
-            var image = new PixelBuffer(50, 50);
-            var canvas = new RasterCanvas(image);
-            var path = new VectorPath().Rectangle(0, 0, 40, 40).Rectangle(10, 10, 20, 20);
+            PixelBuffer? image = new PixelBuffer(50, 50);
+            RasterCanvas? canvas = new RasterCanvas(image);
+            VectorPath? path = new VectorPath().Rectangle(0, 0, 40, 40).Rectangle(10, 10, 20, 20);
             canvas.FillPath(path, new Rgba32(255, 0, 0), Matrix3x2.Identity, FillRule.EvenOdd);
             Assert.That(image[20, 20].A, Is.Zero);
             canvas.Save();
@@ -43,8 +43,8 @@ namespace Render.NET.Tests
         [TestCase(StrokeCap.Square, true)]
         public void StrokeCapsExtendOnlyWhenRequested(StrokeCap cap, bool extends)
         {
-            var image = new PixelBuffer(50, 50);
-            var canvas = new RasterCanvas(image);
+            PixelBuffer? image = new PixelBuffer(50, 50);
+            RasterCanvas? canvas = new RasterCanvas(image);
             canvas.StrokePath(new VectorPath().MoveTo(10, 20).LineTo(35, 20), new Rgba32(255, 0, 0), new StrokeStyle { Width = 10, Cap = cap }, Matrix3x2.Identity);
             Assert.That(image[7, 20].A > 0, Is.EqualTo(extends));
             Assert.That(image[20, 20].A, Is.EqualTo(255));
@@ -53,8 +53,8 @@ namespace Render.NET.Tests
         [Test]
         public void AffineStrokeAndDashLengthsFollowUserSpace()
         {
-            var image = new PixelBuffer(100, 50);
-            var canvas = new RasterCanvas(image);
+            PixelBuffer? image = new PixelBuffer(100, 50);
+            RasterCanvas? canvas = new RasterCanvas(image);
             canvas.StrokePath(new VectorPath().MoveTo(5, 10).LineTo(40, 10), new Rgba32(255, 0, 0),
                 new StrokeStyle { Width = 4, Dashes = new float[] { 5, 5 } }, Matrix3x2.CreateScale(2, 3));
             Assert.That(image[12, 30].A, Is.EqualTo(255));
@@ -66,9 +66,9 @@ namespace Render.NET.Tests
         [Test]
         public void AlphaCompositingAndMultiplyUseStraightAlpha()
         {
-            var image = new PixelBuffer(10, 10);
-            var canvas = new RasterCanvas(image);
-            var path = new VectorPath().Rectangle(0, 0, 10, 10);
+            PixelBuffer? image = new PixelBuffer(10, 10);
+            RasterCanvas? canvas = new RasterCanvas(image);
+            VectorPath? path = new VectorPath().Rectangle(0, 0, 10, 10);
             canvas.FillPath(path, new Rgba32(255, 0, 0, 128), Matrix3x2.Identity);
             Assert.That(image[5, 5], Is.EqualTo(new Rgba32(255, 0, 0, 128)));
             canvas.FillPath(path, new Rgba32(0, 0, 255, 128), Matrix3x2.Identity);

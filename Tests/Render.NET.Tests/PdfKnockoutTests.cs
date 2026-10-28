@@ -38,10 +38,10 @@ namespace Render.NET.Tests
         [Test]
         public void FractionalImageShapeOnlyPartiallyKnocksOutPreviousObject()
         {
-            var pixels = new PixelBuffer(1, 1);
+            PixelBuffer? pixels = new PixelBuffer(1, 1);
             pixels.Clear(new Rgba32(0, 0, 255));
-            var canvas = new RasterCanvas(pixels);
-            var image = new PixelBuffer(1, 1);
+            RasterCanvas? canvas = new RasterCanvas(pixels);
+            PixelBuffer? image = new PixelBuffer(1, 1);
             image[0, 0] = new Rgba32(0, 255, 0, 128);
             canvas.DrawLayer(layer =>
             {
@@ -56,8 +56,8 @@ namespace Render.NET.Tests
         [Test]
         public void ReusedElementBufferClearsEarlierShapeAndColor()
         {
-            var pixels = new PixelBuffer(20, 10);
-            var canvas = new RasterCanvas(pixels);
+            PixelBuffer? pixels = new PixelBuffer(20, 10);
+            RasterCanvas? canvas = new RasterCanvas(pixels);
             canvas.DrawLayer(layer =>
             {
                 layer.DrawObject(c => c.FillPath(new VectorPath().Rectangle(0, 0, 10, 10), new Rgba32(255, 0, 0), System.Numerics.Matrix3x2.Identity));
@@ -72,8 +72,8 @@ namespace Render.NET.Tests
         [Test]
         public void TransparentShaderKnocksOutOnlyExplicitShape()
         {
-            var pixels = new PixelBuffer(20, 10);
-            var canvas = new RasterCanvas(pixels);
+            PixelBuffer? pixels = new PixelBuffer(20, 10);
+            RasterCanvas? canvas = new RasterCanvas(pixels);
             canvas.DrawLayer(layer =>
             {
                 layer.DrawObject(c => c.FillPath(new VectorPath().Rectangle(0, 0, 20, 10), new Rgba32(255, 0, 0), System.Numerics.Matrix3x2.Identity));
@@ -86,8 +86,8 @@ namespace Render.NET.Tests
         [Test]
         public void NestedTransparentGroupPreservesShapeForOuterKnockout()
         {
-            var pixels = new PixelBuffer(20, 10);
-            var canvas = new RasterCanvas(pixels);
+            PixelBuffer? pixels = new PixelBuffer(20, 10);
+            RasterCanvas? canvas = new RasterCanvas(pixels);
             canvas.DrawLayer(layer =>
             {
                 layer.DrawObject(c => c.FillPath(new VectorPath().Rectangle(0, 0, 20, 10), new Rgba32(255, 0, 0), System.Numerics.Matrix3x2.Identity));

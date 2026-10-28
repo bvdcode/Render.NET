@@ -8,11 +8,11 @@ using System.Xml.Linq;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial class SvgSceneBuilder
+    internal partial class SvgSceneBuilder
     {
         private readonly Dictionary<SvgFontRequest, SvgTrueType[]> _fonts = new();
         private readonly Dictionary<string, SvgTrueType> _bundledFonts = new(StringComparer.Ordinal);
-        private sealed class TextSpan
+        private class TextSpan
         {
             internal required XElement Element;
             internal required Dictionary<string, string> Style;
@@ -23,13 +23,13 @@ namespace Render.NET.Svg
             internal float[] X = Array.Empty<float>(), Y = Array.Empty<float>(), Dx = Array.Empty<float>(), Dy = Array.Empty<float>(), Rotate = Array.Empty<float>();
         }
 
-        private sealed record TextCharacter(Rune Rune, TextSpan Span, bool Preserve);
-        private sealed record PlacedGlyph(VectorPath Path, Dictionary<string, string> Style, float X, float Y, float Advance, float Rotation, TextSpan Span, bool Chunk);
+        private record TextCharacter(Rune Rune, TextSpan Span, bool Preserve);
+        private record PlacedGlyph(VectorPath Path, Dictionary<string, string> Style, float X, float Y, float Advance, float Rotation, TextSpan Span, bool Chunk);
         private SvgNode[] TextNodes(XElement e, Dictionary<string, string> style, int depth)
         {
             var raw = new List<TextCharacter>();
             GatherText(e, style, null, 16, Matrix3x2.Identity, false, raw, depth);
-            var text = NormalizeText(raw);
+            List<TextCharacter>? text = NormalizeText(raw);
             var glyphs = new List<PlacedGlyph>();
             float x = 0, y = 0;
             SvgTrueType? previousFont = null;
@@ -38,7 +38,7 @@ namespace Render.NET.Svg
             {
                 _token.ThrowIfCancellationRequested();
                 bool chunk = Position(character.Span, ref x, ref y, out float rotation);
-                var(font, glyph) = TextFont(character.Span.Style, character.Rune.Value);
+                var (font, glyph) = TextFont(character.Span.Style, character.Rune.Value);
                 float scale = character.Span.Size / font.Units;
                 if (!chunk && previousFont == font && Value(character.Span.Style, "font-kerning", "auto") != "none")
                 {
@@ -66,12 +66,12 @@ namespace Render.NET.Svg
             var spans = new Dictionary<TextSpan, (SvgNode Node, List<SvgNode> Children)>();
             List<SvgNode> Container(TextSpan span)
             {
-                if (span.Parent == null)
+                if (span.Parent is null)
                 {
                     return result;
                 }
 
-                if (!spans.TryGetValue(span, out var group))
+                if (!spans.TryGetValue(span, out (SvgNode Node, List<SvgNode> Children) group))
                 {
                     var children = new List<SvgNode>();
                     SvgNode node = Empty with
@@ -97,7 +97,7 @@ namespace Render.NET.Svg
 
             SvgNode Finish(SvgNode node)
             {
-                foreach (var group in spans.Values)
+                foreach ((SvgNode Node, List<SvgNode> Children) group in spans.Values)
                 {
                     if (ReferenceEquals(group.Node, node))
                     {
@@ -128,7 +128,7 @@ namespace Render.NET.Svg
                 ["font-size"] = size.ToString(System.Globalization.CultureInfo.InvariantCulture)
             };
             TextFeatures(style);
-            var span = new TextSpan
+            TextSpan? span = new TextSpan
             {
                 Element = element,
                 Style = style,
@@ -207,7 +207,7 @@ namespace Render.NET.Svg
 
         private void TextFeatures(Dictionary<string, string> style)
         {
-            foreach (var feature in new[]
+            foreach ((string, string) feature in new[]
             {
                 ("direction", "ltr"),
                 ("unicode-bidi", "normal"),
@@ -247,7 +247,7 @@ namespace Render.NET.Svg
         private static bool Position(TextSpan span, ref float x, ref float y, out float rotation)
         {
             var ancestors = new Stack<TextSpan>();
-            for (TextSpan? current = span; current != null; current = current.Parent)
+            for (TextSpan? current = span; current is not null; current = current.Parent)
             {
                 ancestors.Push(current);
             }
@@ -289,122 +289,6 @@ namespace Render.NET.Svg
             x += dx;
             y += dy;
             return absolute;
-        }
-
-        private static float TextLength(string value, float size)
-        {
-            if (value is "normal" or "none")
-            {
-                return 0;
-            }
-
-            if (value.EndsWith("rem", StringComparison.Ordinal))
-            {
-                return SvgLength.Parse(value[..^3]) * 16;
-            }
-
-            if (value.EndsWith("em", StringComparison.Ordinal))
-            {
-                return SvgLength.Parse(value[..^2]) * size;
-            }
-
-            if (value.EndsWith("ex", StringComparison.Ordinal))
-            {
-                return SvgLength.Parse(value[..^2]) * size * .5f;
-            }
-
-            return SvgLength.Parse(value, size);
-        }
-
-        private static float[] TextPositions(XElement e, string name, float percent, float size)
-        {
-            if (e.Attribute(name) is not { } attribute)
-            {
-                return Array.Empty<float>();
-            }
-
-            string[] items = attribute.Value.Split(new[] { ' ', '\t', '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            return items.Select(item => item.EndsWith('%') ? SvgLength.Parse(item, percent) : TextLength(item, size)).ToArray();
-        }
-
-        private static float Baseline(Dictionary<string, string> style, SvgTrueType font, float size)
-        {
-            string value = Value(style, "dominant-baseline", Value(style, "alignment-baseline", "auto"));
-            float offset = value switch
-            {
-                "middle" => font.XHeight / 2,
-                "central" => (font.Ascent + font.Descent) / 2,
-                "hanging" => font.Ascent * .8f,
-                "text-before-edge" or "text-top" => font.Ascent,
-                "text-after-edge" or "text-bottom" => font.Descent,
-                _ => 0
-            };
-            string shift = Value(style, "baseline-shift", "0");
-            return ((offset * size) / font.Units) - (shift switch
-            {
-                "super" => size * .6f,
-                "sub" => -size * .3f,
-                "baseline" => 0,
-                _ => TextLength(shift, size)});
-        }
-
-        private (SvgTrueType Font, int Glyph) TextFont(Dictionary<string, string> style, int character)
-        {
-            string family = Value(style, "font-family", "sans-serif");
-            string weight = Value(style, "font-weight", "400");
-            int numeric = weight is "bold" or "bolder" ? 700 : int.TryParse(weight, out int parsed) ? parsed : 400;
-            var request = new SvgFontRequest(family, numeric, Value(style, "font-style", "normal") is "italic" or "oblique");
-            SvgTrueType[] fonts = TextFonts(request);
-            foreach (SvgTrueType font in fonts)
-            {
-                int glyph = font.Glyph(character);
-                if (glyph != 0)
-                {
-                    return (font, glyph);
-                }
-            }
-
-            Warn("Missing SVG font glyph U+" + character.ToString("X4", System.Globalization.CultureInfo.InvariantCulture));
-            return (fonts[0], 0);
-        }
-
-        private SvgTrueType[] TextFonts(SvgFontRequest request)
-        {
-            if (!_fonts.TryGetValue(request, out SvgTrueType[]? fonts))
-            {
-                var list = new List<SvgTrueType>();
-                foreach (string candidate in request.Family.Split(','))
-                {
-                    ReadOnlyMemory<byte> custom = _limits.FontResolver?.Invoke(request with { Family = candidate.Trim().Trim('\'', '"') }) ?? default;
-                    if (!custom.IsEmpty)
-                    {
-                        list.Add(new SvgTrueType(custom));
-                    }
-                }
-
-                string variant = request.Weight >= 600 ? request.Italic ? "BoldItalic" : "Bold" : request.Italic ? "Italic" : "Regular";
-                list.Add(BundledFont("Aileron-" + variant));
-                list.Add(BundledFont("Canada1500-" + variant));
-                fonts = list.ToArray();
-                _fonts.Add(request, fonts);
-            }
-
-            return fonts;
-        }
-
-        private SvgTrueType BundledFont(string name)
-        {
-            if (_bundledFonts.TryGetValue(name, out SvgTrueType? cached))
-            {
-                return cached;
-            }
-
-            using Stream input = typeof(SvgReader).Assembly.GetManifestResourceStream("Render.NET.Svg.Fonts." + name + ".ttf") ?? throw new InvalidOperationException("Bundled SVG font is missing.");
-            using var memory = new MemoryStream();
-            input.CopyTo(memory);
-            var font = new SvgTrueType(memory.ToArray());
-            _bundledFonts.Add(name, font);
-            return font;
         }
 
         private static void Anchor(List<PlacedGlyph> glyphs)
@@ -472,17 +356,17 @@ namespace Render.NET.Svg
         private VectorPath PlaceTextGlyph(PlacedGlyph glyph)
         {
             TextSpan? path = glyph.Span;
-            while (path != null && path.Element.Name.LocalName != "textPath")
+            while (path is not null && path.Element.Name.LocalName != "textPath")
             {
                 path = path.Parent;
             }
 
             Matrix3x2 placement = Matrix3x2.CreateRotation((glyph.Rotation * MathF.PI) / 180) * Matrix3x2.CreateTranslation(glyph.X, glyph.Y);
-            if (path != null)
+            if (path is not null)
             {
                 XElement? target = Reference(Href(path.Element));
-                VectorPath? curve = target == null ? null : Shape(target)?.Transform(SvgNumbers.Transform((string?)target.Attribute("transform")));
-                if (curve == null)
+                VectorPath? curve = target is null ? null : Shape(target)?.Transform(SvgNumbers.Transform((string?)target.Attribute("transform")));
+                if (curve is null)
                 {
                     return new VectorPath();
                 }
@@ -521,7 +405,7 @@ namespace Render.NET.Svg
 
         private bool PointOnPath(VectorPath path, float distance, out Vector2 point, out float angle)
         {
-            foreach (var segment in PathSegments(path))
+            foreach ((Vector2 A, Vector2 B, float Length) segment in PathSegments(path))
             {
                 if (distance >= 0 && distance <= segment.Length && segment.Length > 0)
                 {

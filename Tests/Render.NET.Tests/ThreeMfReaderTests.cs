@@ -112,7 +112,7 @@ namespace Render.NET.Tests
             Assert.Throws<InvalidDataException>(() => document.CreateBuildMesh());
             Assert.That(document.CreateBuildItemMesh(0).TriangleCount, Is.EqualTo(1));
             using CancellationTokenSource cancellation = new();
-            cancellation.Cancel();
+            await cancellation.CancelAsync();
             _ = Assert.ThrowsAsync<OperationCanceledException>(async () => await ThreeMfReader.ReadAsync(new MemoryStream(bytes), cancellationToken: cancellation.Token));
             Assert.Throws<OperationCanceledException>(() => document.CreateBuildMesh(cancellation.Token));
         }
@@ -204,7 +204,7 @@ namespace Render.NET.Tests
             MemoryStream bytes = new();
             using (ZipArchive archive = new(bytes, ZipArchiveMode.Create, true))
             {
-                string thumb = thumbnail == null ? "" : "<Relationship Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail\" Target=\"/Metadata/preview.png\" Id=\"thumb\"/>";
+                string thumb = thumbnail is null ? "" : "<Relationship Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail\" Target=\"/Metadata/preview.png\" Id=\"thumb\"/>";
                 using (StreamWriter writer = new(archive.CreateEntry("_rels/.rels").Open(), Encoding.UTF8))
                 {
                     writer.Write($"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Type=\"http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel\" Target=\"{target}\" Id=\"model\"/>{thumb}</Relationships>");
@@ -215,13 +215,13 @@ namespace Render.NET.Tests
                     writer.Write(model);
                 }
 
-                foreach (var part in parts ?? [])
+                foreach (KeyValuePair<string, string> part in parts ?? [])
                 {
                     using StreamWriter writer = new(archive.CreateEntry(part.Key).Open(), Encoding.UTF8);
                     writer.Write(part.Value);
                 }
 
-                if (thumbnail != null)
+                if (thumbnail is not null)
                 {
                     using Stream image = archive.CreateEntry("Metadata/preview.png").Open();
                     image.Write(thumbnail);

@@ -37,7 +37,7 @@ namespace Render.NET.Tests
         [TestCase("éåñü")]
         public void LatinCyrillicAndCompositeGlyphsHaveVisibleOutlines(string text)
         {
-            var ink = Ink(Render("<text x='10' y='60' font-size='30'>" + text + "</text>"));
+            (int X, int Y, int Width, int Height) ink = Ink(Render("<text x='10' y='60' font-size='30'>" + text + "</text>"));
             Assert.That(ink.Width, Is.GreaterThan(40));
             Assert.That(ink.Height, Is.InRange(15, 45));
             Assert.That(ink.Y, Is.LessThan(50));
@@ -46,8 +46,8 @@ namespace Render.NET.Tests
         [Test]
         public void TextAnchorMovesCompleteMixedStyleChunk()
         {
-            var start = Ink(Render("<text x='150' y='60' font-size='30'>A<tspan fill='red'>V</tspan></text>"));
-            var end = Ink(Render("<text x='150' y='60' font-size='30' text-anchor='end'>A<tspan fill='red'>V</tspan></text>"));
+            (int X, int Y, int Width, int Height) start = Ink(Render("<text x='150' y='60' font-size='30'>A<tspan fill='red'>V</tspan></text>"));
+            (int X, int Y, int Width, int Height) end = Ink(Render("<text x='150' y='60' font-size='30' text-anchor='end'>A<tspan fill='red'>V</tspan></text>"));
             Assert.That(end.Width, Is.EqualTo(start.Width).Within(1));
             Assert.That(end.X + end.Width, Is.EqualTo(150).Within(4));
         }
@@ -72,8 +72,8 @@ namespace Render.NET.Tests
         [Test]
         public void KerningCanBeDisabled()
         {
-            var kerned = Ink(Render("<text x='10' y='60' font-size='60'>AV</text>"));
-            var plain = Ink(Render("<text x='10' y='60' font-size='60' font-kerning='none'>AV</text>"));
+            (int X, int Y, int Width, int Height) kerned = Ink(Render("<text x='10' y='60' font-size='60'>AV</text>"));
+            (int X, int Y, int Width, int Height) plain = Ink(Render("<text x='10' y='60' font-size='60' font-kerning='none'>AV</text>"));
             Assert.That(kerned.Width, Is.LessThan(plain.Width));
         }
 
@@ -88,14 +88,14 @@ namespace Render.NET.Tests
         [Test]
         public void TextLengthScalesGlyphsAndSpacing()
         {
-            var ink = Ink(Render("<text x='10' y='60' font-size='30' textLength='200' lengthAdjust='spacingAndGlyphs'>AV</text>"));
+            (int X, int Y, int Width, int Height) ink = Ink(Render("<text x='10' y='60' font-size='30' textLength='200' lengthAdjust='spacingAndGlyphs'>AV</text>"));
             Assert.That(ink.Width, Is.InRange(180, 205));
         }
 
         [Test]
         public void TextPathPlacesGlyphsAlongLocalCurve()
         {
-            var ink = Ink(Render("<defs><path id='p' d='M20 70Q150 -20 280 70'/></defs><text font-size='25'><textPath href='#p' startOffset='20%'>Render.NET</textPath></text>"));
+            (int X, int Y, int Width, int Height) ink = Ink(Render("<defs><path id='p' d='M20 70Q150 -20 280 70'/></defs><text font-size='25'><textPath href='#p' startOffset='20%'>Render.NET</textPath></text>"));
             Assert.That(ink.Width, Is.GreaterThan(80));
             Assert.That(ink.X, Is.GreaterThan(40));
             Assert.That(ink.Y, Is.LessThan(40));
@@ -105,11 +105,14 @@ namespace Render.NET.Tests
         public void FontResolverReceivesFamilyWeightAndStyle()
         {
             var requests = new List<SvgFontRequest>();
-            Render("<text x='10' y='60' font-family='Custom' font-weight='700' font-style='italic'>A</text>", new SvgReaderOptions { FontResolver = request =>
+            Render("<text x='10' y='60' font-family='Custom' font-weight='700' font-style='italic'>A</text>", new SvgReaderOptions
+            {
+                FontResolver = request =>
             {
                 requests.Add(request);
                 return default;
-            } });
+            }
+            });
             Assert.That(requests, Does.Contain(new SvgFontRequest("Custom", 700, true)));
         }
 

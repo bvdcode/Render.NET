@@ -24,6 +24,7 @@ namespace Render.NET.Mesh
             }
 
             MemoryStream result = new();
+            bool completed = false;
             try
             {
                 byte[] buffer = new byte[65536];
@@ -33,6 +34,7 @@ namespace Render.NET.Mesh
                     if (count == 0)
                     {
                         result.Position = 0;
+                        completed = true;
                         return result;
                     }
 
@@ -41,13 +43,15 @@ namespace Render.NET.Mesh
                         throw new InvalidDataException("The input exceeds the configured byte limit.");
                     }
 
-                    result.Write(buffer, 0, count);
+                    await result.WriteAsync(buffer.AsMemory(0, count), token).ConfigureAwait(false);
                 }
             }
-            catch
+            finally
             {
-                result.Dispose();
-                throw;
+                if (!completed)
+                {
+                    await result.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
     }

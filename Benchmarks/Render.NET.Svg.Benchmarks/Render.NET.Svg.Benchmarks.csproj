@@ -18,4 +18,13 @@
     <PackageReference Include="SkiaSharp" Version="4.153.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.153.1" />
   </ItemGroup>
+  <Target Name="WriteBenchmarkVersions" AfterTargets="Build">
+    <ItemGroup>
+      <BenchmarkAssembly Include="@(ReferencePath)" Condition="'%(Filename)' == 'Render.NET.Svg' Or '%(Filename)' == 'Svg.Skia' Or '%(Filename)' == 'SkiaSharp'" />
+    </ItemGroup>
+    <GetAssemblyIdentity AssemblyFiles="@(BenchmarkAssembly)">
+      <Output TaskParameter="Assemblies" ItemName="BenchmarkIdentity" />
+    </GetAssemblyIdentity>
+    <WriteLinesToFile File="$(TargetDir)versions.txt" Lines="@(BenchmarkIdentity->'%(Name)=%(Version)')" Overwrite="true" />
+  </Target>
 </Project>

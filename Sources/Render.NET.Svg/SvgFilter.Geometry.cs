@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Render.NET.Svg
 {
-    internal sealed partial record SvgFilter
+    internal partial record SvgFilter
     {
         private static PixelBuffer Gaussian(PixelBuffer input, Vector2 sigma, Matrix3x2 units, bool linear, string edge, SvgRenderContext context)
         {
@@ -35,7 +35,7 @@ namespace Render.NET.Svg
             }
 
             int radius = (int)MathF.Ceiling(sigma * 3);
-            var kernel = new float[(radius * 2) + 1];
+            float[]? kernel = new float[(radius * 2) + 1];
             float total = 0;
             for (int i = -radius; i <= radius; i++)
             {
@@ -56,7 +56,7 @@ namespace Render.NET.Svg
             }
 
             using IDisposable cacheBudget = context.Reserve(input.Width, input.Height, 4);
-            var samples = new Vector4[checked(input.Width * input.Height)];
+            Vector4[]? samples = new Vector4[checked(input.Width * input.Height)];
             for (int y = 0; y < input.Height; y++)
             {
                 context.Token.ThrowIfCancellationRequested();
@@ -66,7 +66,7 @@ namespace Render.NET.Svg
                 }
             }
 
-            var result = new PixelBuffer(input.Width, input.Height);
+            PixelBuffer? result = new PixelBuffer(input.Width, input.Height);
             Parallel.For(0, input.Height, new ParallelOptions { CancellationToken = context.Token }, y =>
             {
                 for (int x = 0; x < input.Width; x++)
@@ -156,7 +156,7 @@ namespace Render.NET.Svg
 
         private static PixelBuffer Convolve(XElement p, PixelBuffer input, Matrix3x2 units, bool linear, SvgRenderContext context)
         {
-            var(width, height, kernel) = ConvolutionKernel(p);
+            var (width, height, kernel) = ConvolutionKernel(p);
             float divisor = Number(p, "divisor", kernel.Sum());
             divisor = divisor == 0 ? 1 : divisor;
             float bias = Number(p, "bias");
@@ -168,8 +168,8 @@ namespace Render.NET.Svg
 
             bool preserve = Text(p, "preserveAlpha") == "true";
             Vector2 step = Pair(p, "kernelUnitLength", 1);
-            Vector2 dx = p.Attribute("kernelUnitLength") == null ? Vector2.UnitX : Vector2.TransformNormal(new Vector2(step.X, 0), units);
-            Vector2 dy = p.Attribute("kernelUnitLength") == null ? Vector2.UnitY : Vector2.TransformNormal(new Vector2(0, step.Y), units);
+            Vector2 dx = p.Attribute("kernelUnitLength") is null ? Vector2.UnitX : Vector2.TransformNormal(new Vector2(step.X, 0), units);
+            Vector2 dy = p.Attribute("kernelUnitLength") is null ? Vector2.UnitY : Vector2.TransformNormal(new Vector2(0, step.Y), units);
             string edge = Text(p, "edgeMode", "duplicate");
             return SvgPixels.Map(input, (x, y) =>
             {
