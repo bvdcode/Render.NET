@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading;
-using StbImageSharp;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Filters;
 using UglyToad.PdfPig.Graphics.Colors;
@@ -30,7 +29,6 @@ namespace Render.NET.Pdf
         {
             CheckSize(image.WidthInSamples, image.HeightInSamples);
             Memory<byte> bytes = image.RawMemory;
-            bool jpeg = false;
             System.Collections.Generic.IReadOnlyList<IFilter>? filters = _filters.GetFilters(image.ImageDictionary, _scanner);
             for (int i = 0; i < filters.Count; i++)
             {
@@ -38,8 +36,9 @@ namespace Render.NET.Pdf
                 IFilter filter = filters[i];
                 if (filter is DctDecodeFilter)
                 {
-                    jpeg = true;
-                    break;
+                    PixelBuffer decoded = DecodeJpeg(image, bytes, i);
+                    ApplyMask(decoded, image.MaskImage);
+                    return decoded;
                 }
 
                 if (filter is JpxDecodeFilter)
@@ -63,7 +62,7 @@ namespace Render.NET.Pdf
                 bytes = filter.Decode(bytes, image.ImageDictionary, _filters, i);
             }
 
-            PixelBuffer result = jpeg ? DecodeJpeg(image, bytes) : DecodeSamples(image, bytes.Span, stencilColor);
+            PixelBuffer result = DecodeSamples(image, bytes.Span, stencilColor);
             ApplyMask(result, image.MaskImage);
             return result;
         }
@@ -81,27 +80,6 @@ namespace Render.NET.Pdf
             {
                 throw new InvalidDataException("PDF page exceeds MaximumImageBytes.");
             }
-        }
-
-        private PixelBuffer DecodeJpeg(IPdfImage image, Memory<byte> bytes)
-        {
-            byte[] encoded = bytes.ToArray();
-            using MemoryStream? input = new MemoryStream(encoded, false);
-            ImageInfo? info = ImageInfo.FromStream(input);
-            if (info is null || info.Value.Width != image.WidthInSamples || info.Value.Height != image.HeightInSamples)
-            {
-                throw new InvalidDataException("JPEG dimensions do not match the PDF image dictionary.");
-            }
-
-            if (image.Decode.Count != 0 || image.ImageDictionary.TryGet<ArrayToken>(NameToken.Mask, out _))
-            {
-                throw new NotSupportedException("JPEG Decode arrays and color-key masks");
-            }
-
-            ImageResult decoded = ImageResult.FromMemory(encoded, ColorComponents.RedGreenBlueAlpha);
-            PixelBuffer? result = new PixelBuffer(decoded.Width, decoded.Height);
-            decoded.Data.CopyTo(result.Pixels.Span);
-            return result;
         }
 
         private PixelBuffer DecodeSamples(IPdfImage image, ReadOnlySpan<byte> bytes, Rgba32 stencilColor)

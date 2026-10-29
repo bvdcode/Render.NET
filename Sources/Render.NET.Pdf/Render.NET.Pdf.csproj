@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Render.NET.Pdf</RootNamespace>
         <Version>0.3.19</Version>
         <Authors>Vadim Belov</Authors>

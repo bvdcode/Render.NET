@@ -9,3 +9,5 @@ These PDF files were authored in this repository as regression cases. They conta
 `Scans/source.png` is our own scan made from repeated text drawn with CC0 Aileron. Its JBIG2 inputs were encoded with `agl/jbig2enc` (development tool only), commit `4553595aa094cad7d55c4efc9657ea31db23c742`, using `jbig2 -s -p -b output source.png`. `Scans/regenerate.py` recreates the input files when that optional tool is installed. No encoder source or third-party sample image is distributed.
 
 The Aileron and Canada 1500 font sources and CC0 declarations are recorded in `Sources/Render.NET.Pdf/Fonts/provenance.json`.
+
+`generate_jpeg.py` uses only Python's standard library to encode original constant 8-by-8 blocks in `Jpeg/`: gray, RGB, YCbCr, CMYK with and without an Adobe marker, and YCCK. Their component values are specified directly. Tests exercise PDF color conversion, Adobe marker precedence, filter parameters, Decode arrays, color-key masks and component-count validation. No source photographs or document extracts are used.

@@ -2,6 +2,36 @@
   "origin": "Authored in this repository; no third-party document content.",
   "files": [
     {
+      "file": "Jpeg/cmyk-no-marker.jpg",
+      "bytes": 194,
+      "sha256": "c860bd8630d8416ac8c061ea2cfd04d09d7800ed7fdfaaa3df7daa0f0fdb7195"
+    },
+    {
+      "file": "Jpeg/cmyk.jpg",
+      "bytes": 210,
+      "sha256": "ff1e9b1d964f59ab4186ef217606a9b82f9f443e01b3752da2c4ddbe144bf76f"
+    },
+    {
+      "file": "Jpeg/gray.jpg",
+      "bytes": 157,
+      "sha256": "7d064364a263aca2fc0a7ad57528b8fb746a0983f8a586531e3a7aff97d473ca"
+    },
+    {
+      "file": "Jpeg/rgb.jpg",
+      "bytes": 193,
+      "sha256": "a4eda4492b3fa3497704aef2ea7ed7ac2af79853c6c24d6d1ca1f5c353529aa7"
+    },
+    {
+      "file": "Jpeg/ycbcr.jpg",
+      "bytes": 171,
+      "sha256": "39eaa0e3d99b8cfc746cf8a25c32ac5c5f56c5b99b473f003476801336e29e78"
+    },
+    {
+      "file": "Jpeg/ycck.jpg",
+      "bytes": 198,
+      "sha256": "0faca15ba84576adf0a433fc5ecf8d3a6e6880bf5e7505f757df26289d5e51a7"
+    },
+    {
       "file": "Scans/globals.jbig2",
       "bytes": 231,
       "sha256": "6b9497fdc04fee1354aeafef84e50dcdb5a43ff52d8d31d952e0fa03b47877d7"
@@ -30,6 +60,11 @@
       "file": "encrypted.pdf",
       "bytes": 1777,
       "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
+    },
+    {
+      "file": "generate_jpeg.py",
+      "bytes": 2673,
+      "sha256": "209168d35f0d58d17cd3993487a7cc493c665e3b22c329c0b3cff72451e6c9b0"
     },
     {
       "file": "generate_knockout.py",
