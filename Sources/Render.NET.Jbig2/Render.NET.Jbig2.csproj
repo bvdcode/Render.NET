@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Compatibility release with the SVG filter performance fix. Existing format support is unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Published with the PDF, SVG and TGS rendering updates. JBIG2 decoding behavior is unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

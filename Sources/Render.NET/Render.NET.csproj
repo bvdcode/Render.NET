@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Compatibility release with the SVG filter performance fix. Existing format support is unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Preserves fractional pixel coverage for thin solid and patterned strokes, including PDF table borders and grid lines.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

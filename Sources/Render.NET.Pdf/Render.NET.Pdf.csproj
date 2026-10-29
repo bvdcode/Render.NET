@@ -22,7 +22,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Compatibility release with the SVG filter performance fix. Existing format support is unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Honors default optional-content visibility and RGB overprint semantics. Preserves JPEG color components through PDF Decode arrays and color spaces. Corrects fractional coverage of thin solid and patterned strokes. Four regression documents totaling 205 pages render without partial rendering.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

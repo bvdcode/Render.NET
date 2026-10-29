@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Compatibility release with the SVG filter performance fix. Existing format support is unchanged.</PackageReleaseNotes>
+        <PackageReleaseNotes>Plays saved property values and keyframes by default, with bounded expression execution available explicitly. Adds lazy animation frame sequences with timing and diagnostics. Fixes group opacity, trim scopes and alpha matte effects, and adds static Roughen Edges rendering. All 15 sticker fixtures render at five timeline positions.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
