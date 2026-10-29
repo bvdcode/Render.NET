@@ -63,8 +63,8 @@
     },
     {
       "file": "generate_jpeg.py",
-      "bytes": 2673,
-      "sha256": "209168d35f0d58d17cd3993487a7cc493c665e3b22c329c0b3cff72451e6c9b0"
+      "bytes": 2790,
+      "sha256": "d0107ba2fca2ba56120ab8050f16d91f343d5898d754cad760223e0db32d06f6"
     },
     {
       "file": "generate_knockout.py",
