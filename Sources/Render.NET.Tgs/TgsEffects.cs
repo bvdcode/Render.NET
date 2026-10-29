@@ -58,6 +58,12 @@ namespace Render.NET.Tgs
                 fallback,
                 fallback
             };
+            if (TgsEffectInfo.IsRoughenEdges(effect))
+            {
+                RoughenEdges(filter, Scalar, values, frame);
+                return;
+            }
+
             if (type == 24)
             {
                 LevelsEffect(filter, Scalar);

@@ -153,7 +153,7 @@ namespace Render.NET.Tgs
                     continue;
                 }
 
-                if (TgsEffectInfo.IsParameterGroup(effect) || TgsEffectInfo.IsIdentity(effect))
+                if (TgsEffectInfo.IsParameterGroup(effect) || TgsEffectInfo.IsIdentity(effect) || TgsEffectInfo.IsRoughenEdges(effect))
                 {
                     continue;
                 }

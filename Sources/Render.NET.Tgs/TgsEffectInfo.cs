@@ -6,6 +6,7 @@ namespace Render.NET.Tgs
 {
     internal static class TgsEffectInfo
     {
+        internal static bool IsRoughenEdges(JsonElement effect) => TgsJson.Text(effect, "mn") == "ADBE Roughen Edges";
         internal static int Type(JsonElement effect) => TgsJson.Text(effect, "mn") switch
         {
             "ADBE Gaussian Blur" => 29,

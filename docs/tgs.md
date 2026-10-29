@@ -61,7 +61,7 @@ The interpreter has no enabled CLR access, host file or network API. Defaults pe
 | Paint | Solid fills/strokes, nonzero/evenodd, line width/caps/joins/miter limits, animated dashes, linear/radial gradients with color/opacity stops and radial highlight. |
 | Modifiers | Parallel/sequential trim paths with wrapping offset; repeaters with transforms and opacity; merge/add/subtract/intersect/exclude paths; round corners, offset paths, Pucker & Bloat and sharp/smooth Zig Zag. |
 | Masks/mattes | Multiple additive/subtractive/intersection/difference/lighten/darken masks; inverse masks, animated opacity/expansion/feather; alpha/luma track mattes and inverse mattes, including explicit matte layer selection; alpha Set Matte effects with hidden source layers and inversion. |
-| Effects/compositing | All 18 Lottie layer blend modes; grouped Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur (including the legacy export) and Transform effects with animated parameters. |
+| Effects/compositing | Roughen Edges in Roughen mode with static, unstretched, unshifted fractal noise; all 18 Lottie layer blend modes; grouped Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur (including the legacy export) and Transform effects with animated parameters. |
 
 Slots, text/image layers and external assets, 3D, effect IDs outside the documented list, and Twist remain outside this implementation. Morphs with different vertex counts are rejected. Simultaneous trims reach separately styled subgroups. Sequential trims split across interleaved style scopes or separately styled subgroups are diagnosed. Set Matte channel extraction and alpha replacement remain unsupported. Fractional stars and flattened path offsets may differ numerically between players. This is a managed vector preview implementation, not full After Effects/Lottie conformance.
 
@@ -97,4 +97,10 @@ Merge/offset operations use our own managed planar edge arrangement in `VectorPa
 
 ## Sticker regression inputs
 
-`Tests/Fixtures/Tgs/Stickers` contains 15 compressed Telegram sticker files and a SHA-256 manifest. The regression tests cover hidden video layers, translucent groups, inherited simultaneous trim paths, parameter-only controllers, identity hue/saturation and empty puppet effects, legacy Gaussian Blur and alpha Set Matte. Opt-in expression regressions cover elastic controls and path expressions at multiple frames. Roughen Edges and a sticker referencing a missing color controller remain open cases.
+`Tests/Fixtures/Tgs/Stickers` contains 15 compressed Telegram sticker files and a SHA-256 manifest. The regression tests cover hidden video layers, translucent groups, inherited simultaneous trim paths, parameter-only controllers, identity hue/saturation and empty puppet effects, legacy Gaussian Blur and alpha Set Matte. Opt-in expression regressions cover elastic controls and path expressions at multiple frames. Roughen Edges is covered at five timeline positions. A sticker referencing a missing color controller remains an open input-data case.
+
+### Roughen Edges
+
+The Roughen mode uses managed fractal noise to vary an eroded alpha boundary while retaining source colors. Border, sharpness, fractal influence, scale, integer complexity (1–12 octaves) and random seed are supported; zero Border is an identity. Other edge modes, stretch, offset and evolution/cycling are diagnosed and rejected in strict mode. The raster filter is an original approximation of the documented effect, rather than a pixel-identical implementation of Adobe's noise algorithm. Its alpha profile and noise pattern can differ. Effect buffer and cancellation limits apply.
+
+Parameter meanings follow [Adobe's Roughen Edges documentation](https://helpx.adobe.com/after-effects/desktop/apply-effects-and-animation-presets/list-of-effects/stylize-effects.html#roughen-edges-effect).

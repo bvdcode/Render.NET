@@ -7,6 +7,7 @@ namespace Render.NET.Tests
     public class TgsStickerFrameTests
     {
         [TestCase("hue-saturation-controls.tgs")]
+        [TestCase("roughen-edge-controls.tgs")]
         [TestCase("bounce-path-expression.tgs")]
         [TestCase("controller-expressions.tgs")]
         [TestCase("trimmed-translucent-groups.tgs")]
