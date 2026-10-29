@@ -16,8 +16,9 @@ namespace Render.NET.Svg
         internal static readonly HashSet<string> Operations = new("feGaussianBlur feOffset feColorMatrix feComponentTransfer feComposite feBlend feMerge feFlood feTile feMorphology feConvolveMatrix feDisplacementMap feTurbulence feDiffuseLighting feSpecularLighting feDropShadow feImage".Split(' '));
         internal PixelBuffer Apply(PixelBuffer source, (float X, float Y, float Width, float Height) box, Matrix3x2 matrix, SvgRenderContext context, PixelBuffer background, SvgPaint? fill, SvgPaint? stroke, float fillOpacity, float strokeOpacity)
         {
-            int named = Primitives.Select(p => Text(p, "result")).Where(n => n.Length > 0).Distinct().Count();
-            using IDisposable reservation = context.Reserve(source.Width, source.Height, named + 8);
+            using SvgBufferScope buffers = context.BeginBuffers();
+            buffers.Adopt(source);
+            Dictionary<string, int> lastUses = LastUses();
             var results = new Dictionary<string, PixelBuffer>(StringComparer.Ordinal)
             {
                 ["SourceGraphic"] = source
@@ -29,14 +30,20 @@ namespace Render.NET.Svg
             };
             PixelBuffer previous = source;
             Matrix3x2 units = PrimitiveBox ? Matrix3x2.CreateScale(box.Width, box.Height) * Matrix3x2.CreateTranslation(box.X, box.Y) * matrix : matrix;
-            foreach (XElement primitive in Primitives)
+            for (int index = 0; index < Primitives.Length; index++)
             {
+                XElement primitive = Primitives[index];
                 context.Token.ThrowIfCancellationRequested();
                 PixelBuffer input = Input(Text(primitive, "in"), previous, results, source, context);
-                PixelBuffer second = Input(Text(primitive, "in2", "SourceGraphic"), source, results, source, context);
+                PixelBuffer second = input;
+                if (UsesSecondInput(primitive))
+                {
+                    second = Input(Text(primitive, "in2", "SourceGraphic"), source, results, source, context);
+                }
                 bool linear = Text(primitive, "color-interpolation-filters", Linear ? "linearRGB" : "sRGB") != "sRGB";
                 (float X, float Y, float Width, float Height) region = PrimitiveRegion(primitive, box, context);
-                previous = Execute(primitive, input, second, results, source, units, matrix, region, regions.GetValueOrDefault(input, Region.Path(box).GetBounds(context.Token)), linear, context);
+                bool overwrite = CanOverwrite(input, results, lastUses, index, buffers);
+                previous = Execute(primitive, input, second, results, source, units, matrix, region, regions.GetValueOrDefault(input, Region.Path(box).GetBounds(context.Token)), linear, context, overwrite);
                 ClipPrimitive(previous, region, matrix, context);
                 regions[previous] = region;
                 string name = Text(primitive, "result");
@@ -44,23 +51,22 @@ namespace Render.NET.Svg
                 {
                     results[name] = previous;
                 }
+
+                ReleaseResults(results, regions, previous, lastUses, index, buffers);
             }
 
             if (Primitives.Length == 0)
             {
-                previous = new PixelBuffer(source.Width, source.Height);
+                previous = context.CreateBuffer(source.Width, source.Height);
             }
 
             if (Unbounded)
             {
-                return previous;
+                return buffers.Transfer(previous);
             }
 
-            PixelBuffer? clipped = new PixelBuffer(source.Width, source.Height);
-            RasterCanvas? canvas = new RasterCanvas(clipped);
-            canvas.ClipPath(Region.Path(box), matrix, cancellationToken: context.Token);
-            canvas.DrawImage(previous, Matrix3x2.Identity, cancellationToken: context.Token);
-            return clipped;
+            Clip(previous, Region.Path(box).GetBounds(context.Token), matrix, context, true);
+            return buffers.Transfer(previous);
         }
 
         private static PixelBuffer Input(string name, PixelBuffer fallback, Dictionary<string, PixelBuffer> results, PixelBuffer source, SvgRenderContext context)
@@ -77,38 +83,38 @@ namespace Render.NET.Svg
 
             if (name == "SourceAlpha")
             {
-                PixelBuffer alpha = SvgPixels.Map(source, (x, y) => new Vector4(0, 0, 0, source[x, y].A / 255f), false, context.Token);
+                PixelBuffer alpha = SvgPixels.Map(source, (x, y) => new Vector4(0, 0, 0, source[x, y].A / 255f), false, context);
                 results[name] = alpha;
                 return alpha;
             }
 
-            return new PixelBuffer(source.Width, source.Height);
+            return context.CreateBuffer(source.Width, source.Height);
         }
 
-        private PixelBuffer Execute(XElement p, PixelBuffer input, PixelBuffer second, Dictionary<string, PixelBuffer> results, PixelBuffer source, Matrix3x2 units, Matrix3x2 matrix, (float X, float Y, float Width, float Height) region, (float X, float Y, float Width, float Height) inputRegion, bool linear, SvgRenderContext context) => ColorOperations.Contains(p.Name.LocalName) ? ExecuteColor(p, input, second, results, source, linear, context) : p.Name.LocalName switch
+        private PixelBuffer Execute(XElement p, PixelBuffer input, PixelBuffer second, Dictionary<string, PixelBuffer> results, PixelBuffer source, Matrix3x2 units, Matrix3x2 matrix, (float X, float Y, float Width, float Height) region, (float X, float Y, float Width, float Height) inputRegion, bool linear, SvgRenderContext context, bool overwrite) => ColorOperations.Contains(p.Name.LocalName) ? ExecuteColor(p, input, second, results, source, linear, context, overwrite) : p.Name.LocalName switch
         {
-            "feGaussianBlur" => Gaussian(input, Pair(p, "stdDeviation"), units, linear, Text(p, "edgeMode", "none"), context),
+            "feGaussianBlur" => Gaussian(input, Pair(p, "stdDeviation"), units, linear, Text(p, "edgeMode", "none"), context, overwrite),
             "feOffset" => Offset(input, Vector2.TransformNormal(new Vector2(Number(p, "dx"), Number(p, "dy")), units), linear, context),
             "feDropShadow" => DropShadow(p, input, units, linear, context),
-            "feMorphology" => Morphology(p, input, units, linear, context),
+            "feMorphology" => Morphology(p, input, units, linear, context, overwrite),
             "feConvolveMatrix" => Convolve(p, input, units, linear, context),
             "feDisplacementMap" => Displace(p, input, second, units, linear, context),
             "feTurbulence" => Turbulence(p, source, matrix, region, linear, context),
             "feDiffuseLighting" or "feSpecularLighting" => Lighting(p, input, units, matrix, linear, context),
             "feTile" => Tile(input, inputRegion, matrix, linear, context),
             "feImage" => FilterImage(p, source, units, matrix, region, context),
-            _ => SvgPixels.Copy(input)
+            _ => SvgPixels.Copy(input, context)
         };
         private static readonly HashSet<string> ColorOperations = new("feColorMatrix feComponentTransfer feComposite feBlend feMerge feFlood".Split(' '));
-        private static PixelBuffer ExecuteColor(XElement p, PixelBuffer input, PixelBuffer second, Dictionary<string, PixelBuffer> results, PixelBuffer source, bool linear, SvgRenderContext context) => p.Name.LocalName switch
+        private static PixelBuffer ExecuteColor(XElement p, PixelBuffer input, PixelBuffer second, Dictionary<string, PixelBuffer> results, PixelBuffer source, bool linear, SvgRenderContext context, bool overwrite) => p.Name.LocalName switch
         {
-            "feColorMatrix" => ColorMatrix(p, input, linear, context),
-            "feComponentTransfer" => Transfer(p, input, linear, context),
-            "feComposite" => Composite(p, input, second, linear, context),
+            "feColorMatrix" => ColorMatrix(p, input, linear, context, overwrite),
+            "feComponentTransfer" => Transfer(p, input, linear, context, overwrite),
+            "feComposite" => Composite(p, input, second, linear, context, overwrite),
             "feBlend" => BlendPixels(p, input, second, linear, context),
             "feMerge" => Merge(p, input, results, source, context),
-            "feFlood" => Flood(p, source),
-            _ => SvgPixels.Copy(input)
+            "feFlood" => Flood(p, source, context),
+            _ => SvgPixels.Copy(input, context)
         };
         private (float X, float Y, float Width, float Height) PrimitiveRegion(XElement primitive, (float X, float Y, float Width, float Height) box, SvgRenderContext context)
         {
@@ -117,18 +123,43 @@ namespace Render.NET.Svg
             return (Get("x", region.X, box.Width, box.X, Region.ViewWidth), Get("y", region.Y, box.Height, box.Y, Region.ViewHeight), Get("width", region.Width, box.Width, 0, Region.ViewWidth), Get("height", region.Height, box.Height, 0, Region.ViewHeight));
         }
 
-        private static void Clip(PixelBuffer image, (float X, float Y, float Width, float Height) region, Matrix3x2 matrix, SvgRenderContext context)
+        private static void Clip(PixelBuffer image, (float X, float Y, float Width, float Height) region, Matrix3x2 matrix, SvgRenderContext context, bool clearColor = false)
         {
-            PixelBuffer? mask = new PixelBuffer(image.Width, image.Height);
             VectorPath? path = region.Width <= 0 || region.Height <= 0 ? new VectorPath() : new VectorPath().Rectangle(region.X, region.Y, region.Width, region.Height);
-            new RasterCanvas(mask).FillPath(path, new Rgba32(0, 0, 0), matrix, cancellationToken: context.Token);
-            Span<byte> pixels = image.Pixels.Span;
-            ReadOnlySpan<byte> clip = mask.Pixels.Span;
-            for (int i = 3; i < pixels.Length; i += 4)
+            int[] lefts = new int[image.Height], rights = new int[image.Height];
+            ScanlineRasterizer.Paint(path, matrix, FillRule.NonZero, image.Width, image.Height, (y, left, right) =>
             {
-                if (clip[i] == 0)
+                lefts[y] = left;
+                rights[y] = right;
+            }, context.Token);
+            Span<byte> pixels = image.Pixels.Span;
+            for (int y = 0; y < image.Height; y++)
+            {
+                context.Token.ThrowIfCancellationRequested();
+                int row = (y * image.Width * 4) + 3;
+                if (clearColor)
                 {
-                    pixels[i] = 0;
+                    pixels.Slice(row - 3, lefts[y] * 4).Clear();
+                    pixels.Slice(row - 3 + (rights[y] * 4), (image.Width - rights[y]) * 4).Clear();
+                    for (int x = lefts[y]; x < rights[y]; x++)
+                    {
+                        Rgba32 color = image[x, y];
+                        Span<byte> pixel = pixels.Slice(row - 3 + (x * 4), 4);
+                        pixel.Clear();
+                        PixelCompositor.Blend(pixel, 0, color, ColorBlendMode.Normal);
+                    }
+
+                    continue;
+                }
+
+                for (int x = 0; x < lefts[y]; x++)
+                {
+                    pixels[row + (x * 4)] = 0;
+                }
+
+                for (int x = rights[y]; x < image.Width; x++)
+                {
+                    pixels[row + (x * 4)] = 0;
                 }
             }
         }
@@ -151,14 +182,14 @@ namespace Render.NET.Svg
 
             if (requested.Contains("BackgroundAlpha"))
             {
-                results["BackgroundAlpha"] = SvgPixels.Map(source, (x, y) => new Vector4(0, 0, 0, background[x, y].A / 255f), false, context.Token);
+                results["BackgroundAlpha"] = SvgPixels.Map(source, (x, y) => new Vector4(0, 0, 0, background[x, y].A / 255f), false, context);
             }
 
             void Paint(string name, SvgPaint? paint, float opacity)
             {
                 if (requested.Contains(name))
                 {
-                    PixelBuffer? buffer = new PixelBuffer(source.Width, source.Height);
+                    PixelBuffer? buffer = context.CreateBuffer(source.Width, source.Height);
                     paint?.DrawUnbounded(new RasterCanvas(buffer), box, matrix, opacity, context.Token);
                     results[name] = buffer;
                 }
@@ -170,7 +201,7 @@ namespace Render.NET.Svg
 
         private PixelBuffer FilterImage(XElement p, PixelBuffer source, Matrix3x2 units, Matrix3x2 matrix, (float X, float Y, float Width, float Height) region, SvgRenderContext context)
         {
-            PixelBuffer? result = new PixelBuffer(source.Width, source.Height);
+            PixelBuffer? result = context.CreateBuffer(source.Width, source.Height);
             if (!Images.TryGetValue(p, out SvgNode? node) || region.Width <= 0 || region.Height <= 0)
             {
                 return result;

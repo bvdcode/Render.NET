@@ -7,8 +7,8 @@ namespace Render.NET.Svg
     {
         internal void Apply(PixelBuffer source, (float X, float Y, float Width, float Height) box, Matrix3x2 matrix, SvgRenderContext context)
         {
-            using IDisposable reservation = context.Reserve(source.Width, source.Height, 1);
-            PixelBuffer? mask = new PixelBuffer(source.Width, source.Height);
+            using SvgBufferScope buffers = context.BeginBuffers();
+            PixelBuffer mask = context.CreateBuffer(source.Width, source.Height);
             RasterCanvas? canvas = new RasterCanvas(mask);
             canvas.ClipPath(Region.Path(box), matrix, cancellationToken: context.Token);
             Matrix3x2 content = ContentBox ? Matrix3x2.CreateScale(box.Width, box.Height) * Matrix3x2.CreateTranslation(box.X, box.Y) * matrix : matrix;

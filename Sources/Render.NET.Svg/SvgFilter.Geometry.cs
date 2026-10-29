@@ -9,7 +9,7 @@ namespace Render.NET.Svg
 {
     internal partial record SvgFilter
     {
-        private static PixelBuffer Gaussian(PixelBuffer input, Vector2 sigma, Matrix3x2 units, bool linear, string edge, SvgRenderContext context)
+        private static PixelBuffer Gaussian(PixelBuffer input, Vector2 sigma, Matrix3x2 units, bool linear, string edge, SvgRenderContext context, bool overwrite = false)
         {
             if (sigma.X < 0 || sigma.Y < 0)
             {
@@ -17,8 +17,20 @@ namespace Render.NET.Svg
             }
 
             Vector2 x = Vector2.TransformNormal(new Vector2(sigma.X, 0), units), y = Vector2.TransformNormal(new Vector2(0, sigma.Y), units);
+            if (x.Length() < .01f && y.Length() < .01f)
+            {
+                return overwrite ? input : SvgPixels.Copy(input, context);
+            }
+
             PixelBuffer first = GaussianAxis(input, x, linear, edge, context);
-            return GaussianAxis(first, y, linear, edge, context);
+            if (overwrite)
+            {
+                context.Release(input);
+            }
+
+            PixelBuffer result = GaussianAxis(first, y, linear, edge, context);
+            context.Release(first);
+            return result;
         }
 
         private static PixelBuffer GaussianAxis(PixelBuffer input, Vector2 axis, bool linear, string edge, SvgRenderContext context)
@@ -26,19 +38,21 @@ namespace Render.NET.Svg
             float sigma = axis.Length();
             if (sigma < .01f)
             {
-                return SvgPixels.Copy(input);
+                return SvgPixels.Copy(input, context);
             }
 
-            if (sigma > 256)
+            if (!float.IsFinite(sigma) || sigma > 256)
             {
                 throw new InvalidDataException("SVG blur deviation exceeds 256 device samples.");
             }
 
             int radius = (int)MathF.Ceiling(sigma * 3);
+            using IDisposable kernelBudget = context.Reserve((radius * 2) + 1, 1, 1);
             float[]? kernel = new float[(radius * 2) + 1];
             float total = 0;
             for (int i = -radius; i <= radius; i++)
             {
+                context.Token.ThrowIfCancellationRequested();
                 float weight = MathF.Exp(-(i * i) / (2 * sigma * sigma));
                 kernel[i + radius] = weight;
                 total += weight;
@@ -55,64 +69,11 @@ namespace Render.NET.Svg
                 return GaussianAligned(input, kernel, axis.Y == 0, axis.X + axis.Y < 0, linear, edge, context);
             }
 
-            using IDisposable cacheBudget = context.Reserve(input.Width, input.Height, 4);
-            Vector4[]? samples = new Vector4[checked(input.Width * input.Height)];
-            for (int y = 0; y < input.Height; y++)
-            {
-                context.Token.ThrowIfCancellationRequested();
-                for (int x = 0; x < input.Width; x++)
-                {
-                    samples[(y * input.Width) + x] = SvgPixels.Read(input.Pixels.Span, ((y * input.Width) + x) * 4, linear, true);
-                }
-            }
-
-            PixelBuffer? result = new PixelBuffer(input.Width, input.Height);
-            Parallel.For(0, input.Height, new ParallelOptions { CancellationToken = context.Token }, y =>
-            {
-                for (int x = 0; x < input.Width; x++)
-                {
-                    Vector4 value = Vector4.Zero;
-                    for (int i = -radius; i <= radius; i++)
-                    {
-                        value += CachedSample(samples, input.Width, input.Height, x + (direction.X * i), y + (direction.Y * i), edge) * kernel[i + radius];
-                    }
-
-                    SvgPixels.Write(result.Pixels.Span, ((y * input.Width) + x) * 4, value, linear, true);
-                }
-            });
-            return result;
+            return GaussianRotated(input, direction, kernel, linear, edge, context);
         }
 
-        private static Vector4 CachedSample(Vector4[] data, int width, int height, float x, float y, string edge)
-        {
-            Vector4 Pixel(int px, int py)
-            {
-                if (edge == "duplicate")
-                {
-                    px = Math.Clamp(px, 0, width - 1);
-                    py = Math.Clamp(py, 0, height - 1);
-                }
-                else if (edge == "wrap")
-                {
-                    px = ((px % width) + width) % width;
-                    py = ((py % height) + height) % height;
-                }
-
-                return (uint)px < width && (uint)py < height ? data[(py * width) + px] : Vector4.Zero;
-            }
-
-            int ix = (int)MathF.Floor(x), iy = (int)MathF.Floor(y);
-            float fx = x - ix, fy = y - iy;
-            if (fx == 0 && fy == 0)
-            {
-                return Pixel(ix, iy);
-            }
-
-            return Vector4.Lerp(Vector4.Lerp(Pixel(ix, iy), Pixel(ix + 1, iy), fx), Vector4.Lerp(Pixel(ix, iy + 1), Pixel(ix + 1, iy + 1), fx), fy);
-        }
-
-        private static PixelBuffer Offset(PixelBuffer input, Vector2 delta, bool linear, SvgRenderContext context) => SvgPixels.Map(input, (x, y) => SvgPixels.Sample(input, x - delta.X, y - delta.Y, linear), linear, context.Token);
-        private static PixelBuffer Morphology(XElement p, PixelBuffer input, Matrix3x2 units, bool linear, SvgRenderContext context)
+        private static PixelBuffer Offset(PixelBuffer input, Vector2 delta, bool linear, SvgRenderContext context) => SvgPixels.Map(input, (x, y) => SvgPixels.Sample(input, x - delta.X, y - delta.Y, linear), linear, context);
+        private static PixelBuffer Morphology(XElement p, PixelBuffer input, Matrix3x2 units, bool linear, SvgRenderContext context, bool overwrite)
         {
             Vector2 radius = Pair(p, "radius");
             if (radius.X < 0 || radius.Y < 0)
@@ -123,7 +84,14 @@ namespace Render.NET.Svg
             bool dilate = Text(p, "operator", "erode") == "dilate";
             Vector2 xAxis = Vector2.TransformNormal(new Vector2(radius.X, 0), units), yAxis = Vector2.TransformNormal(new Vector2(0, radius.Y), units);
             PixelBuffer first = MorphAxis(input, xAxis, dilate, linear, context);
-            return MorphAxis(first, yAxis, dilate, linear, context);
+            if (overwrite)
+            {
+                context.Release(input);
+            }
+
+            PixelBuffer result = MorphAxis(first, yAxis, dilate, linear, context);
+            context.Release(first);
+            return result;
         }
 
         private static PixelBuffer MorphAxis(PixelBuffer input, Vector2 axis, bool dilate, bool linear, SvgRenderContext context)
@@ -151,7 +119,7 @@ namespace Render.NET.Svg
                 }
 
                 return result;
-            }, linear, context.Token);
+            }, linear, context);
         }
 
         private static PixelBuffer Convolve(XElement p, PixelBuffer input, Matrix3x2 units, bool linear, SvgRenderContext context)
@@ -196,7 +164,7 @@ namespace Render.NET.Svg
                 }
 
                 return sum;
-            }, linear, context.Token, !preserve);
+            }, linear, context, !preserve);
         }
 
         private static (int Width, int Height, float[] Kernel) ConvolutionKernel(XElement p)
@@ -221,7 +189,7 @@ namespace Render.NET.Svg
                 Vector4 control = SvgPixels.At(second, x, y, linear, premultiplied: false);
                 Vector2 delta = Vector2.TransformNormal(new Vector2((control[xc] - .5f) * scale, (control[yc] - .5f) * scale), units);
                 return SvgPixels.Sample(input, x + delta.X, y + delta.Y, linear);
-            }, linear, context.Token);
+            }, linear, context);
         }
 
         private static int Channel(string name) => name switch
@@ -235,7 +203,7 @@ namespace Render.NET.Svg
         {
             if (region.Width <= 0 || region.Height <= 0 || !Matrix3x2.Invert(matrix, out Matrix3x2 inverse))
             {
-                return new PixelBuffer(input.Width, input.Height);
+                return context.CreateBuffer(input.Width, input.Height);
             }
 
             return SvgPixels.Map(input, (x, y) =>
@@ -245,7 +213,7 @@ namespace Render.NET.Svg
                 local = new Vector2(Wrap(local.X, region.X, region.Width), Wrap(local.Y, region.Y, region.Height));
                 Vector2 point = Vector2.Transform(local, matrix) - new Vector2(.5f);
                 return SvgPixels.Sample(input, point.X, point.Y, linear);
-            }, linear, context.Token);
+            }, linear, context);
         }
     }
 }

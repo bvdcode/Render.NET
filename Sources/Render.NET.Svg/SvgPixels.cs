@@ -1,20 +1,34 @@
 using System;
 using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Render.NET.Svg
 {
     internal static class SvgPixels
     {
+        private static readonly float[] LinearChannels = CreateLinearChannels();
+
+        private static float[] CreateLinearChannels()
+        {
+            float[] channels = new float[256];
+            for (int i = 0; i < channels.Length; i++)
+            {
+                channels[i] = Linear(i / 255f);
+            }
+
+            return channels;
+        }
+
         internal static Vector4 Read(ReadOnlySpan<byte> data, int offset, bool linear = false, bool premultiplied = true)
         {
             float alpha = data[offset + 3] / 255f;
             Vector4 color = new Vector4(data[offset] / 255f, data[offset + 1] / 255f, data[offset + 2] / 255f, alpha);
             if (linear)
             {
-                color.X = Linear(color.X);
-                color.Y = Linear(color.Y);
-                color.Z = Linear(color.Z);
+                color.X = LinearChannels[data[offset]];
+                color.Y = LinearChannels[data[offset + 1]];
+                color.Z = LinearChannels[data[offset + 2]];
             }
 
             if (premultiplied)
@@ -82,19 +96,38 @@ namespace Render.NET.Svg
             return Read(image.Pixels.Span, ((y * image.Width) + x) * 4, linear, premultiplied);
         }
 
-        internal static PixelBuffer Map(PixelBuffer size, Func<int, int, Vector4> sample, bool linear, CancellationToken token, bool premultiplied = true)
+        internal static PixelBuffer Map(PixelBuffer size, Func<int, int, Vector4> sample, bool linear, SvgRenderContext context, bool premultiplied = true, bool parallel = false, PixelBuffer? destination = null)
         {
-            PixelBuffer? output = new PixelBuffer(size.Width, size.Height);
-            for (int y = 0; y < output.Height; y++)
+            PixelBuffer output = destination ?? context.CreateBuffer(size.Width, size.Height);
+            void Row(int y)
             {
-                token.ThrowIfCancellationRequested();
+                context.Token.ThrowIfCancellationRequested();
                 for (int x = 0; x < output.Width; x++)
                 {
                     Write(output.Pixels.Span, ((y * output.Width) + x) * 4, sample(x, y), linear, premultiplied);
                 }
             }
 
+            if (parallel)
+            {
+                Parallel.For(0, output.Height, new ParallelOptions { CancellationToken = context.Token }, Row);
+            }
+            else
+            {
+                for (int y = 0; y < output.Height; y++)
+                {
+                    Row(y);
+                }
+            }
+
             return output;
+        }
+
+        internal static PixelBuffer Copy(PixelBuffer image, SvgRenderContext context)
+        {
+            PixelBuffer result = context.CreateBuffer(image.Width, image.Height);
+            image.Pixels.CopyTo(result.Pixels);
+            return result;
         }
 
         internal static PixelBuffer Copy(PixelBuffer image)

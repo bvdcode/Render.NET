@@ -9,7 +9,7 @@ namespace Render.NET.Svg
 {
     internal partial record SvgFilter
     {
-        private static PixelBuffer ColorMatrix(XElement p, PixelBuffer input, bool linear, SvgRenderContext context)
+        private static PixelBuffer ColorMatrix(XElement p, PixelBuffer input, bool linear, SvgRenderContext context, bool overwrite)
         {
             string type = Text(p, "type", "matrix");
             float[] numbers = SvgNumbers.List(Text(p, "values", ""));
@@ -99,7 +99,7 @@ namespace Render.NET.Svg
                 Vector4 c = SvgPixels.At(input, x, y, linear, premultiplied: false);
                 float Row(int i) => (c.X * m[i]) + (c.Y * m[i + 1]) + (c.Z * m[i + 2]) + (c.W * m[i + 3]) + m[i + 4];
                 return Vector4.Clamp(new Vector4(Row(0), Row(5), Row(10), Row(15)), Vector4.Zero, Vector4.One);
-            }, linear, context.Token, false);
+            }, linear, context, false, destination: overwrite ? input : null);
         }
 
         private static float[] HueMatrix(float angle)
@@ -130,14 +130,14 @@ namespace Render.NET.Svg
             };
         }
 
-        private static PixelBuffer Transfer(XElement p, PixelBuffer input, bool linear, SvgRenderContext context)
+        private static PixelBuffer Transfer(XElement p, PixelBuffer input, bool linear, SvgRenderContext context, bool overwrite)
         {
             Func<float, float>[] functions = "RGBA".Select(c => TransferFunction(p.Elements().LastOrDefault(e => e.Name.LocalName == "feFunc" + c))).ToArray();
             return SvgPixels.Map(input, (x, y) =>
             {
                 Vector4 c = SvgPixels.At(input, x, y, linear, premultiplied: false);
                 return new Vector4(functions[0](c.X), functions[1](c.Y), functions[2](c.Z), functions[3](c.W));
-            }, linear, context.Token, false);
+            }, linear, context, false, destination: overwrite ? input : null);
         }
 
         private static Func<float, float> TransferFunction(XElement? function)
@@ -149,10 +149,12 @@ namespace Render.NET.Svg
 
             float[] table = SvgNumbers.List(Text(function, "tableValues"));
             string type = Text(function, "type", "identity");
+            float slope = Number(function, "slope", 1), intercept = Number(function, "intercept");
+            float amplitude = Number(function, "amplitude", 1), exponent = Number(function, "exponent", 1), offset = Number(function, "offset");
             return type switch
             {
-                "linear" => x => (Number(function, "slope", 1) * x) + Number(function, "intercept"),
-                "gamma" => x => (Number(function, "amplitude", 1) * MathF.Pow(x, Number(function, "exponent", 1))) + Number(function, "offset"),
+                "linear" => x => (slope * x) + intercept,
+                "gamma" => x => (amplitude * MathF.Pow(x, exponent)) + offset,
                 "discrete" when table.Length > 0 => x => table[Math.Min(table.Length - 1, (int)(x * table.Length))],
                 "table" when table.Length > 1 => x => TableValue(table, x),
                 "table" when table.Length == 1 => _ => table[0],
@@ -167,7 +169,7 @@ namespace Render.NET.Svg
             return table[i] + ((table[i + 1] - table[i]) * (position - i));
         }
 
-        private static PixelBuffer Composite(XElement p, PixelBuffer input, PixelBuffer second, bool linear, SvgRenderContext context)
+        private static PixelBuffer Composite(XElement p, PixelBuffer input, PixelBuffer second, bool linear, SvgRenderContext context, bool overwrite)
         {
             string operation = Text(p, "operator", "over");
             Vector4 coefficients = new Vector4(Number(p, "k1"), Number(p, "k2"), Number(p, "k3"), Number(p, "k4"));
@@ -184,7 +186,7 @@ namespace Render.NET.Svg
                     "lighter" => Vector4.Min(a + b, Vector4.One),
                     _ => a + (b * (1 - a.W))
                 };
-            }, linear, context.Token);
+            }, linear, context, destination: overwrite ? input : null);
         }
 
         private static Vector4 Arithmetic(Vector4 a, Vector4 b, Vector4 k)
@@ -201,7 +203,7 @@ namespace Render.NET.Svg
                 throw new NotSupportedException("SVG filter blend mode: " + name);
             }
 
-            PixelBuffer? output = SvgPixels.Copy(second);
+            PixelBuffer? output = SvgPixels.Copy(second, context);
             for (int y = 0; y < input.Height; y++)
             {
                 context.Token.ThrowIfCancellationRequested();
@@ -230,7 +232,7 @@ namespace Render.NET.Svg
 
         private static PixelBuffer Merge(XElement p, PixelBuffer previous, Dictionary<string, PixelBuffer> results, PixelBuffer source, SvgRenderContext context)
         {
-            PixelBuffer? output = new PixelBuffer(source.Width, source.Height);
+            PixelBuffer? output = context.CreateBuffer(source.Width, source.Height);
             RasterCanvas? canvas = new RasterCanvas(output);
             foreach (XElement child in p.Elements().Where(e => e.Name.LocalName == "feMergeNode"))
             {
@@ -240,22 +242,24 @@ namespace Render.NET.Svg
             return output;
         }
 
-        private static PixelBuffer Flood(XElement p, PixelBuffer source)
+        private static PixelBuffer Flood(XElement p, PixelBuffer source, SvgRenderContext context)
         {
             Rgba32 color = SvgColor.Parse(Text(p, "flood-color", "black"));
-            PixelBuffer? result = new PixelBuffer(source.Width, source.Height);
+            PixelBuffer? result = context.CreateBuffer(source.Width, source.Height);
             result.Clear(color with { A = (byte)MathF.Round(color.A * Math.Clamp(Number(p, "flood-opacity", 1), 0, 1)) });
             return result;
         }
 
         private static PixelBuffer DropShadow(XElement p, PixelBuffer input, Matrix3x2 units, bool linear, SvgRenderContext context)
         {
-            PixelBuffer alpha = SvgPixels.Map(input, (x, y) => new Vector4(0, 0, 0, input[x, y].A / 255f), false, context.Token);
-            PixelBuffer blur = Gaussian(alpha, Pair(p, "stdDeviation", 2), units, linear, "none", context);
+            PixelBuffer alpha = SvgPixels.Map(input, (x, y) => new Vector4(0, 0, 0, input[x, y].A / 255f), false, context);
+            PixelBuffer blur = Gaussian(alpha, Pair(p, "stdDeviation", 2), units, linear, "none", context, overwrite: true);
             PixelBuffer offset = Offset(blur, Vector2.TransformNormal(new Vector2(Number(p, "dx", 2), Number(p, "dy", 2)), units), linear, context);
+            context.Release(blur);
             Rgba32 color = SvgColor.Parse(Text(p, "flood-color", "black"));
             float opacity = Number(p, "flood-opacity", 1);
-            PixelBuffer result = SvgPixels.Map(input, (x, y) => new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, (offset[x, y].A / 255f) * opacity * (color.A / 255f)), false, context.Token, false);
+            PixelBuffer result = SvgPixels.Map(input, (x, y) => new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, (offset[x, y].A / 255f) * opacity * (color.A / 255f)), false, context, false);
+            context.Release(offset);
             new RasterCanvas(result).DrawImage(input, Matrix3x2.Identity, cancellationToken: context.Token);
             return result;
         }

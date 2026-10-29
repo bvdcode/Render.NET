@@ -28,31 +28,32 @@ namespace Render.NET.Svg
 
             if (!Matrix3x2.Invert(matrix, out Matrix3x2 inverse))
             {
-                return new PixelBuffer(source.Width, source.Height);
+                return context.CreateBuffer(source.Width, source.Height);
+            }
+
+            SvgNoiseOctave[] levels = new SvgNoiseOctave[octaves];
+            float amplitude = 1;
+            for (int octave = 0; octave < octaves; octave++)
+            {
+                levels[octave] = new SvgNoiseOctave(frequency, amplitude,
+                    stitch ? (int)MathF.Round(region.Width * frequency.X) : 0, stitch ? (int)MathF.Round(region.Height * frequency.Y) : 0,
+                    (int)MathF.Floor(region.X * frequency.X), (int)MathF.Floor(region.Y * frequency.Y));
+                frequency *= 2;
+                amplitude *= .5f;
             }
 
             return SvgPixels.Map(source, (x, y) =>
             {
                 Vector2 point = Vector2.Transform(new Vector2(x + .5f, y + .5f), inverse);
-                Vector4 value = new Vector4();
-                for (int channel = 0; channel < 4; channel++)
+                Vector4 sum = Vector4.Zero;
+                foreach (SvgNoiseOctave level in levels)
                 {
-                    float sum = 0, amplitude = 1;
-                    Vector2 f = frequency;
-                    for (int octave = 0; octave < octaves; octave++)
-                    {
-                        int width = stitch ? (int)MathF.Round(region.Width * f.X) : 0, height = stitch ? (int)MathF.Round(region.Height * f.Y) : 0;
-                        float sample = noise.Sample(point.X * f.X, point.Y * f.Y, channel, width, height, (int)MathF.Floor(region.X * f.X), (int)MathF.Floor(region.Y * f.Y));
-                        sum += (fractal ? sample : MathF.Abs(sample)) * amplitude;
-                        f *= 2;
-                        amplitude *= .5f;
-                    }
-
-                    value[channel] = fractal ? (sum + 1) / 2 : sum;
+                    Vector4 sample = noise.Sample(point.X * level.Frequency.X, point.Y * level.Frequency.Y, level.Width, level.Height, level.OriginX, level.OriginY);
+                    sum += (fractal ? sample : Vector4.Abs(sample)) * level.Amplitude;
                 }
 
-                return value;
-            }, linear, context.Token, false);
+                return fractal ? (sum + Vector4.One) / 2 : sum;
+            }, linear, context, false, parallel: true);
         }
 
         private static float StitchFrequency(float value, float size)
@@ -71,7 +72,7 @@ namespace Render.NET.Svg
             XElement? light = p.Elements().FirstOrDefault();
             if (light is null || !Matrix3x2.Invert(matrix, out Matrix3x2 inverse))
             {
-                return new PixelBuffer(input.Width, input.Height);
+                return context.CreateBuffer(input.Width, input.Height);
             }
 
             bool specular = p.Name.LocalName == "feSpecularLighting";
@@ -105,7 +106,7 @@ namespace Render.NET.Svg
                 float intensity = constant * attenuation * (specular ? MathF.Pow(Math.Max(0, dot), exponent) : Math.Max(0, dot));
                 Vector3 rgb = Vector3.Clamp(color * intensity, Vector3.Zero, Vector3.One);
                 return new Vector4(rgb, specular ? Math.Max(rgb.X, Math.Max(rgb.Y, rgb.Z)) : 1);
-            }, linear, context.Token, false);
+            }, linear, context, false);
         }
 
         private static (Vector3 Direction, float Attenuation) Light(XElement light, Vector3 position)

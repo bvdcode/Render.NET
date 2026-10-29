@@ -1,0 +1,272 @@
+[
+  {
+    "file": "bounce-path-expression.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "c5dd8868f06f2278bf400028381d9bc07fe29b4e1fbc468b058ccbbef60076cf"
+  },
+  {
+    "file": "bounce-path-expression.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "cf6cf7df78a5c7bed858527813cd8eeab2b8a0a95e0992abad471632b41ffb42"
+  },
+  {
+    "file": "bounce-path-expression.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "2c86d7fd08950b15c463647d3f4323f51da94b9c7dbac09577c5404ef555547f"
+  },
+  {
+    "file": "controller-expressions.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "adfa0683e3a06320dcc8a3d6b0af82d14630588e582997b5780aac96e053efd6"
+  },
+  {
+    "file": "controller-expressions.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "f2422d7de7a2930b5369d7f49136552eb328a32bceeb871bf18df4cf423d8732"
+  },
+  {
+    "file": "controller-expressions.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "4da98c02b3be2b26dba72804b1709c6e39387a8c286e5494ba1ea474c6772c1f"
+  },
+  {
+    "file": "elastic-controls.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "5d9447c38577ac81ede752c5c8a6fd6359eb3fa5814e19937d6bdadcb893b6fe"
+  },
+  {
+    "file": "elastic-controls.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "e271e735cd95a6d1f4e2f7a8dcf63afcd72e431cdd0c12c58ac431ded9808680"
+  },
+  {
+    "file": "elastic-controls.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "e2186dec84e77afd9b0b1b487c2ac7241a022d0a9be6d33361bc90cd928fca79"
+  },
+  {
+    "file": "elastic-expressions.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "7dfa543dc4d93456e177f3a4e48187962850a4ddf91351e3ab3548d34d556759"
+  },
+  {
+    "file": "elastic-expressions.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "e280c858920184d4ee991dabdf2d104ebf49d292dd3d00853e8c092519f688d3"
+  },
+  {
+    "file": "elastic-expressions.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "ccbd409b7bf54b5d7fa53b4a4693fe409e2e0649a4012d6a37987ff56eab797c"
+  },
+  {
+    "file": "empty-puppet-mesh.tgs",
+    "size": 256,
+    "frame": 0.25,
+    "sha256": "d132a4a0ffda560637d95ace13aaa1970bd3fc7db4db748bf5200adca96898ad"
+  },
+  {
+    "file": "empty-puppet-mesh.tgs",
+    "size": 256,
+    "frame": 0.5,
+    "sha256": "d132a4a0ffda560637d95ace13aaa1970bd3fc7db4db748bf5200adca96898ad"
+  },
+  {
+    "file": "empty-puppet-mesh.tgs",
+    "size": 256,
+    "frame": 0.75,
+    "sha256": "d132a4a0ffda560637d95ace13aaa1970bd3fc7db4db748bf5200adca96898ad"
+  },
+  {
+    "file": "hidden-video-layer.tgs",
+    "size": 256,
+    "frame": 13.5,
+    "sha256": "4ceebd142b0f835d795d5383adf6ac3584d454237c74cc175d7c0f4100b65046"
+  },
+  {
+    "file": "hidden-video-layer.tgs",
+    "size": 256,
+    "frame": 27,
+    "sha256": "c3f57933ddd020baaf8619cf5f5629d462bae82d14a74762231a05e37d672961"
+  },
+  {
+    "file": "hidden-video-layer.tgs",
+    "size": 256,
+    "frame": 40.5,
+    "sha256": "8267592db681add8bfbf6bf1d2f08c8d7699d6131f802c2b50e440873c03b90d"
+  },
+  {
+    "file": "hue-saturation-controls.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "6a4ed2fcb8c50656d95f894d38f99c11e22ee87f8205480b4b777ce2d4312702"
+  },
+  {
+    "file": "hue-saturation-controls.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "f678f3c28250a7cce06b63178fb7af2b249e4fa2ceac8676124ec84dca3ce08f"
+  },
+  {
+    "file": "hue-saturation-controls.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "9558dd37a997f20a7a91fca3e1ce2cc7b8ee6135e401f2470dd6a9a526ba5d76"
+  },
+  {
+    "file": "layer-controls.tgs",
+    "size": 256,
+    "frame": 40.25,
+    "sha256": "4aa74843ed27daf69fd5f3da91689d91e661b664419f99a11b37ea5ae895de72"
+  },
+  {
+    "file": "layer-controls.tgs",
+    "size": 256,
+    "frame": 80.5,
+    "sha256": "d044b0547995e6362f2875356fec65f5e9e57f02a593d5d088c09e83c0f8b35a"
+  },
+  {
+    "file": "layer-controls.tgs",
+    "size": 256,
+    "frame": 120.75,
+    "sha256": "dd6612d8941b6920ac8b7565b5681c0241da78941dce70dc24649b7b70db4492"
+  },
+  {
+    "file": "legacy-gaussian-blur.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "a1bc9916051586112e57accc3683a133e2e75894a0be88cee39200757b31c0a9"
+  },
+  {
+    "file": "legacy-gaussian-blur.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "400f91fbc7c24b2abd7c5d06228a0db269761dcccf66b67da4a87e6398b64877"
+  },
+  {
+    "file": "legacy-gaussian-blur.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "400f91fbc7c24b2abd7c5d06228a0db269761dcccf66b67da4a87e6398b64877"
+  },
+  {
+    "file": "missing-color-controller.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "d32954aa0cd58e9fe164cf3f9238d1d319f651a46066bfec2c2e0637ec1b463a"
+  },
+  {
+    "file": "missing-color-controller.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "802784cacd467c07a7f633c76c44056d518ddb93d6c8977a62f391a467603c01"
+  },
+  {
+    "file": "missing-color-controller.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "802784cacd467c07a7f633c76c44056d518ddb93d6c8977a62f391a467603c01"
+  },
+  {
+    "file": "roughen-edge-controls.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "c8bfb5ea3418e74353cadbc5b344e5936f8ad5c72caade047b23853e180a7365"
+  },
+  {
+    "file": "roughen-edge-controls.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "401886e49ca271e6377b5d9bfd3fb207eb01c199b9429971e1d64bede9f9b1ca"
+  },
+  {
+    "file": "roughen-edge-controls.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "c540d71569385818d2b10ec5a91cb4076cba7f75ef5cfeae12735d9b92a05e0d"
+  },
+  {
+    "file": "set-matte.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "6a9dea4b1ebbd945f7b4d62349341e49ad5b4a8911d63498907206109b682aca"
+  },
+  {
+    "file": "set-matte.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "429ac69560b7147d30616cac1f71d9fb84d3f956f978deb83c36926af71f021c"
+  },
+  {
+    "file": "set-matte.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "c3e525f22fb24da8d13fcf335900a2f9ebcb4ba43c4d815e7ea71a36897eef87"
+  },
+  {
+    "file": "translucent-groups.tgs",
+    "size": 256,
+    "frame": 0.25,
+    "sha256": "9b3cf51c43061f3c780da1359fa30cc3cc08f6d8c127bab5cb59ed1115d636f8"
+  },
+  {
+    "file": "translucent-groups.tgs",
+    "size": 256,
+    "frame": 0.5,
+    "sha256": "9b3cf51c43061f3c780da1359fa30cc3cc08f6d8c127bab5cb59ed1115d636f8"
+  },
+  {
+    "file": "translucent-groups.tgs",
+    "size": 256,
+    "frame": 0.75,
+    "sha256": "9b3cf51c43061f3c780da1359fa30cc3cc08f6d8c127bab5cb59ed1115d636f8"
+  },
+  {
+    "file": "trimmed-groups-blur.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "66fb0b1dc1eed5b48797ee8465292cf6afdb35c79d0e72007a30c994d911ffb4"
+  },
+  {
+    "file": "trimmed-groups-blur.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "6615ca1e45e15f393cda6400aaf9240ad8efbb03722039d0eb9e68069018845e"
+  },
+  {
+    "file": "trimmed-groups-blur.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "26e11db507c0eeb9b44ff55db141bde1f1b44587b176ae731c16a7788c3df119"
+  },
+  {
+    "file": "trimmed-translucent-groups.tgs",
+    "size": 256,
+    "frame": 45,
+    "sha256": "394152fc854694be8bf1786695988e76cf0a67e06d69030de9611ee12643d3bc"
+  },
+  {
+    "file": "trimmed-translucent-groups.tgs",
+    "size": 256,
+    "frame": 90,
+    "sha256": "c7b6f8a1da666b058562b548e9f4aab57568960741fd9b20fc0a0673026c4a48"
+  },
+  {
+    "file": "trimmed-translucent-groups.tgs",
+    "size": 256,
+    "frame": 135,
+    "sha256": "bb828bc4ea664f82f4efbc0e75eb2b01f76771f9ef30eceb7232a7019e8ec4c4"
+  }
+]

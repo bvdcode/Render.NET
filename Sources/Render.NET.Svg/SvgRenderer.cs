@@ -23,7 +23,8 @@ namespace Render.NET.Svg
             PixelBuffer? image = new PixelBuffer(width * factor, height * factor);
             image.Clear(options.Background);
             Matrix3x2 matrix = Viewport(document.ViewBox, width, height, document.AspectRatio) * Matrix3x2.CreateScale(factor);
-            document.Root.Draw(new RasterCanvas(image), matrix, new SvgRenderContext(options, cancellationToken));
+            using SvgRenderContext context = new(options, cancellationToken);
+            document.Root.Draw(new RasterCanvas(image), matrix, context);
             return factor == 1 ? image : image.Downsample(factor, cancellationToken);
         }
 

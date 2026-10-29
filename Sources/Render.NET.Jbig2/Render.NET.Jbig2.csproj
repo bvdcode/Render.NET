@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Render.NET.Jbig2</RootNamespace>
-    <Version>0.3.19</Version>
+    <Version>0.3.21</Version>
     <Authors>Vadim Belov</Authors>
     <Company>bvdcode</Company>
     <Product>Render.NET.Jbig2</Product>
@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageReleaseNotes>Published with the PDF, SVG and TGS rendering updates. JBIG2 decoding behavior is unchanged.</PackageReleaseNotes>
+    <PackageReleaseNotes>Published with the shared drawing-core, SVG and TGS memory optimizations. JBIG2 decoding behavior is unchanged.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

@@ -45,8 +45,11 @@ namespace Render.NET
             bool isolated = true, PixelBuffer? alphaMask = null, CancellationToken cancellationToken = default)
             => DrawLayerCore(draw, knockout, opacity, blendMode, isolated, alphaMask, null, cancellationToken);
 
+        internal void DrawLayer(Action<RasterCanvas> draw, PixelBuffer buffer, float opacity, ColorBlendMode blendMode, CancellationToken token)
+            => DrawLayerCore(draw, false, opacity, blendMode, true, null, null, token, buffer);
+
         private void DrawLayerCore(Action<RasterCanvas> draw, bool knockout, float opacity, ColorBlendMode blendMode,
-            bool isolated, PixelBuffer? alphaMask, byte[]? shapeMask, CancellationToken cancellationToken)
+            bool isolated, PixelBuffer? alphaMask, byte[]? shapeMask, CancellationToken cancellationToken, PixelBuffer? storage = null)
         {
             ArgumentNullException.ThrowIfNull(draw);
             if (!float.IsFinite(opacity) || opacity < 0 || opacity > 1 || _layerDepth >= 8)
@@ -59,17 +62,18 @@ namespace Render.NET
                 throw new ArgumentException("The layer mask must match the canvas dimensions.", nameof(alphaMask));
             }
 
-            PixelBuffer? buffer = new PixelBuffer(_target.Width, _target.Height);
+            PixelBuffer buffer = storage ?? new PixelBuffer(_target.Width, _target.Height);
             if (!isolated)
             {
                 _target.Pixels.CopyTo(buffer.Pixels);
             }
 
+            bool trackShape = knockout || _shape is not null || !isolated || shapeMask is not null;
             RasterCanvas? layer = new RasterCanvas(buffer)
             {
                 _clip = shapeMask is null ? _clip : IntersectShape(shapeMask),
-                _coverage = new byte[_target.Width * _target.Height],
-                _shape = new byte[_target.Width * _target.Height],
+                _coverage = trackShape ? new byte[_target.Width * _target.Height] : null,
+                _shape = trackShape ? new byte[_target.Width * _target.Height] : null,
                 _knockoutBackdrop = !isolated ? _target : null,
                 _knockout = knockout,
                 _layerDepth = _layerDepth + 1
@@ -88,8 +92,8 @@ namespace Render.NET
                 for (int x = 0; x < buffer.Width; x++)
                 {
                     int index = (y * buffer.Width) + x;
-                    byte coverage = layer._coverage![index];
-                    byte shape = layer._shape![index];
+                    byte coverage = layer._coverage is null ? buffer[x, y].A : layer._coverage[index];
+                    byte shape = layer._shape is null ? coverage : layer._shape[index];
                     if (shape == 0)
                     {
                         continue;
@@ -165,6 +169,11 @@ namespace Render.NET
         public void ClipPath(VectorPath path, Matrix3x2 transform, FillRule rule = FillRule.NonZero, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(path);
+            if (CoversCanvas(path, transform, rule, cancellationToken))
+            {
+                return;
+            }
+
             ClipUnion(new[] { (path, transform, rule) }, cancellationToken);
         }
 

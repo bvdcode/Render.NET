@@ -18,7 +18,8 @@ namespace Render.NET.Svg
         public bool AllowPartialRendering { get; init; }
         /// <summary>Gets the output sample budget, including supersampling.</summary>
         public int MaximumSamples { get; init; } = 16_777_216;
-        /// <summary>Gets the live temporary buffer budget for nested masks and filters, default 256 MiB.</summary>
+        /// <summary>Gets the retained temporary RGBA buffer and filter scratch budget, default 256 MiB.
+        /// Includes masks, effects and opacity groups; excludes the output image, clipping arrays and runtime memory.</summary>
         public long MaximumEffectBytes { get; init; } = 256L * 1024 * 1024;
     }
 }

@@ -37,7 +37,9 @@ namespace Render.NET.Svg
                 ApplyClip(canvas, matrix, token);
                 if (Opacity < 1 || BlendMode != ColorBlendMode.Normal)
                 {
-                    canvas.DrawLayer(layer => Paint(layer, matrix, context), Opacity, BlendMode, cancellationToken: token);
+                    using SvgBufferScope buffers = context.BeginBuffers();
+                    PixelBuffer group = context.CreateBuffer(canvas.Buffer.Width, canvas.Buffer.Height);
+                    canvas.DrawLayer(layer => Paint(layer, matrix, context), group, Opacity, BlendMode, token);
                 }
                 else
                 {
@@ -69,13 +71,14 @@ namespace Render.NET.Svg
 
         private void DrawEffects(RasterCanvas canvas, Matrix3x2 matrix, SvgRenderContext context)
         {
-            using IDisposable reservation = context.Reserve(canvas.Buffer.Width, canvas.Buffer.Height, 2);
-            PixelBuffer? source = new PixelBuffer(canvas.Buffer.Width, canvas.Buffer.Height);
+            using SvgBufferScope buffers = context.BeginBuffers();
+            PixelBuffer source = context.CreateBuffer(canvas.Buffer.Width, canvas.Buffer.Height);
             Paint(new RasterCanvas(source), matrix, context);
             (float X, float Y, float Width, float Height) box = Bounds(context.Token);
             if (Filter is not null)
             {
-                source = Filter.Apply(source, box, matrix, context, canvas.Buffer, Fill, Stroke, FillOpacity, StrokeOpacity);
+                PixelBuffer filtered = Filter.Apply(source, box, matrix, context, canvas.Buffer, Fill, Stroke, FillOpacity, StrokeOpacity);
+                source = filtered;
             }
 
             if (Mask is not null)

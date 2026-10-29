@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET</RootNamespace>
-        <Version>0.3.19</Version>
+        <Version>0.3.21</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Preserves fractional pixel coverage for thin solid and patterned strokes, including PDF table borders and grid lines.</PackageReleaseNotes>
+        <PackageReleaseNotes>Reduces temporary memory for isolated opacity groups and full-canvas clipping while preserving rendered pixels.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
