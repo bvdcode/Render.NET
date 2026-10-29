@@ -24,7 +24,7 @@ namespace Render.NET.Svg
             }
 
             using StringReader? source = new StringReader(xml);
-            using XmlReader reader = XmlReader.Create(source, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = options.MaximumInputBytes });
+            using XmlReader reader = XmlReader.Create(source, new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore, XmlResolver = null, MaxCharactersInDocument = options.MaximumInputBytes });
             XElement root = XElement.Load(reader);
             return new SvgSceneBuilder(root, options, cancellationToken).Build();
         }
