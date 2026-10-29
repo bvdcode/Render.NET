@@ -24,8 +24,7 @@ The document owns an immutable copy of its JSON and can be rendered concurrently
 ## Expressions and animation
 
 ```csharp
-TgsDocument animation = await TgsReader.ReadFileAsync("sticker.tgs",
-    new TgsReaderOptions { Expressions = new TgsExpressionOptions() }, token);
+TgsDocument animation = await TgsReader.ReadFileAsync("sticker.tgs", cancellationToken: token);
 
 IEnumerable<TgsFrame> frames = TgsRenderer.RenderFrames(animation,
     new TgsAnimationOptions { FrameRate = 30, MaximumFrames = 300 },
@@ -47,7 +46,16 @@ ffmpeg -framerate 30 -i frame-%05d.png -c:v libwebp_anim -loop 0 -an sticker.web
 
 No image/video encoder or FFmpeg process is bundled or launched by the library. `RenderFrameDetailed` returns the same diagnostics for a selected frame; `RenderFrame` continues to return only its pixel buffer.
 
-The expression environment supports exported `$bm_rt` JavaScript expressions, scalar/vector arithmetic helpers, `time`, `value`, `numKeys`, `key`, `nearestKey`, `valueAtTime`, `velocityAtTime`, composition layer lookup, effect control lookup, transform properties, parent access and 2D `toComp`. Base path values interpolate vertices and relative tangents. Property dependencies resolve lazily, and precomposition expressions use remapped composition time. Unused control expressions do not run. This is a subset of the After Effects expression environment; missing layers/properties and unsupported APIs fail rather than silently using cached values. A script's own `try/catch` retains its authored behavior.
+Default playback uses the saved property values and animated keyframes in `k`. Exported expression strings in `x` are not compiled or executed and do not require partial rendering. Position, path and color keyframes continue to interpolate normally, including when an expression references a controller absent from the exported composition.
+
+Enable bounded expression execution explicitly when it is required:
+
+```csharp
+TgsDocument animation = await TgsReader.ReadFileAsync("animation.json",
+    new TgsReaderOptions { Expressions = new TgsExpressionOptions() }, token);
+```
+
+The expression environment supports exported `$bm_rt` JavaScript expressions, scalar/vector arithmetic helpers, `time`, `value`, `numKeys`, `key`, `nearestKey`, `valueAtTime`, `velocityAtTime`, composition layer lookup, effect control lookup, transform properties, parent access and 2D `toComp`. Base path values interpolate vertices and relative tangents. Property dependencies resolve lazily, and precomposition expressions use remapped composition time. Unused control expressions do not run. This is a subset of the After Effects expression environment. When execution is enabled, missing layers/properties, unsupported APIs and exhausted budgets fail; execution errors do not switch playback to saved values. A script's own `try/catch` retains its authored behavior.
 
 The interpreter has no enabled CLR access, host file or network API. Defaults per property are 50,000 statements, 32 MiB allocations, depth 32 and one second; one frame allows 256 evaluations and five seconds of expression processing. Options expose these bounds. Dependency cycles fail, cancellation propagates, and results must match their property's numeric/vector/path type and size bounds. These limits do not replace process isolation for untrusted input. The document stays immutable and concurrent frames use independent execution contexts.
 
@@ -65,7 +73,7 @@ The interpreter has no enabled CLR access, host file or network API. Defaults pe
 
 Slots, text/image layers and external assets, 3D, effect IDs outside the documented list, and Twist remain outside this implementation. Morphs with different vertex counts are rejected. Simultaneous trims reach separately styled subgroups. Sequential trims split across interleaved style scopes or separately styled subgroups are diagnosed. Set Matte channel extraction and alpha replacement remain unsupported. Fractional stars and flattened path offsets may differ numerically between players. This is a managed vector preview implementation, not full After Effects/Lottie conformance.
 
-`animation.UnsupportedFeatures` reports features detectable while reading. Frame-dependent unsupported combinations can also throw while evaluating the selected scene. Rendering rejects known unsupported features by default; `AllowPartialRendering = true` opts into a potentially incomplete preview. Expressions are rejected by default and run only when `TgsReaderOptions.Expressions` is supplied. External assets are never fetched.
+`animation.UnsupportedFeatures` reports features detectable while reading. Frame-dependent unsupported combinations can also throw while evaluating the selected scene. Rendering rejects known unsupported features by default; `AllowPartialRendering = true` opts into a potentially incomplete preview. Saved-value playback is the default; expressions run only when `TgsReaderOptions.Expressions` is supplied. External assets are never fetched.
 
 Motion paths use a 64-segment arc-length lookup. Trim paths flatten curves at 0.1 user-unit tolerance. SVG/raster curve and gradient approximations also apply. Numerical differences from another animation player are expected around curved edges and trimmed endpoints.
 
@@ -97,7 +105,7 @@ Merge/offset operations use our own managed planar edge arrangement in `VectorPa
 
 ## Sticker regression inputs
 
-`Tests/Fixtures/Tgs/Stickers` contains 15 compressed Telegram sticker files and a SHA-256 manifest. The regression tests cover hidden video layers, translucent groups, inherited simultaneous trim paths, parameter-only controllers, identity hue/saturation and empty puppet effects, legacy Gaussian Blur and alpha Set Matte. Opt-in expression regressions cover elastic controls and path expressions at multiple frames. Roughen Edges is covered at five timeline positions. A sticker referencing a missing color controller remains an open input-data case.
+`Tests/Fixtures/Tgs/Stickers` contains 15 compressed Telegram sticker files and a SHA-256 manifest. All 15 are rendered with default saved-value playback at five timeline positions. The regression tests cover hidden video layers, translucent groups, inherited simultaneous trim paths, parameter-only controllers, identity hue/saturation and empty puppet effects, legacy Gaussian Blur and alpha Set Matte. Opt-in expression regressions cover elastic controls and path expressions at multiple frames. Roughen Edges is covered at five timeline positions. The sticker with an absent color controller renders its saved colors by default; explicitly enabling expression execution still reports the unresolved layer.
 
 ### Roughen Edges
 

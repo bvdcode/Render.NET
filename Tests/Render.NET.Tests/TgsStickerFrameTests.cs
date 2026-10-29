@@ -6,6 +6,16 @@ namespace Render.NET.Tests
 {
     public class TgsStickerFrameTests
     {
+        private static string Root => Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Tgs", "Stickers");
+        private static IEnumerable<string> StickerFiles => Directory.EnumerateFiles(Root, "*.tgs").Select(path => Path.GetFileName(path)).Order();
+
+        [TestCaseSource(nameof(StickerFiles))]
+        public async Task DefaultPlaybackCoversCompositionTimeline(string name)
+        {
+            TgsDocument document = await TgsReader.ReadFileAsync(Path.Combine(Root, name));
+            VerifyTimeline(document, name);
+        }
+
         [TestCase("hue-saturation-controls.tgs")]
         [TestCase("roughen-edge-controls.tgs")]
         [TestCase("bounce-path-expression.tgs")]
@@ -22,8 +32,13 @@ namespace Render.NET.Tests
         [TestCase("trimmed-groups-blur.tgs")]
         public async Task StrictFramesCoverCompositionTimeline(string name)
         {
-            string path = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "Tgs", "Stickers", name);
-            TgsDocument document = await TgsReader.ReadFileAsync(path, new TgsReaderOptions { Expressions = new TgsExpressionOptions() });
+            TgsDocument document = await TgsReader.ReadFileAsync(Path.Combine(Root, name), new TgsReaderOptions { Expressions = new TgsExpressionOptions() });
+            VerifyTimeline(document, name);
+        }
+
+        private static void VerifyTimeline(TgsDocument document, string name)
+        {
+            Assert.That(document.UnsupportedFeatures, Is.Empty);
             foreach (double progress in new[] { 0, .25, .5, .75, .999 })
             {
                 double frame = document.InPoint + ((document.OutPoint - document.InPoint) * progress);

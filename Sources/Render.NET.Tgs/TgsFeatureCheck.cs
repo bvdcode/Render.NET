@@ -128,11 +128,6 @@ namespace Render.NET.Tgs
                 CheckEffects(TgsJson.Get(e, "ef"));
             }
 
-            if (_limits.Expressions is null && TgsJson.Get(e, "x").ValueKind == JsonValueKind.String)
-            {
-                _warnings.Add("Lottie expressions");
-            }
-
             if (TgsJson.Get(e, "sid").ValueKind == JsonValueKind.String)
             {
                 _warnings.Add("Lottie property slots");

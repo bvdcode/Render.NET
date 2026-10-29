@@ -16,8 +16,10 @@ namespace Render.NET.Tests
         public void ExpressionsRequireExplicitOptIn()
         {
             TgsDocument document = Read(Layer("$bm_rt=[20,50];"), enabled: false);
-            Assert.That(document.UnsupportedFeatures, Does.Contain("Lottie expressions"));
-            Assert.Throws<NotSupportedException>(() => TgsRenderer.RenderFrame(document, 0));
+            Assert.That(document.UnsupportedFeatures, Is.Empty);
+            PixelBuffer image = TgsRenderer.RenderFrame(document, 0, Options());
+            Assert.That(image[1, 1].R, Is.EqualTo(255));
+            Assert.That(image[20, 50].A, Is.Zero);
         }
 
         [TestCase(0, 20)]

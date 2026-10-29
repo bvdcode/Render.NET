@@ -6,7 +6,7 @@ namespace Render.NET.Tgs
     /// <summary>Bounds for TGS input, decompression and selected-frame geometry.</summary>
     public record TgsReaderOptions
     {
-        /// <summary>Gets optional bounded expression execution. Null rejects expressions.</summary>
+        /// <summary>Gets optional bounded expression execution. Null plays saved values and keyframes without evaluating expressions.</summary>
         public TgsExpressionOptions? Expressions { get; init; }
         /// <summary>Gets the maximum encoded JSON/TGS input size, default 16 MiB.</summary>
         public int MaximumInputBytes { get; init; } = 16 * 1024 * 1024;
