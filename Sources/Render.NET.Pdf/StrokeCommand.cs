@@ -9,7 +9,7 @@ namespace Render.NET.Pdf
         {
             if (Matrix3x2.Invert(Pen, out Matrix3x2 inverse))
             {
-                canvas.StrokePath(Path.Transform(inverse), Color, Style, Pen * device, Blend, cancellationToken);
+                canvas.StrokePathAntialiased(Path.Transform(inverse), Color, Style, Pen * device, Blend, cancellationToken);
             }
         }
     }

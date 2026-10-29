@@ -10,22 +10,21 @@ namespace Render.NET.Pdf
     {
         public void Draw(RasterCanvas canvas, Matrix3x2 device, CancellationToken token)
         {
+            if (Stroke is not null)
+            {
+                if (Matrix3x2.Invert(Pen, out Matrix3x2 inverse))
+                {
+                    canvas.PaintStrokePath(Path.Transform(inverse), Stroke, Pen * device,
+                        layer => Pattern.Draw(layer, device, token), token);
+                }
+
+                return;
+            }
+
             canvas.Save();
             try
             {
-                if (Stroke is null)
-                {
-                    canvas.ClipPath(Path, device, Rule, token);
-                }
-                else if (Matrix3x2.Invert(Pen, out Matrix3x2 inverse))
-                {
-                    canvas.ClipStrokePath(Path.Transform(inverse), Stroke, Pen * device, token);
-                }
-                else
-                {
-                    return;
-                }
-
+                canvas.ClipPath(Path, device, Rule, token);
                 Pattern.Draw(canvas, device, token);
             }
             finally

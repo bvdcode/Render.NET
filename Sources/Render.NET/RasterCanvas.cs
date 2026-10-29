@@ -43,6 +43,10 @@ namespace Render.NET
         /// elementary object in a knockout group; opacity remains independent of its shape.</summary>
         public void DrawLayer(Action<RasterCanvas> draw, bool knockout, float opacity = 1, ColorBlendMode blendMode = ColorBlendMode.Normal,
             bool isolated = true, PixelBuffer? alphaMask = null, CancellationToken cancellationToken = default)
+            => DrawLayerCore(draw, knockout, opacity, blendMode, isolated, alphaMask, null, cancellationToken);
+
+        private void DrawLayerCore(Action<RasterCanvas> draw, bool knockout, float opacity, ColorBlendMode blendMode,
+            bool isolated, PixelBuffer? alphaMask, byte[]? shapeMask, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(draw);
             if (!float.IsFinite(opacity) || opacity < 0 || opacity > 1 || _layerDepth >= 8)
@@ -63,7 +67,7 @@ namespace Render.NET
 
             RasterCanvas? layer = new RasterCanvas(buffer)
             {
-                _clip = _clip,
+                _clip = shapeMask is null ? _clip : IntersectShape(shapeMask),
                 _coverage = new byte[_target.Width * _target.Height],
                 _shape = new byte[_target.Width * _target.Height],
                 _knockoutBackdrop = !isolated ? _target : null,
@@ -71,10 +75,11 @@ namespace Render.NET
                 _layerDepth = _layerDepth + 1
             };
             draw(layer);
-            CompositeLayer(layer, opacity, blendMode, isolated, alphaMask, cancellationToken);
+            CompositeLayer(layer, opacity, blendMode, isolated, alphaMask, shapeMask, cancellationToken);
         }
 
-        private void CompositeLayer(RasterCanvas layer, float opacity, ColorBlendMode blendMode, bool isolated, PixelBuffer? alphaMask, CancellationToken cancellationToken)
+        private void CompositeLayer(RasterCanvas layer, float opacity, ColorBlendMode blendMode, bool isolated,
+            PixelBuffer? alphaMask, byte[]? shapeMask, CancellationToken cancellationToken)
         {
             PixelBuffer buffer = layer._target;
             for (int y = 0; y < buffer.Height; y++)
@@ -92,7 +97,9 @@ namespace Render.NET
 
                     Rgba32 color = coverage == 0 ? default : isolated ? buffer[x, y] : RemoveBackdrop(buffer[x, y], _target[x, y], coverage);
                     float mask = alphaMask is null ? 1 : alphaMask[x, y].A / 255f;
-                    Paint(x, y, color with { A = (byte)MathF.Round(coverage * opacity * mask) }, blendMode, shape);
+                    float clip = shapeMask is null ? 1 : shapeMask[index] / 255f;
+                    Paint(x, y, color with { A = (byte)MathF.Round(coverage * opacity * mask * clip) }, blendMode,
+                        (byte)MathF.Round(shape * clip));
                 }
             }
         }

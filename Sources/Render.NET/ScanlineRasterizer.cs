@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Render.NET
 {
-    internal static class ScanlineRasterizer
+    internal static partial class ScanlineRasterizer
     {
         internal static void Paint(VectorPath path, Matrix3x2 transform, FillRule rule, int width, int height,
             Action<int, int, int> span, CancellationToken cancellationToken)
@@ -24,17 +24,7 @@ namespace Render.NET
             for (int y = top; y < bottom; y++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                crossings.Clear();
-                float sample = y + 0.5f;
-                foreach (Edge edge in edges)
-                {
-                    if (sample >= edge.MinimumY && sample < edge.MaximumY)
-                    {
-                        crossings.Add(new Crossing(edge.X + ((sample - edge.MinimumY) * edge.Slope), edge.Winding));
-                    }
-                }
-
-                crossings.Sort((a, b) => a.X.CompareTo(b.X));
+                CrossingsAt(edges, y + 0.5f, crossings);
                 PaintRow(crossings, rule, width, y, span);
             }
         }
@@ -63,6 +53,19 @@ namespace Render.NET
 
         private static void PaintRow(List<Crossing> crossings, FillRule rule, int width, int y, Action<int, int, int> span)
         {
+            VisitSpans(crossings, rule, (start, end) =>
+            {
+                int left = (int)Math.Clamp(MathF.Ceiling(start - 0.5f), 0, width);
+                int right = (int)Math.Clamp(MathF.Ceiling(end - 0.5f), 0, width);
+                if (right > left)
+                {
+                    span(y, left, right);
+                }
+            });
+        }
+
+        private static void VisitSpans(List<Crossing> crossings, FillRule rule, Action<float, float> span)
+        {
             int winding = 0;
             float start = 0;
             foreach (Crossing crossing in crossings)
@@ -76,12 +79,7 @@ namespace Render.NET
                 }
                 else if (wasInside && !isInside)
                 {
-                    int left = (int)Math.Clamp(MathF.Ceiling(start - 0.5f), 0, width);
-                    int right = (int)Math.Clamp(MathF.Ceiling(crossing.X - 0.5f), 0, width);
-                    if (right > left)
-                    {
-                        span(y, left, right);
-                    }
+                    span(start, crossing.X);
                 }
             }
         }
