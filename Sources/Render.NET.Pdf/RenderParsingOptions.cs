@@ -9,6 +9,7 @@ namespace Render.NET.Pdf
     {
         internal PdfReaderOptions Limits { get; }
         internal CancellationToken CancellationToken { get; set; }
+        internal PdfOptionalContent OptionalContent { get; set; } = null!;
 
         internal RenderParsingOptions(PdfReaderOptions options)
         {

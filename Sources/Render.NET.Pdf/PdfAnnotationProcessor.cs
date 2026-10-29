@@ -28,6 +28,11 @@ namespace Render.NET.Pdf
 
         private void ProcessAnnotation(DictionaryToken annotation)
         {
+            if (annotation.TryGet(NameToken.Create("OC"), out IToken visibility) && !_optionalContent.IsVisible(visibility))
+            {
+                return;
+            }
+
             int flags = Resolve(annotation, NameToken.F, out NumericToken flag) ? flag.Int : 0;
             if ((flags & 35) != 0)
             {

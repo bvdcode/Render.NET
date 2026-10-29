@@ -29,6 +29,7 @@ namespace Render.NET.Pdf
         private int _pathCommands;
         private TransformationMatrix _patternMatrix;
         private CurrentGraphicsState _patternState = null!;
+        private readonly PdfOptionalContent _optionalContent;
 
         internal List<IPdfDrawCommand> Commands { get; } = new List<IPdfDrawCommand>();
         internal List<string> Unsupported { get; } = new List<string>();
@@ -42,6 +43,7 @@ namespace Render.NET.Pdf
             _cancellationToken = options.CancellationToken;
             _images = new PdfImageDecoder(_limits, filters, scanner, _cancellationToken);
             _pageDictionary = pageDictionary;
+            _optionalContent = options.OptionalContent;
         }
 
         public override int Process(int pageNumberCurrent, IReadOnlyList<IGraphicsStateOperation> operations)

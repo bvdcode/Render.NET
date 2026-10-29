@@ -19,6 +19,11 @@ namespace Render.NET.Pdf
 
         private void AddImage(IPdfImage image, Matrix3x2 placement)
         {
+            if (!ContentVisible)
+            {
+                return;
+            }
+
             if (_uncoloredPattern && !image.IsImageMask)
             {
                 throw new InvalidDataException("Uncolored tiling pattern contains a color image.");

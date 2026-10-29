@@ -20,6 +20,7 @@ namespace Render.NET.Pdf
         {
             _options = new RenderParsingOptions(options);
             _document = PigDocument.Open(data, _options);
+            _options.OptionalContent = new PdfOptionalContent(_document.Structure.Catalog.CatalogDictionary, _document.Structure.TokenScanner);
             _document.AddPageFactory<PdfPage, PdfPageFactory>();
             PageCount = _document.NumberOfPages;
         }

@@ -33,6 +33,11 @@ namespace Render.NET.Pdf
 
         private void AddPaint(IPdfDrawCommand command, CurrentGraphicsState state)
         {
+            if (!ContentVisible)
+            {
+                return;
+            }
+
             Commands.Add(state.SoftMask is null ? command : new MaskedCommand(command, GetMask(state.SoftMask)));
         }
 
@@ -109,6 +114,12 @@ namespace Render.NET.Pdf
 
         protected override void ProcessFormXObject(StreamToken formStream, NameToken name)
         {
+            if (!ContentVisible || (formStream.StreamDictionary.TryGet(NameToken.Create("OC"), out IToken visibility)
+                && !_optionalContent.IsVisible(visibility)))
+            {
+                return;
+            }
+
             VectorPath savedPath = _path;
             PdfPoint savedStart = _start;
             PdfPoint savedPosition = CurrentPosition;
