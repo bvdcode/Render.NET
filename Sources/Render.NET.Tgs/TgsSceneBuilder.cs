@@ -86,7 +86,7 @@ namespace Render.NET.Tgs
             return group;
         }
 
-        private XElement PaintLayer(JsonElement[] layers, int index, Dictionary<double, JsonElement> byIndex, double frame, int depth, HashSet<int> active)
+        private XElement PaintLayer(JsonElement[] layers, int index, Dictionary<double, JsonElement> byIndex, double frame, int depth, HashSet<int> active, bool includeHidden = false)
         {
             Count(depth);
             if (!active.Add(index))
@@ -97,7 +97,7 @@ namespace Render.NET.Tgs
             try
             {
                 JsonElement layer = layers[index];
-                if (TgsJson.Flag(layer, "hd") || frame < TgsJson.Number(layer, "ip", _document.InPoint) || frame >= TgsJson.Number(layer, "op", _document.OutPoint))
+                if ((!includeHidden && TgsJson.Flag(layer, "hd")) || frame < TgsJson.Number(layer, "ip", _document.InPoint) || frame >= TgsJson.Number(layer, "op", _document.OutPoint))
                 {
                     return new XElement("g");
                 }
@@ -110,6 +110,7 @@ namespace Render.NET.Tgs
                 content.SetAttributeValue("transform", Matrix(matrix));
                 content.SetAttributeValue("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(TgsJson.Get(layer, "ks"), "o"), frame, 100) / 100, 0, 1)));
                 XElement result = new("g", content);
+                SetMatte(layer, result, layers, byIndex, frame, depth, active);
                 int matte = (int)TgsJson.Number(layer, "tt");
                 if (matte is >= 1 and <= 4)
                 {

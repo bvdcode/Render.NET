@@ -26,7 +26,7 @@ namespace Render.NET.Tgs
             return _warnings.Order().ToArray();
         }
 
-        private void Visit(JsonElement e, bool layer = false)
+        private void Visit(JsonElement e, bool layer = false, bool visible = true)
         {
             _token.ThrowIfCancellationRequested();
             if (++_items > _limits.MaximumItems)
@@ -37,10 +37,15 @@ namespace Render.NET.Tgs
             switch (e.ValueKind)
             {
                 case JsonValueKind.Object:
-                    Features(e, layer);
+                    visible = visible && !(layer && TgsJson.Flag(e, "hd")) && !TgsEffectInfo.IsParameterGroup(e);
+                    if (visible)
+                    {
+                        Features(e, layer);
+                    }
+
                     foreach (JsonProperty property in e.EnumerateObject())
                     {
-                        Visit(property.Value, property.Name == "layers");
+                        Visit(property.Value, property.Name == "layers", visible);
                     }
 
                     break;
@@ -48,7 +53,7 @@ namespace Render.NET.Tgs
                     ValidateKeys(e);
                     foreach (JsonElement child in e.EnumerateArray())
                     {
-                        Visit(child, layer);
+                        Visit(child, layer, visible);
                     }
 
                     break;
@@ -148,8 +153,13 @@ namespace Render.NET.Tgs
                     continue;
                 }
 
-                int type = (int)TgsJson.Number(effect, "ty", -1);
-                if (type == 5)
+                if (TgsEffectInfo.IsParameterGroup(effect) || TgsEffectInfo.IsIdentity(effect))
+                {
+                    continue;
+                }
+
+                int type = TgsEffectInfo.Type(effect);
+                if (TgsEffectInfo.IsContainer(effect))
                 {
                     CheckEffects(TgsJson.Get(effect, "ef"));
                 }
@@ -161,6 +171,7 @@ namespace Render.NET.Tgs
                     23,
                     24,
                     25,
+                    28,
                     29,
                     35
                 }.Contains(type))

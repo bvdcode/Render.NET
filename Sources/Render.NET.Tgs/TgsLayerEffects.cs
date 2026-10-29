@@ -14,12 +14,12 @@ namespace Render.NET.Tgs
         {
             foreach (JsonElement effect in TgsJson.Array(array))
             {
-                if (TgsJson.Number(effect, "en", 1) == 0)
+                if (TgsJson.Number(effect, "en", 1) == 0 || TgsEffectInfo.IsParameterGroup(effect) || TgsEffectInfo.IsIdentity(effect))
                 {
                     continue;
                 }
 
-                if (TgsJson.Number(effect, "ty", -1) == 5)
+                if (TgsEffectInfo.IsContainer(effect))
                 {
                     foreach (JsonElement nested in ExpandEffects(TgsJson.Get(effect, "ef")))
                     {

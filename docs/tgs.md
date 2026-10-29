@@ -27,13 +27,13 @@ The document owns an immutable copy of its JSON and can be rendered concurrently
 | --- | --- |
 | Animation | Static/animated scalar, vector and color properties; hold/linear/cubic temporal easing including per-component handles; split positions; cubic spatial motion sampled by arc length; matching-topology Bezier path morphs. |
 | Layers | Shape, solid, null and precomposition layers; reverse paint order; in/out points, parent transforms, anchor/position/scale/rotation/skew, atomic opacity and automatic path orientation; precomp start/stretch and time remapping; precomp viewport clipping. |
-| Shapes | Bezier paths with relative tangents, ellipses, rounded rectangles, rounded polygon/star geometry and fractional star point counts, nested groups and inherited outer styles. |
+| Shapes | Bezier paths with relative tangents, ellipses, rounded rectangles, rounded polygon/star geometry and fractional star point counts, nested groups, inherited outer styles and atomic opacity across translucent styled subgroups. |
 | Paint | Solid fills/strokes, nonzero/evenodd, line width/caps/joins/miter limits, animated dashes, linear/radial gradients with color/opacity stops and radial highlight. |
 | Modifiers | Parallel/sequential trim paths with wrapping offset; repeaters with transforms and opacity; merge/add/subtract/intersect/exclude paths; round corners, offset paths, Pucker & Bloat and sharp/smooth Zig Zag. |
-| Masks/mattes | Multiple additive/subtractive/intersection/difference/lighten/darken masks; inverse masks, animated opacity/expansion/feather; alpha/luma track mattes and inverse mattes, including explicit matte layer selection. |
-| Effects/compositing | All 18 Lottie layer blend modes; grouped Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur and Transform effects with animated parameters. |
+| Masks/mattes | Multiple additive/subtractive/intersection/difference/lighten/darken masks; inverse masks, animated opacity/expansion/feather; alpha/luma track mattes and inverse mattes, including explicit matte layer selection; alpha Set Matte effects with hidden source layers and inversion. |
+| Effects/compositing | All 18 Lottie layer blend modes; grouped Tint, Fill, Stroke, Tritone, Levels, Drop Shadow, Gaussian Blur (including the legacy export) and Transform effects with animated parameters. |
 
-Expressions, slots, text/image layers and external assets, 3D, effect IDs outside the documented list (including legacy matte effect 28), and Twist remain outside this implementation. Outer styles spanning translucent subgroups are rejected. Morphs with different vertex counts are rejected. Sequential trims split across interleaved style scopes and trim modifiers spanning separately styled subgroups are diagnosed. Fractional stars and flattened path offsets may differ numerically between players. This is a managed vector preview implementation, not full After Effects/Lottie conformance.
+Expressions, slots, text/image layers and external assets, 3D, effect IDs outside the documented list, and Twist remain outside this implementation. Morphs with different vertex counts are rejected. Simultaneous trims reach separately styled subgroups. Sequential trims split across interleaved style scopes or separately styled subgroups are diagnosed. Set Matte channel extraction and alpha replacement remain unsupported. Fractional stars and flattened path offsets may differ numerically between players. This is a managed vector preview implementation, not full After Effects/Lottie conformance.
 
 `animation.UnsupportedFeatures` reports features detectable while reading. Frame-dependent unsupported combinations can also throw while evaluating the selected scene. Rendering rejects known unsupported features by default; `AllowPartialRendering = true` opts into a potentially incomplete preview. Expressions/scripts are never executed and external assets are never fetched.
 
@@ -55,7 +55,7 @@ dotnet run --project Samples/Render.NET.Vector.Sample -c Release -- \
 # Or --time 0.5. Optional: --opaque, --allow-partial.
 ```
 
-Implementation follows the [Lottie community format specification](https://lottie.github.io/lottie-spec/latest/), including its property interpolation and shape rendering model. No animation-player implementation or third-party sticker content was copied into this library.
+Implementation follows the [Lottie community format specification](https://lottie.github.io/lottie-spec/latest/), including its property interpolation and shape rendering model.
 
 ## Effects and modifier regression scenes
 
@@ -64,3 +64,7 @@ Implementation follows the [Lottie community format specification](https://lotti
 ![TGS effects and modifiers](images/tgs-effects.png)
 
 Merge/offset operations use our own managed planar edge arrangement in `VectorPath.Combine`, `Offset` and `RoundCorners`; they do not depend on a third-party geometry library. Rounded corners/offsets flatten curves at 0.05 user-unit tolerance; boolean operations default to 0.1. Geometry budgets and cancellation also apply to these operations.
+
+## Sticker regression inputs
+
+`Tests/Fixtures/Tgs/Stickers` contains 15 compressed Telegram sticker files and a SHA-256 manifest. The regression tests cover hidden video layers, translucent groups, inherited simultaneous trim paths, parameter-only controllers, identity hue/saturation and empty puppet effects, legacy Gaussian Blur and alpha Set Matte. Active expressions and Roughen Edges remain open cases.

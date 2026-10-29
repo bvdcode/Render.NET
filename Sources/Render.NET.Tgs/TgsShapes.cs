@@ -11,10 +11,25 @@ namespace Render.NET.Tgs
 {
     internal partial class TgsSceneBuilder
     {
-        private XElement Shapes(JsonElement array, double frame, int depth)
+        private XElement Shapes(JsonElement array, double frame, int depth, JsonElement[]? inheritedStyles = null, JsonElement[]? inheritedTrims = null)
         {
             Count(depth);
             JsonElement[] items = TgsJson.Array(array);
+            inheritedStyles ??= Array.Empty<JsonElement>();
+            items = items.Concat(inheritedTrims ?? Array.Empty<JsonElement>()).ToArray();
+            JsonElement transform = items.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
+            double opacity = Math.Clamp(TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) / 100, 0, 1);
+            if (opacity == 0)
+            {
+                return new XElement("g");
+            }
+
+            if (opacity != 1)
+            {
+                items = items.Concat(inheritedStyles).ToArray();
+                inheritedStyles = Array.Empty<JsonElement>();
+            }
+
             int repeater = Array.FindLastIndex(items, item => TgsJson.Text(item, "ty") == "rp" && !TgsJson.Flag(item, "hd"));
             if (repeater >= 0)
             {
@@ -23,9 +38,14 @@ namespace Render.NET.Tgs
 
             CheckTrimScopes(items);
             XElement? group = new XElement("g");
-            JsonElement transform = items.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
             group.SetAttributeValue("transform", Matrix(Transform(transform, frame)));
-            group.SetAttributeValue("opacity", F(Math.Clamp(TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) / 100, 0, 1)));
+            group.SetAttributeValue("opacity", F(opacity));
+            PaintShapes(group, items, inheritedStyles, frame, depth);
+            return group;
+        }
+
+        private void PaintShapes(XElement group, JsonElement[] items, JsonElement[] inheritedStyles, double frame, int depth)
+        {
             for (int i = items.Length - 1; i >= 0; i--)
             {
                 Count(depth);
@@ -37,7 +57,10 @@ namespace Render.NET.Tgs
                 string type = TgsJson.Text(items[i], "ty");
                 if (type == "gr")
                 {
-                    group.Add(Shapes(TgsJson.Get(items[i], "it"), frame, depth + 1));
+                    JsonElement[] following = items[(i + 1)..];
+                    JsonElement[] styles = following.Where(x => TgsJson.Text(x, "ty") is "fl" or "st" or "gf" or "gs").Concat(inheritedStyles).ToArray();
+                    JsonElement[] trims = following.Where(x => TgsJson.Text(x, "ty") == "tm" && !TgsJson.Flag(x, "hd")).ToArray();
+                    group.Add(Shapes(TgsJson.Get(items[i], "it"), frame, depth + 1, styles, trims));
                 }
                 else if (type is "fl" or "st" or "gf" or "gs")
                 {
@@ -48,8 +71,6 @@ namespace Render.NET.Tgs
                     group.Add(paint);
                 }
             }
-
-            return group;
         }
 
         private void CheckTrimScopes(JsonElement[] items)
@@ -62,7 +83,7 @@ namespace Render.NET.Tgs
                 }
 
                 JsonElement[] before = items[..i];
-                if (before.Any(x => TgsJson.Text(x, "ty") == "gr" && ContainsStyle(TgsJson.Get(x, "it"))))
+                if (TgsJson.Number(items[i], "m", 1) == 2 && before.Any(x => TgsJson.Text(x, "ty") == "gr" && ContainsStyle(TgsJson.Get(x, "it"))))
                 {
                     _warnings.Add("Lottie trim across separately styled subgroups");
                 }
@@ -112,7 +133,7 @@ namespace Render.NET.Tgs
                     JsonElement transform = nested.LastOrDefault(x => TgsJson.Text(x, "ty") == "tr" && !TgsJson.Flag(x, "hd"));
                     if (TgsValues.Scalar(TgsJson.Get(transform, "o"), frame, 100) != 100)
                     {
-                        _warnings.Add("Lottie styles spanning translucent subgroups");
+                        continue;
                     }
 
                     paths.Add((i, Collect(nested, nested.Length, frame, depth + 1).Transform(Transform(transform, frame))));

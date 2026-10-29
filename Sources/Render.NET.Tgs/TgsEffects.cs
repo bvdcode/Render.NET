@@ -14,7 +14,12 @@ namespace Render.NET.Tgs
             XElement filter = FullFilter(Id());
             foreach (JsonElement effect in ExpandEffects(TgsJson.Get(layer, "ef")))
             {
-                int type = (int)TgsJson.Number(effect, "ty", -1);
+                int type = TgsEffectInfo.Type(effect);
+                if (type == 28)
+                {
+                    continue;
+                }
+
                 if (type is 22 or 35)
                 {
                     FlushEffect(content, filter);
@@ -44,7 +49,7 @@ namespace Render.NET.Tgs
                 return;
             }
 
-            int type = (int)TgsJson.Number(effect, "ty", -1);
+            int type = TgsEffectInfo.Type(effect);
             JsonElement[] values = TgsJson.Array(TgsJson.Get(effect, "ef"));
             double Scalar(int index, double fallback = 0) => index < values.Length ? TgsValues.Scalar(TgsJson.Get(values[index], "v"), frame, fallback) : fallback;
             double[] Color(int index, double fallback = 0) => index < values.Length ? TgsValues.Vector(TgsJson.Get(values[index], "v"), frame, new[] { fallback, fallback, fallback }) : new[]

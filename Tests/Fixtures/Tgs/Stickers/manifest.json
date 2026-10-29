@@ -1,0 +1,65 @@
+{
+  "provenance": "User-provided Telegram sticker samples included with permission for regression testing.",
+  "files": [
+    {
+      "file": "hue-saturation-controls.tgs",
+      "sha256": "890fff9213a2bf0cb775bde25c374400dd71795010a37d5adc83506566539b0f"
+    },
+    {
+      "file": "roughen-edge-controls.tgs",
+      "sha256": "af8719e5f62a4ec77fce361dd2fd109c4826377c0559ec71567450d1f89899a3"
+    },
+    {
+      "file": "bounce-path-expression.tgs",
+      "sha256": "f5fbaa7bd6bc21e1a86b245bcf2112311c7c27bfe14276fce6c60e44fbdefff7"
+    },
+    {
+      "file": "controller-expressions.tgs",
+      "sha256": "8800a6112a3e10b0df8493c0f4ea60eb620c8256a753c3e34572e2006e700e5e"
+    },
+    {
+      "file": "trimmed-translucent-groups.tgs",
+      "sha256": "84bfe4c74a39595a0d6d1c3bfd8cd61bf794a52d38cb3ebd88f04904c012363b"
+    },
+    {
+      "file": "set-matte.tgs",
+      "sha256": "f8c187a2fc727ef2e23ce3d345c3f6fa33017348f6231b3080bfc14aa6c064f9"
+    },
+    {
+      "file": "legacy-gaussian-blur.tgs",
+      "sha256": "1218698a89fc2ab53df0af0e6810f8a1fc712b227e9f199542a81c39a253b9c5"
+    },
+    {
+      "file": "hidden-video-layer.tgs",
+      "sha256": "fced25f8b7659e00229a96094e7bda56ce98023fb1ebc1227ec816004e500527"
+    },
+    {
+      "file": "layer-controls.tgs",
+      "sha256": "6cab4928857eb4b6ba943460e3aa53ad650b100932cc709925d8524082742ded"
+    },
+    {
+      "file": "translucent-groups.tgs",
+      "sha256": "7b99c0e48f6d797ba44a6c1a2b936cceee298a54d6fdff4fb7b629c1a3ea1d4e"
+    },
+    {
+      "file": "elastic-expressions.tgs",
+      "sha256": "17d43fd69f777d1bb975cc645680439f74d174e867745bbf43b5717537825b31"
+    },
+    {
+      "file": "elastic-controls.tgs",
+      "sha256": "c7c6b14a35cc2f0cc9de4f5e319b6b16b6745b05257a7fe93d5d38729eb8e5f3"
+    },
+    {
+      "file": "empty-puppet-mesh.tgs",
+      "sha256": "a10f21f776f20ecc29f46ed2a01a13d7f325f228e67c7352daccd5291e6596b2"
+    },
+    {
+      "file": "missing-color-controller.tgs",
+      "sha256": "590f2ed06b27acf5c0c4d0bba329214b70b555b05ba0476dddf6b6045762a5f1"
+    },
+    {
+      "file": "trimmed-groups-blur.tgs",
+      "sha256": "1997732b1f5a3d1e5cb454dac42e9aed847c2c33a5746591a1be94f871b1af17"
+    }
+  ]
+}
