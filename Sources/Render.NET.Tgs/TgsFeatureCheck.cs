@@ -128,7 +128,7 @@ namespace Render.NET.Tgs
                 CheckEffects(TgsJson.Get(e, "ef"));
             }
 
-            if (TgsJson.Get(e, "x").ValueKind == JsonValueKind.String)
+            if (_limits.Expressions is null && TgsJson.Get(e, "x").ValueKind == JsonValueKind.String)
             {
                 _warnings.Add("Lottie expressions");
             }

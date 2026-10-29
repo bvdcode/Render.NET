@@ -31,10 +31,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Jint" Version="4.17.0" />
         <ProjectReference Include="../Render.NET.Svg/Render.NET.Svg.csproj" />
         <None Include="../../README.md" Pack="true" PackagePath="/" />
         <None Include="../../LICENSE" Pack="true" PackagePath="/" />
         <None Include="../Render.NET/packageIcon.png" Pack="true" PackagePath="/" />
+        <None Update="ThirdPartyNotices.txt" Pack="true" PackagePath="/" />
     </ItemGroup>
 
 </Project>

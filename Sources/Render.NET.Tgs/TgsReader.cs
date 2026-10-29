@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Render.NET.Tgs
 {
-    /// <summary>Reads bounded TGS or Lottie JSON without executing expressions or loading assets.</summary>
+    /// <summary>Reads bounded TGS or Lottie JSON without loading external assets.</summary>
     public static class TgsReader
     {
         /// <summary>Reads JSON bytes or gzip TGS bytes.</summary>
@@ -101,6 +101,7 @@ namespace Render.NET.Tgs
 
         private static void Validate(TgsReaderOptions o)
         {
+            o.Expressions?.Validate();
             if (o.MaximumInputBytes <= 0 || o.MaximumJsonBytes <= 0 || o.MaximumItems <= 0 || o.MaximumPathCommands <= 0 || o.MaximumDepth < 1 || o.MaximumDepth > 64)
             {
                 throw new ArgumentOutOfRangeException(nameof(o));

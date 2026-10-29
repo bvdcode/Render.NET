@@ -36,6 +36,10 @@ namespace Render.NET.Tgs
             if (start.ValueKind == JsonValueKind.Undefined && i > 0)
             {
                 start = TgsJson.Get(k[i - 1], "e");
+                if (start.ValueKind == JsonValueKind.Undefined)
+                {
+                    start = TgsJson.Get(k[i - 1], "s");
+                }
             }
 
             JsonElement end = TgsJson.Get(current, "e");

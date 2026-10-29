@@ -212,42 +212,28 @@ namespace Render.NET.Tgs
         };
         private VectorPath Bezier(JsonElement property, double frame)
         {
-            TgsKeyPair pair = TgsValues.Keys(property, frame);
-            JsonElement a = Unwrap(pair.Start), b = Unwrap(pair.End);
-            JsonElement[] av = TgsJson.Array(TgsJson.Get(a, "v")), bv = TgsJson.Array(TgsJson.Get(b, "v"));
-            if (av.Length != bv.Length)
-            {
-                throw new NotSupportedException("Lottie morph paths with different vertex counts.");
-            }
-
-            JsonElement[] ai = TgsJson.Array(TgsJson.Get(a, "i")), ao = TgsJson.Array(TgsJson.Get(a, "o"));
-            JsonElement[] bi = TgsJson.Array(TgsJson.Get(b, "i")), bo = TgsJson.Array(TgsJson.Get(b, "o"));
-            if (ai.Length != av.Length || ao.Length != av.Length || bi.Length != av.Length || bo.Length != av.Length)
-            {
-                throw new InvalidDataException("Lottie path tangent counts do not match vertices.");
-            }
-
+            JsonElement shape = TgsPropertySample.Read(property, frame);
+            JsonElement[] av = TgsJson.Array(TgsJson.Get(shape, "v"));
+            JsonElement[] ai = TgsJson.Array(TgsJson.Get(shape, "i")), ao = TgsJson.Array(TgsJson.Get(shape, "o"));
             VectorPath? path = new VectorPath();
             if (av.Length == 0)
             {
                 return path;
             }
 
-            double t = TgsValues.Ease(pair.Key, pair.Progress);
-            Vector2 Mix(JsonElement x, JsonElement y) => Vector2.Lerp(RawPoint(x), RawPoint(y), (float)t);
-            Vector2 Vertex(int i) => Mix(av[i], bv[i]);
+            Vector2 Vertex(int i) => RawPoint(av[i]);
             Vector2 start = Vertex(0);
             path.MoveTo(start.X, start.Y);
-            int segments = TgsJson.Flag(a, "c") ? av.Length : av.Length - 1;
+            int segments = TgsJson.Flag(shape, "c") ? av.Length : av.Length - 1;
             for (int i = 0; i < segments; i++)
             {
                 _token.ThrowIfCancellationRequested();
                 int next = (i + 1) % av.Length;
-                Vector2 p = Vertex(i) + Mix(ao[i], bo[i]), q = Vertex(next) + Mix(ai[next], bi[next]), end = Vertex(next);
+                Vector2 p = Vertex(i) + RawPoint(ao[i]), q = Vertex(next) + RawPoint(ai[next]), end = Vertex(next);
                 path.CubicTo(p.X, p.Y, q.X, q.Y, end.X, end.Y);
             }
 
-            if (TgsJson.Flag(a, "c"))
+            if (TgsJson.Flag(shape, "c"))
             {
                 path.Close();
             }
@@ -255,7 +241,6 @@ namespace Render.NET.Tgs
             return path;
         }
 
-        private static JsonElement Unwrap(JsonElement value) => value.ValueKind == JsonValueKind.Array && value.GetArrayLength() > 0 ? value[0] : value;
         private static Vector2 RawPoint(JsonElement value)
         {
             if (value.ValueKind != JsonValueKind.Array || value.GetArrayLength() < 2)

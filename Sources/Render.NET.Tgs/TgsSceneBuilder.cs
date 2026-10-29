@@ -19,13 +19,19 @@ namespace Render.NET.Tgs
         private readonly HashSet<string> _activeAssets = new();
         private readonly HashSet<string> _warnings = new();
         private readonly XElement _defs = new("defs");
+        private readonly TgsExpressionBudget? _expressionBudget;
         private int _items;
         private int _commands;
         private int _id;
+        internal IEnumerable<string> Warnings => _warnings;
         internal TgsSceneBuilder(TgsDocument document, CancellationToken token)
         {
             _document = document;
             _token = token;
+            if (document.Limits.Expressions is not null)
+            {
+                _expressionBudget = new TgsExpressionBudget(document.Limits.Expressions, token);
+            }
             foreach (JsonElement asset in TgsJson.Array(TgsJson.Get(document.Root, "assets")))
             {
                 if (!_assets.TryAdd(TgsJson.Text(asset, "id"), asset))
@@ -47,19 +53,15 @@ namespace Render.NET.Tgs
             return SvgReader.Read(root.ToString(SaveOptions.DisableFormatting), new SvgReaderOptions { MaximumInputBytes = _document.Limits.MaximumJsonBytes, MaximumElements = _document.Limits.MaximumItems, MaximumDepth = _document.Limits.MaximumDepth, MaximumPathCommands = _document.Limits.MaximumPathCommands }, _token);
         }
 
-        private XElement Layers(JsonElement array, double frame, int depth)
+        private XElement Layers(JsonElement array, double frame, int depth, double width = 0, double height = 0)
         {
             Count(depth);
             JsonElement[] layers = TgsJson.Array(array);
-            var byIndex = new Dictionary<double, JsonElement>();
-            foreach (JsonElement layer in layers)
+            if (_expressionBudget is not null)
             {
-                JsonElement index = TgsJson.Get(layer, "ind");
-                if (index.ValueKind == JsonValueKind.Number && !byIndex.TryAdd(TgsJson.Number(index), layer))
-                {
-                    throw new InvalidDataException("Duplicate Lottie layer index.");
-                }
+                layers = new TgsExpressionScope(_document, layers, frame, width > 0 ? width : _document.Width, height > 0 ? height : _document.Height, _expressionBudget, _token).Resolve();
             }
+            Dictionary<double, JsonElement> byIndex = IndexLayers(layers);
 
             XElement? group = new XElement("g");
             var matteLayers = new HashSet<int>();
@@ -84,6 +86,21 @@ namespace Render.NET.Tgs
             }
 
             return group;
+        }
+
+        private static Dictionary<double, JsonElement> IndexLayers(JsonElement[] layers)
+        {
+            var byIndex = new Dictionary<double, JsonElement>();
+            foreach (JsonElement layer in layers)
+            {
+                JsonElement index = TgsJson.Get(layer, "ind");
+                if (index.ValueKind == JsonValueKind.Number && !byIndex.TryAdd(TgsJson.Number(index), layer))
+                {
+                    throw new InvalidDataException("Duplicate Lottie layer index.");
+                }
+            }
+
+            return byIndex;
         }
 
         private XElement PaintLayer(JsonElement[] layers, int index, Dictionary<double, JsonElement> byIndex, double frame, int depth, HashSet<int> active, bool includeHidden = false)
@@ -219,9 +236,9 @@ namespace Render.NET.Tgs
 
                 JsonElement remap = TgsJson.Get(layer, "tm");
                 double time = remap.ValueKind == JsonValueKind.Object ? TgsValues.Scalar(remap, frame) * _document.FrameRate : (frame - TgsJson.Number(layer, "st")) / stretch;
-                XElement group = Layers(TgsJson.Get(asset, "layers"), time, depth);
                 double width = TgsJson.Number(layer, "w", TgsJson.Number(asset, "w", _document.Width));
                 double height = TgsJson.Number(layer, "h", TgsJson.Number(asset, "h", _document.Height));
+                XElement group = Layers(TgsJson.Get(asset, "layers"), time, depth, width, height);
                 string clip = Id();
                 _defs.Add(new XElement("clipPath", new XAttribute("id", clip), new XElement("rect", new XAttribute("width", F(width)), new XAttribute("height", F(height)))));
                 return new XElement("g", new XAttribute("clip-path", "url(#" + clip + ")"), group);
@@ -245,15 +262,7 @@ namespace Render.NET.Tgs
             return delta.LengthSquared() < 1e-12 ? 0 : (Math.Atan2(delta.Y, delta.X) * 180) / Math.PI;
         }
 
-        private static Matrix3x2 Transform(JsonElement value, double frame, double orientation = 0)
-        {
-            Vector2 anchor = TgsValues.Point(TgsJson.Get(value, "a"), frame), position = TgsValues.Point(TgsJson.Get(value, "p"), frame);
-            Vector2 scale = TgsValues.Point(TgsJson.Get(value, "s"), frame, 100, 100) / 100;
-            double rotation = TgsValues.Scalar(TgsJson.Get(value, "r"), frame) + orientation;
-            float skew = (float)((TgsValues.Scalar(TgsJson.Get(value, "sk"), frame) * Math.PI) / 180);
-            float axis = (float)((TgsValues.Scalar(TgsJson.Get(value, "sa"), frame) * Math.PI) / 180);
-            return Matrix3x2.CreateTranslation(-anchor) * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateRotation(-axis) * new Matrix3x2(1, 0, -MathF.Tan(skew), 1, 0, 0) * Matrix3x2.CreateRotation(axis) * Matrix3x2.CreateRotation((float)((rotation * Math.PI) / 180)) * Matrix3x2.CreateTranslation(position);
-        }
+        private static Matrix3x2 Transform(JsonElement value, double frame, double orientation = 0) => TgsTransforms.Transform(value, frame, orientation);
 
         private void Count(int depth)
         {
