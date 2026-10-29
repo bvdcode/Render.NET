@@ -197,7 +197,6 @@ namespace Render.NET.Pdf
         private void AddPainting(VectorPath path, bool fill, bool stroke, FillRule rule)
         {
             CurrentGraphicsState state = GetCurrentState();
-            CheckState(state);
             StorePath(path);
             ColorBlendMode blend = Blend(state.BlendMode);
             if (fill)

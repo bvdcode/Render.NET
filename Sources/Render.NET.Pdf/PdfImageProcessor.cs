@@ -35,7 +35,6 @@ namespace Render.NET.Pdf
             }
 
             CurrentGraphicsState state = GetCurrentState();
-            CheckState(state);
             try
             {
                 bool patternedMask = image.IsImageMask && state.CurrentNonStrokingColor?.ColorSpace == UglyToad.PdfPig.Graphics.Colors.ColorSpace.Pattern;

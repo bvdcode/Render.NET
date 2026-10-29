@@ -1,4 +1,3 @@
-using UglyToad.PdfPig.Graphics;
 using UglyToad.PdfPig.Tokens;
 using System.Collections.Generic;
 using System.IO;
@@ -15,14 +14,6 @@ namespace Render.NET.Pdf
             if (!Unsupported.Contains(feature))
             {
                 Unsupported.Add(feature);
-            }
-        }
-
-        private void CheckState(CurrentGraphicsState state)
-        {
-            if (ContentVisible && (state.Overprint || state.NonStrokingOverprint))
-            {
-                Warn("Overprint compositing");
             }
         }
 

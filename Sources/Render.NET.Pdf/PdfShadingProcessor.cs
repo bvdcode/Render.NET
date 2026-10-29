@@ -13,7 +13,6 @@ namespace Render.NET.Pdf
         {
             Shading shading = ResourceStore.GetShading(shadingName);
             UglyToad.PdfPig.Graphics.CurrentGraphicsState? state = GetCurrentState();
-            CheckState(state);
             IPdfDrawCommand? command = CreateShading(shading, Matrix(CurrentTransformationMatrix), state.AlphaConstantNonStroking, Blend(state.BlendMode));
             if (command is not null)
             {
