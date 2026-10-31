@@ -22,5 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Sources\Render.NET.Svg\Render.NET.Svg.csproj" />
     <ProjectReference Include="..\..\Sources\Render.NET.Tgs\Render.NET.Tgs.csproj" />
+    <ProjectReference Include="..\..\Tools\Render.NET.DevelopmentTools\Render.NET.DevelopmentTools.csproj" />
   </ItemGroup>
 </Project>

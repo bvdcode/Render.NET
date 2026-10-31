@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Tgs</RootNamespace>
-        <Version>0.3.21</Version>
+        <Version>0.3.22</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Tgs</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Reduces memory and CPU use for TGS effects at 2560 pixels. The tested Roughen Edges sticker renders within the default 256 MiB effect budget, with peak process memory reduced from about 1030 to 297 MiB. Preserves 45 reference frames and three 2560-pixel outputs exactly. Fourteen of fifteen sticker fixtures render at 2560 pixels; one still exceeds the existing Gaussian blur deviation limit.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses C# release and benchmark tooling with the existing managed rendering and codec APIs.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

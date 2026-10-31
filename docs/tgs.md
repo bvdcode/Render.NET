@@ -97,7 +97,7 @@ Implementation follows the [Lottie community format specification](https://lotti
 
 ## Effects and modifier regression scenes
 
-`effects.json`/`.tgs` add repeaters, rounded corners, Pucker & Bloat, multiple masks, an inverse alpha matte and drop shadow. `geometry.json`/`.tgs` cover rounded stars/polygons and sharp/smooth Zig Zag on a cubic curve. The original scenes and deterministic standard-library generator `generate_effects.py` are committed with SHA-256 manifests. Reference comparison uses lottie-web 5.13.0 SVG in Chrome with an expanded filter region; no player code or third-party artwork is shipped. Mask feather has separate pixel tests because the reference SVG player does not implement it.
+`effects.json`/`.tgs` add repeaters, rounded corners, Pucker & Bloat, multiple masks, an inverse alpha matte and drop shadow. `geometry.json`/`.tgs` cover rounded stars/polygons and sharp/smooth Zig Zag on a cubic curve. The original scenes are committed with SHA-256 manifests. Reference comparison uses lottie-web 5.13.0 SVG in Chrome with an expanded filter region; no player code or third-party artwork is shipped. Mask feather has separate pixel tests because the reference SVG player does not implement it.
 
 ![TGS effects and modifiers](images/tgs-effects.png)
 

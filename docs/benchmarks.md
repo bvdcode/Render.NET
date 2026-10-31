@@ -65,13 +65,13 @@ The images below come from the measured quality configuration. Render.NET and F3
 
 ## Reproduce
 
-Requires .NET 10, Python 3, F3D 4.0 with the Assimp 3MF plugin, Mesa software OpenGL, `xvfb-run`, and `xauth`. No Python packages are required.
+Requires .NET 10, F3D 4.0 with the Assimp 3MF plugin, Mesa software OpenGL, `xvfb-run`, and `xauth`.
 
 ```bash
-python3 Benchmarks/compare.py --f3d /path/to/f3d --xvfb --output artifacts/benchmark
+dotnet run --project Tools/Render.NET.DevelopmentTools -c Release -- compare --f3d /path/to/f3d --xvfb --output artifacts/benchmark
 ```
 
-The script sets `LIBGL_ALWAYS_SOFTWARE=1`, `MESA_LOADER_DRIVER_OVERRIDE=llvmpipe`, and `GALLIUM_DRIVER=llvmpipe`. It builds the managed benchmark once, then measures the five models in both profiles and resolutions. Images and raw JSON are written under the output directory. Failed renderer processes abort the benchmark and are never counted as fast renders.
+The comparison tool sets `LIBGL_ALWAYS_SOFTWARE=1`, `MESA_LOADER_DRIVER_OVERRIDE=llvmpipe`, and `GALLIUM_DRIVER=llvmpipe`. It builds the managed benchmark once, then measures the five models in both profiles and resolutions. Images and raw JSON are written under the output directory. Failed renderer processes abort the benchmark and are never counted as fast renders.
 
 For this machine, the official portable F3D binary needed newer OpenSSL/TIFF libraries than the host provided. Matching libraries from the official `f3d-4.0.0-cp312-cp312-manylinux_2_34_x86_64.whl` release asset were extracted into a temporary directory; `LD_LIBRARY_PATH` points at its `f3d/lib64` folder. Temporary `libGLX.so` / `libOpenGL.so` symlinks point to the installed `.so.0` runtime libraries. No system packages or libraries were replaced. The raw JSON records these paths; use paths appropriate to your installation.
 

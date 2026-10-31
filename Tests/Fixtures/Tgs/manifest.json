@@ -8,10 +8,6 @@
     {
       "file": "orbit.tgs",
       "sha256": "129ec7b2c751141cecf8a723afe62437c43dd9da6d96fa01e6fd064178dc1ed0"
-    },
-    {
-      "file": "generate_preview.py",
-      "sha256": "4086c338b12b94f77c6de860bcce06c190726af5a674ea5a6e5fc4158efd4d31"
     }
   ]
 }
