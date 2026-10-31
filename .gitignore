@@ -9,5 +9,3 @@ artifacts/
 *.suo
 notes/
 AGENTS.md
-__pycache__/
-*.pyc

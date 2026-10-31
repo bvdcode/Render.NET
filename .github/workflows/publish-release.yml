@@ -52,28 +52,13 @@ jobs:
       - name: Test
         run: dotnet test Sources/Render.NET.sln --configuration Release --no-build --no-restore
 
-      - name: Check Python development tools
-        run: |
-          python3 -m pip install -r requirements-dev.txt
-          python3 -m black --check .github/scripts Benchmarks/compare.py Tests/Fixtures
-          python3 -m isort --check-only --profile black .github/scripts Benchmarks/compare.py Tests/Fixtures
-          python3 -m mypy --strict .github/scripts
-          python3 -m mypy --strict Benchmarks/compare.py Tests/Fixtures/Jpeg2000
-          python3 -m mypy --strict Tests/Fixtures/Jbig2
-          python3 -m mypy --strict Tests/Fixtures/Tgs
-          python3 -m mypy --strict Tests/Fixtures/Pdf
-          python3 -m mypy --strict Tests/Fixtures/Svg/Png
-
-      - name: Test release notes generation
-        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
-
       - name: Pack
         run: dotnet pack Sources/Render.NET.sln --configuration Release --no-build --output artifacts/packages -p:Version=${{ steps.gitversion.outputs.MajorMinorPatch }}
 
       - name: Generate release notes
         env:
           RELEASE_VERSION: ${{ steps.gitversion.outputs.MajorMinorPatch }}
-        run: python3 .github/scripts/release_notes.py --repository "$GITHUB_REPOSITORY" --version "$RELEASE_VERSION" --commit "$GITHUB_SHA" --packages artifacts/packages --output artifacts/release-notes.md
+        run: dotnet run --project Tools/Render.NET.DevelopmentTools --configuration Release --no-build -- release-notes "$GITHUB_REPOSITORY" "$RELEASE_VERSION" "$GITHUB_SHA" artifacts/packages artifacts/release-notes.md
 
       - name: Upload release notes
         uses: actions/upload-artifact@v7

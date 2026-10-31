@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Render.NET.Pdf</RootNamespace>
-        <Version>0.3.21</Version>
+        <Version>0.3.22</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Pdf</Product>
@@ -22,7 +22,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Includes reduced temporary memory for isolated opacity groups and full-canvas clipping in the shared drawing core. PDF regression tests pass.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses C# release and benchmark tooling with the existing managed rendering and codec APIs.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

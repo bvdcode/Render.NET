@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Render.NET.Svg</RootNamespace>
-        <Version>0.3.21</Version>
+        <Version>0.3.22</Version>
         <Authors>Vadim Belov</Authors>
         <Company>bvdcode</Company>
         <Product>Render.NET.Svg</Product>
@@ -21,7 +21,7 @@
         <RepositoryUrl>https://github.com/bvdcode/Render.NET</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>Reuses temporary effect buffers, releases filter intermediates after their last consumer, and reduces clipping and Gaussian blur memory. Accelerates turbulence and color operations. MaximumEffectBytes accounts for retained RGBA effect buffers and filter scratch; it is not a whole-process memory cap.</PackageReleaseNotes>
+        <PackageReleaseNotes>Uses C# release and benchmark tooling with the existing managed rendering and codec APIs.</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>

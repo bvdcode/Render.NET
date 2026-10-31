@@ -42,11 +42,6 @@
       "sha256": "4c8412bbc146d886aa665843e79dc79053385a7535dc8597152746661a71d29f"
     },
     {
-      "file": "Scans/regenerate.py",
-      "bytes": 1085,
-      "sha256": "8f359495b7ecbdb7f826e48ae3b479d561970dbaf1599280a46d7bc08212bf1c"
-    },
-    {
       "file": "Scans/source.png",
       "bytes": 479,
       "sha256": "14ec898ce4dc3ceb8e455d07b3649a3e4abd9877f27fcbfd87f46b8f222cef43"
@@ -60,31 +55,6 @@
       "file": "encrypted.pdf",
       "bytes": 1777,
       "sha256": "412ccd0d284ecac8f18d312082810b5959136dbb8d4874b15459fff27733ef55"
-    },
-    {
-      "file": "generate_jpeg.py",
-      "bytes": 2790,
-      "sha256": "d0107ba2fca2ba56120ab8050f16d91f343d5898d754cad760223e0db32d06f6"
-    },
-    {
-      "file": "generate_knockout.py",
-      "bytes": 1513,
-      "sha256": "a132c6138a39feaa41bbbc7a2034e5ab3e8a451f86e7585a9d5c544f1ca8751a"
-    },
-    {
-      "file": "generate_patterns.py",
-      "bytes": 5481,
-      "sha256": "93edab3d1d23da4512bf86ac9be23cd4108328f75a83958088dcee0deb16102a"
-    },
-    {
-      "file": "generate_shadings.py",
-      "bytes": 5227,
-      "sha256": "abe0005bab6f28480bd8da134e4b43e5a6b9eafe8d78c2cc73a96ddd5d12e428"
-    },
-    {
-      "file": "generate_type3.py",
-      "bytes": 4600,
-      "sha256": "9096c7497319f344115e58096335d9cf0011b7f5d9e15c9c4bf0bbc51b76edbc"
     },
     {
       "file": "graphics.pdf",
